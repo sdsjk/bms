@@ -1,0 +1,29 @@
+<span ng-controller="lefttimeCtrl">
+{% if status == 0 %}
+{%verbatim%}该问题在<span class="text-danger">{{ lefttime }}</span>内未回答,会被关闭{% endverbatim %}
+{% elif status == 1 %}
+{%verbatim%}该问题在<span class="text-danger">{{ lefttime }}</span>后或者<span class="text-danger">{{ question.left_count }}次</span>对话之后会被关闭 {% endverbatim %}
+{% elif status == 2 %}
+{%verbatim%}该问题已结束,在<span class="text-danger">{{ lefttime }}</span>后,会被公开展示.{% endverbatim %}
+{% endif %}
+</span>
+<script>
+ function lefttimeCtrl($scope,$interval) {
+     console.log($scope)
+
+     var seconds = Math.floor({{ lefttime.total_seconds }});
+     $scope.question.left_count = {{ left_count }}
+
+     $scope.promise  = $interval(function () {
+         seconds = seconds - 1;
+         hour  = Math.floor(seconds/3600)
+         minutes = Math.floor((seconds-3600*hour)/60)
+         $scope.lefttime = "" + hour+ ":"+minutes+ ":" + seconds%60
+
+
+     },1000,$scope.seconds)
+
+
+
+ }
+</script>

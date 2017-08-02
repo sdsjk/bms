@@ -1,0 +1,105 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-12">
+<h4>关注{{ analyst.nick_name }}的用户</h4>
+
+<form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+    <input  name="id" value="{{ analyst.id }}" type="hidden" />
+    <div class="form-group">
+        <label for="follower_id">用户ID</label>
+        <input type="text" class="form-control" value="{{ follower_id }}" name="follower_id" id="follower_id" >
+    </div>
+    <button class="btn btn-primary" type="submit">查询</button>
+</fieldset>
+</form>
+<br />
+<table class="table table-bordered table-striped table-hover sortable">
+<thead>
+<tr><th>ID</th>
+    <th>头像</th>
+    <th>用户ID</th>
+    <th>类型</th>
+    <th>状态</th>
+    <th>最后登录时间</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+{% for user in pager.object_list %}
+<tr>
+<td>{{ user.userid }}</td>
+<td><img src="{{user.picpath|default_if_none:"/static/img/default_avatar.png"}}" width="32px"> </td>
+<th>{{ user.userid}}</th>
+<td>{{ user.payinfo|payinfo_name }}</td>
+<td>{{ user.isactive|yesno:"可登录,不可登录,非法" }}</td>
+<td>{{ user.udate|notzdate }}</td>
+    <td>{% if user.banned  %}<button type="button" onclick="delBannedLettor({{ analyst.id }},{{ user.userid }})">解除私信屏蔽</button>{% endif %}</td>
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+<script type="text/javascript">
+function delArticle(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/del_result/", data,
+        function(data){
+            if(data.result){
+              alert("成功删除!");
+              location.reload()
+            }else{
+              alert("删除失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function delBannedLettor(analyst_id,auser_id) {
+    if(!confirm("确认做此操作")){
+            return false;
+        }
+        var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+        var data = {
+            "analyst_id":analyst_id,
+            "auser_id":auser_id,
+            "csrfmiddlewaretoken":csrfmiddlewaretoken,
+        };
+        console.log(data)
+        $.post("/site/jiechupingbi/", data,
+            function(data) {
+                if (data.result) {
+                    alert("解除屏蔽成功!");
+                    location.reload()
+                } else {
+                    alert("解除屏蔽失败：" + data.message);
+                }
+            }, "json");
+}
+</script>
+{% endblock %}

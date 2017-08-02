@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport"/>
+<title>欧洲杯</title>
+<link href="/static/img/euro/styles.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<div class="bgbox"><img src="/static/img/euro/mailbg2.jpg">
+<div class="mlbox">
+	<div class="list2box">
+	<span class="txt">{{ fixture.start_time|date:"Y-m-d H:i" }} {{ fixture.remark }} </span>
+    <div class="glob">
+    	<dl>
+        	<dt><img src="/static/img/euro/img.jpg"></dt>
+            <dd>{{ fixture.home_team }}</dd>
+        </dl>
+        <div class="title">?  :  ?</div>
+        <dl class="frbox">
+        	<dd>{{  fixture.away_team}}</dd>
+        	<dt><img src="/static/img/euro/img.jpg"></dt>
+        </dl>
+    </div>
+    <span class="num">200人参与</span>
+    <div class="numlist">
+    	<div class="num_f">
+        	<span class="n_t">60%</span>
+            <span class="c_t"><a href="#">猜主队胜</a></span>
+        </div>
+        <div class="num_f">
+        	<span class="n_t">60%</span>
+            <span class="c_t"><a href="#">猜主客平</a></span>
+        </div>
+        <div class="num_f">
+        	<span class="n_t">60%</span>
+            <span class="c_t"><a href="#">猜主队胜</a></span>
+        </div>
+    </div>
+    <h2><i><img src="/static/img/euro/ico.png"></i>赛事分析</h2>
+</div>
+	<div class="newslist">
+        <a href="javascript:void(0)" onclick="app.openArticle(19455)">
+    	<div class="con_box">
+            <div class="pn_46x46">
+                <dl>
+                    <dt><img src="/static/img/euro/img.jpg"></dt>
+                    <dd>老艾老师</dd>
+                    <dd class="tm">11:20 09:46</dd>
+                    <span class="t_num"><i><img src="/static/img/euro/ico2.png"></i>1120 </span>
+                </dl>
+            </div>
+            <span class="txt" >从历史经验看龙头板块虽然中途会正常回调但长期看会螺旋式上涨只块虽然中途会正常回调但长期看会螺旋式上涨只要股</span>
+		</div>
+        </a>
+
+
+
+
+
+
+    </div>
+</div>
+{%  if  request.GET.inapp != "on"%}
+<div class="foot"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.xycentury.jcs.jcsand"><img src="/static/img/euro/foot.jpg"></a><span class="close"><a href="#">关闭</a></span></div>
+{% endif %}
+<script>
+
+</script>
+</div>
+</body>
+</html>

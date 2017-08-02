@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <meta name="applicable-device"content="pc,mobile">
+{#    <meta name="keywords" content="竞彩说 彩票分析 数字彩 竞技彩">#}
+{#    的彩票分析-精彩说#}
+    <title>บทวิเคราะห์การลงทุนของ{{ article.author.nick_name }}-winwin:{{ article.text|striptags|slice:":12" }}</title>
+{#    <meta name="description" content="winwin-{{ article.author.nick_name }} 彩票分析 数字彩 竞技彩">#}
+    <meta name="description" content="winwin-{{ article.author.nick_name }}ให้บริการการวิเคราะห์ลงทุนอย่างใกล้ชิด">
+    <meta name="author" content="stone">
+    <meta name="robots" content="index,follow">
+    <meta property="qc:admins" content="24614436777641413656375" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="winwin">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-itunes-app" content="app-id=#######">
+    <link rel="shortcut icon" href="/static/img/fav.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/static/img/fav.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/static/img/fav.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/static/img/fav.png" />
+    <link rel="apple-touch-icon" href="/static/img/fav.png" />
+    <!-- Android Lollipop -->
+    <meta name="theme-color" content="#5f7fb0">
+    <!-- win8 -->
+    <meta name="msapplication-TileColor" content="#5f7fb0"/>
+    <meta name="msapplication-tap-highlight" content="no">
+    <!-- old mobile -->
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="320">
+    <!-- uc -->
+    <meta name="screen-orientation" content="portrait">
+    <meta name="full-screen" content="yes">
+    <meta name="browsermode" content="application">
+    <!-- QQ -->
+    <meta name="x5-orientation" content="portrait">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="x5-page-mode" content="app">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <!-- Optional theme -->
+    <!--link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"-->
+    <!-- Site Style Css-->
+    <style>
+        html,body{
+            font-size:12pt;
+        }
+        .box{
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+
+        }
+        img{
+            display:block;
+            max-width: 100%;
+            height:auto;
+        }
+    </style>
+
+</head>
+<body class="" style="background-color: #404040;color:#FFFFFF ;padding-bottom: 80px;">
+<div class="container">
+<article>
+
+
+    <table>
+<tr>
+<td style="min-width: 68px;vertical-align: top"><img style="width: 58px;min-width: 58px; margin-right: 8px; margin-bottom: 8px;margin-top: 8px;" src="http://bms.winwin.in.th/static/{{ article.author.user.userinfo.avatar|default_if_none:"/static/img/default_avatar.png" }}"></td>
+<td style="font-size:1.0rem  ;color:#AEAEAE;max-width: 90%">
+    <div >
+    <strong style="color: #FFDF1B; font-size: 1.2rem;">{{ article.author.nick_name }}</strong>
+            <br>{{ article.author.brief }}
+    </div>
+</td>
+</tr>
+
+</table>
+
+
+    <section  style="font-size: 1.0rem;">
+{#        最后修改于#}
+        <p style="color:#AEAEAE;font-size: 1.0rem;">แก้ไขล่าสุด{{ article.date_added|date:"y-m-d H:i" }}</p>
+        {% if article.chargeable %}
+        {{ article.digest|safe }}
+          {% if article.outdated %}
+              <br>
+{#              该文章相关赛事已结束,以下为原收费内容#}
+              <div style="width: 100%; height: 0.7em; border-bottom: 1px solid #AEAEAE; text-align: center">  <span style="font-size: 1em; background-color: #404040; padding: 0 5px;color:#AEAEAE;">การแข่งจบลง บทความเสียเงินเป็นฟรี</span></div>
+              <br>
+               {{ article.text|safe }}
+          {% else%}
+              <div  class="container-fluid" style="background-color: #313131;margin-top: 30px;padding-top: 12px;padding-bottom: 12px;"align="center"><img src="/static/img/shoufei.png" style="width: 32px" class="img-responsive"><div class="text-center">บทความที่คิดเงินจะขึ้นแสดงแค่หัวข้อเท่านั้น</div></div>
+          {% endif %}
+        {% else %}
+        {{ article.text|safe }}
+        {% endif %}
+
+    </section>
+
+</article>
+{#观点建议仅供参考，据此投注，风险自负。购彩仅为娱乐，请量力而行(泰语)#}
+    <p style="font-size: 11px;color: gray;"> ข้อคิดเห็นเสนอแนะเป็นแค่อ้างอิง ดังนั้นการเดิมพัน มีความเสี่ยงควรพิจารณาด้วยตัวเอง การพนันเป็นแค่การเล่นเพื่อสนุก โปรดใช้วิจารณญาณ！</p>
+    {% if not is_from_app %}
+    <footer class="navbar-fixed-bottom container-fluid" style="background-color: #313131;padding-top: 12px;padding-bottom: 12px; display: none;"  >
+        <div class="row">
+        <div class="col-sm-6">
+        {% if language == 'M' %}
+            <div style="float: left"><img style="width:50px" src="/static/img/cai500.png"></div>
+        {% else %}
+            <div style="float: left"><img style="width:50px" src="/static/img/cai501.png"></div>
+        {% endif %}
+        <div style="float: left;padding-left: 12px;padding-top: 5px;">
+            {% if language == 'M' %}
+                <div style="font-size: 1.2rem"><a style="color: #FFFFFF;" href="/">精彩说</a></div>
+            {% else %}
+                <div style="font-size: 1.2rem"><a style="color: #FFFFFF;" href="/">精彩说粤语版</a></div>
+            {% endif %}
+            <div>一切为了彩民</div>
+
+        </div>
+         </div>
+
+
+         <div class="col-sm-6">
+        <div  style="float: right;padding-top: 18px;padding-right: 18px;">
+            {% if language == 'M' %}
+                <a class="btn"style="background-color: #FFDF1B;color: #000;" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.xycentury.jcs.jcsand" >立即下载国语版</a>
+            {% else %}
+                <a class="btn"style="background-color: #FFDF1B;color: #000;" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.xycentury.jcs.jcsand_Cantonese" >立即下载粤语版</a>
+            {% endif %}
+        </div>
+        </div>
+        </div>
+
+    </footer>
+    {% endif %}
+</div>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?20c9d3fbaa81e04dc5d4c00fa387eab9";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+</body>
+</html>

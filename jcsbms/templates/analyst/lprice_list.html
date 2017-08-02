@@ -1,0 +1,49 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+
+{% block description %}{% endblock %}
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-12">
+<a class="btn btn-primary" href="/laoshi/fabuzhibojiage/">添加报时价格</a>
+<table class="table table-bordered table-striped table-hover sortable">
+<thead>
+<tr><th>ID</th>
+    <th>天数</th>
+    <th>周期名称</th>
+    <td>对应价格</td>
+</tr>
+</thead>
+<tbody>
+{% for object in pager.object_list %}
+<tr>
+<td>{{ object.id }}</td>
+<td>{{ object.days }}</td>
+<th>{{ object.period_name }}</th>
+<td>{{ object.cost}}</td>
+
+
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+<script type="text/javascript">
+
+</script>
+{% endblock %}

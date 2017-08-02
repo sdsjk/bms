@@ -1,0 +1,97 @@
+body{width:100%;font-family:"Microsoft yahei"; background:url(bg.png);}
+*{margin:0;padding:0;list-style:none}
+a{text-decoration:none}
+.bgbox{position:relative;width:100%;}
+.bgbox img{width:100%;}
+.cnbox{position:absolute;left:4.6%;top:0;width:90%;margin:48.4% auto 0; padding-bottom:36px; background:rgba(6,26,20,0.36)}
+.toplin{float:left;width:100%;margin-bottom:15px;background:#ffde47;border-bottom:2px #fe9901 solid; border-radius:16px}
+.toplin .before{float:left;width:21%;height:30px;line-height:30px; background:#ffcf0d; border-right:1px #ffc501 solid;color:#333; font-size:0.813em; text-align:center;border-radius:16px 0 0 16px}
+.toplin .before a{display:block;color:#333}
+.toplin .before i{display:inline-block; width:9%;margin-right:4px; vertical-align:middle}
+.toplin .before i img{width:100%}
+.toplin .after{float:right;border-radius:0 16px 16px 0;border-left:1px #ffc501 solid;}
+.toplin .after i{margin-left:4px;}
+.toplin .time{float:left;width:56%;line-height:30px;font-size:.875em;text-align:center;color:#333}
+.conlist{width:87.5%;margin:auto;}
+.conlist .list{position:relative;float:left; margin-top:-5px;width:100%;}
+.conlist .list img{width:100%}
+.conbox{position:absolute;left:11.5%;top:0;width:76%;}
+.conbox .txt{float:left;width:100%;line-height:26px;text-align:center;color:#ffdf1b; font-size:.635em}
+.conbox .f14{margin:0 4px;font-size:.875em; font-weight:bold}
+.conbox dl{float:left;width:20%; margin-top:13px;}
+.conbox dt,.conbox dt img{width:100%;}
+.conbox dd{float:left;width:100%; font-size:.875em; text-align:center;color:#fff}
+.time_num{float:left;width:60%; text-align:center}
+.time_num .time{float:left;width:100%;margin-top:10px;font-size:.813em; color:#e8e8e8}
+.time_num .num{margin-top:5px;font-size:1.063em}
+.foot{position:fixed; left:0; bottom:0;width:100%; height:38px; background:#ffdf1b}
+.foot img{width:100%}
+.close{position:absolute;right:11px;top:5px;width:10px;height:10px; text-indent:-9999px;}
+.close a{display:block;width:10px;height:10px;}
+.mlbox{position:absolute;left:0;top:33.6%;width:100%;}
+.list2box{float:left;width:91%;margin-left:5.5%}
+.list2box .txt{float:left;width:100%; line-height:24px; text-align:center;color:#000; font-size:.813em}
+.list2box .glob{position:relative;float:left;width:100%;}
+.list2box .glob dl{float:left;width:40%;margin-top:4.5%;}
+.list2box .glob dt{float:left;width:40%; height:34px;}
+.list2box .glob dt img{width:100%}
+.list2box .glob dd{float:left;width:55%;margin:10% 0 0 5%;font-size:.750em;color:#fefefe}
+.list2box .title{position:absolute;left:43%;top:58.6%;text-align:center;color:#ffed9b; font-size:1em;}
+.list2box .glob .frbox{float:right}
+.list2box .glob .frbox dd{margin:10% 5% 0 0 ; text-align:right}
+.list2box .num{float:left;width:100%; margin-top:5%;text-align:center;color:#ffdd43; font-size:0.500em}
+.numlist{float:left;width:83%;margin:10% 0 0 8%;}
+.numlist .num_f{float:left;width:24%; margin-right:33px; text-align:center}
+.numlist .num_f:nth-last-child(1){margin-right:0}
+.numlist .num_f .n_t{float:left;width:100%; font-size:.938em;color:#fff;}
+.numlist .num_f .c_t{float:left;width:100%;padding:2% 7%;font-size:.625em;color:#fff; background:#fc0000;border-radius:2px;}
+.numlist .num_f .c_t a{display:block;color:#fff}
+.list2box h2{float:left;width:100%;margin-top:12px;font-weight:normal; font-size:.813em;color:#fff}
+.list2box h2 i{display:inline-block;width:2%;margin-right:5px;vertical-align:middle}
+.list2box h2 i img{width:100%}
+.newslist{float:left;width:100%;padding-bottom:40px;background:rgba(9,61,8,0.9);}
+
+.con_box{width:88%;padding:0 6% 10px 6%;margin:15px auto 0;border-bottom:1px #849d84 solid; overflow:hidden}
+.pn_46x46 dl{position:relative;float:left; width:100%; padding-bottom:10px; }
+.pn_46x46 dt{float:left; width:46px;}
+.pn_46x46 dd{float:left; width:60%;margin-top:2px; color:#fff; margin-left:10px;font-size:0.813em;}
+.con_box .txt{color:#fff;font-size:.750em;}
+.pn_46x46 .tm{font-size:.625em;}
+.t_num{position:absolute;right:0;top:10px;font-size:.750em;color:#ccc}
+.t_num i{display:inline-block;width:30%;margin-right:5px;vertical-align:middle}
+.t_num i img{width:100%}
+
+ @media (device-height:480px) and (-webkit-min-device-pixel-ratio:2){/* 兼容iphone4/4s */
+.conbox dl{margin-top:5px;}
+.conbox dd{font-size:.813em;}
+.list2box .glob dl{margin-top:2%;}
+.list2box .glob dt{width:46%}
+.list2box{width:94%}
+.list2box .title{left:39%;top:53.6%;}
+.list2box .num{margin-top:1.5%;}
+.list2box .txt{ line-height:20px;}
+}
+
+@media (device-height:568px) and (-webkit-min-device-pixel-ratio:2){/* 兼容iphone5 */
+.conbox dl{margin-top:5px;}
+.conbox dd{font-size:.813em;}
+.list2box .glob dl{margin-top:2%;}
+.list2box .glob dt{width:46%}
+.list2box .title{left:39%;top:53.6%;}
+.list2box .num{margin-top:1.5%;}
+.list2box .txt{ line-height:20px;}
+} 
+
+
+@media (device-height:667px) and (-webkit-min-device-pixel-ratio:2){/* 兼容iphone6 */
+.conbox dl{margin-top:10px;}
+.foot{bottom:6px;}
+.list2box .glob dl{margin-top:4%;}
+.list2box .glob dt{width:54%}
+.list2box .num{margin-top:4%;}
+} 
+ @media (device-height:736px) and (-webkit-min-device-pixel-ratio:2){/* 兼容iphone6 Plus */
+.foot{bottom:11px;}
+.list2box .glob dl{margin-top:4%;}
+.list2box .num{margin-top:6%;}
+} 

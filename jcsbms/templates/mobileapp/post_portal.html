@@ -1,0 +1,177 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="portalForm" name="portalForm" ng-controller="portalCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>传送门</legend>
+    {% if portal %}
+        <input type="hidden" name="id" value="{{ portal.id }}">
+    {% endif %}
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">上传图片:</label>
+       <div class="col-sm-6">
+           <input type="hidden" name="img_url" value="" />
+           <iframe name="uploadf" id="uploadf" align="middle" marginwidth="0" marginheight="0" src="/yonghu/avatar_upload/" frameborder="0" width="500" scrolling="no" height="30" allowTransparency="true" border="0"></iframe>
+       </div>
+    </div>
+
+     <img alt="默认头像" id="avatar" src="/static/img/default_avatar.png"
+      style="width: 480px;margin-top: 20px; "
+     />
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">是否可选:</label>
+       <div class="col-sm-3">
+           <input type="checkbox" name="can_selected" id="can_selected" ng-model="portal.can_selected">
+       </div>
+
+    </div>
+     <div class="form-group">
+       <label  class="col-sm-2 control-label">名称:</label>
+
+       <div class="col-sm-3">
+           <input type="text" required class="form-control" ng-model="portal.name" id="name" name="name" placeholder="填入名称">
+
+       </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">跳转地址:</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="target_url" name="target_url" placeholder="填入要跳转的url">
+
+        </div>
+
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">显示序号:</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control" id="rank" name="rank" placeholder="填入显示的序号">
+        </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">所属项目:</label>
+        <div class="col-sm-6">
+            <select name="project" id="project" class="form-control">
+                <option value="M" >国语版</option>
+                <option value="C">粤语版</option>
+                <option value="J">一起赢</option>
+             </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">是否只允许新用户访问:</label>
+       <div class="col-sm-3">
+           <input type="checkbox" name="show_user_flag" id="show_user_flag" ng-model="portal.show_user_flag">
+       </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">新用户注册天数限制:</label>
+        <div class="col-sm-3">
+            <input type="number" class="form-control" id="show_user_value" name="show_user_value" placeholder="新用户注册天数限制">
+        </div>
+   </div>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">是否只允许渠道用户访问:</label>
+       <div class="col-sm-3">
+           <input type="checkbox" name="show_channel_flag" id="show_channel_flag" ng-model="portal.show_channel_flag">
+       </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">允许的渠道编号:</label>
+        <div class="col-sm-3">
+            <input type="text" class="form-control" id="show_channel_value" name="show_channel_value" placeholder="允许的渠道编号">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postPortal()" class="btn btn-primary btn-lg" ng-disabled="portalForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+
+
+<script type="text/javascript">
+  function portalCtrl($scope){
+    {% if portal %}
+        $scope.portal={
+            "name":"{{ portal.name }}",
+            "can_selected":{{ portal.can_selected|yesno:"true,false,false" }},
+            "show_user_flag":{{ portal.show_user_flag|yesno:"true,false,false" }},
+            "show_channel_flag":{{ portal.show_channel_flag|yesno:"true,false,false" }},
+        };
+        $('input[name="img_url"]').val("{{ portal.img_url }}");
+        $("#avatar").prop("src","{{ portal.img_url }}");
+        $('input[name="target_url"]').val("{{ portal.target_url }}");
+        $('input[name="rank"]').val("{{ portal.rank }}");
+        $('#project').val("{{ portal.project }}");
+        $('#show_user_value').val("{{ portal.show_user_value }}");
+        $('#show_channel_value').val("{{ portal.show_channel_value|default:'' }}");
+    {% endif %}
+
+    $scope.postPortal=function(){
+      if ($('input[name="img_url"]').val().length==0){
+          alert("图片尚未上传")
+          return;
+      }
+      if($('#show_user_flag').is(':checked')){
+          var userValue = $("#show_user_value").val();
+          if (!$.isNumeric(userValue)) {
+              alert("天数必须是整数!");
+              return false;
+          }else {
+              userValue = parseInt(userValue);
+              if (userValue < 1) {
+                  alert("天数必须大于0!");
+                  return false;
+              }
+          }
+      }
+      if($('#show_channel_flag').is(':checked')){
+          var channelValue = $("#show_channel_value").val();
+          if($.trim(channelValue) == ''){
+              alert('渠道编号不能为空')
+              return false;
+          }
+      }
+      next = "/app/rukouguanli/";
+      $(".btn-primary img").show();
+      $.post("", $("#portalForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+
+
+  }
+function image_preview(imageurl){
+  var url_prefix = "/static/";
+  imageurl = url_prefix + imageurl;
+  $('input[name="img_url"]').val(imageurl);
+
+  $("#avatar").prop("src",imageurl);
+
+}
+</script>
+{% endblock %}

@@ -1,0 +1,144 @@
+<div ng-controller="lotterytypeCtrl">
+<div class="row form-group">
+<!--div class="col-sm-7">
+<select class="form-control"  id="selectLotterytype" name="lottery_type"
+ng-options="type.name  for type in types track by type.id"
+        ng-model="lottery.type" ng-change="typeSelect()"
+>
+<option value="">请选择彩种</option>
+
+</select>
+</div-->
+<div class="col-sm-12">
+ <h3>请选择赛事</h3>
+ <div class="text-danger">如果不选择赛事,文章发布后不可修改</div>
+ <input class="form-control" ng-model="lottery.teamword" id="inputTypeWord" name="typeword" placeholder="请输入队名关键字">
+</div>
+</div>
+<div class="row form-group">
+<div class="col-sm-12">
+<button type="button" class="btn btn-primary btn-block" ng-click="searchLottery()">搜索</button>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+{% verbatim %}
+    <ul class="list-inline">
+
+    <li ng-repeat="lottery in checkedLotteries" >
+    <button  class="btn btn-success" ng-click="delLottery($event)" data-id="{{ lottery.id }}"><span class="glyphicon glyphicon-remove"></span>{{ lottery.name }}
+    <input name="relLottery" value="{{ lottery.id }}" type="hidden">
+    </button>
+    </li>
+    </ul>
+{% endverbatim %}
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+{% verbatim %}
+<div class="btn-group" data-toggle="buttons">
+
+    <button ng-repeat="lottery in lotteries" class="btn btn-default btn-block" data-id="{{ lottery.id }}" data-name="{{ lottery.name }}" ng-click="selectLottery($event)"  >{{ lottery.name }}</button>
+
+</div>
+{% endverbatim %}
+</div>
+</div>
+
+</div>
+<script>
+function lotterytypeCtrl($scope,$http){
+    //console.log(1111);
+    $scope.lotteries = []
+    $scope.nextPage={}
+    if($scope.checkedLotteries==undefined){
+        $scope.checkedLotteries=[]
+    }
+
+    {% for lottery in lotteries %}
+
+        $scope.checkedLotteries.push({
+          "id":"{{ lottery.id }}",
+          "name":"{{ lottery.name }}"
+        });
+    {% endfor %}
+
+
+    $scope.types=[
+        {% for lottype in lottery_types  %}
+        {"id": {{ lottype.id }},
+         "name":"{{ lottype.name }}"
+        },
+        {% endfor %}
+    ];
+
+    $scope.lottery = {};
+    $scope.lottery.type={
+        "id":{{ lotterytype.id }},
+        "name":"{{ lotterytype.name }}"
+    }
+    $scope.typeSelect=function(){
+        if($scope.lottery.type.name =="数字彩"){
+            $scope.searchLottery();
+
+        }
+    }
+    $scope.searchLottery=function(){
+
+
+        if (!$scope.lottery.type){
+            alert("请选择彩种!");
+            return false;
+        }
+        var type_name = $scope.lottery.type.name
+        if (type_name !="数字彩" ){
+            if(!$scope.lottery.teamword){
+                alert("体育赛事请输入一个队名");
+                return false;
+            }
+        }
+        $http.get('/caishi/sousuo/', {params: {typeid:$scope.lottery.type.id,teamword:$scope.lottery.teamword, source:'analyst'}}).
+        success(function(data) {
+          if (data.length ==0){
+              alert("没有搜到相关彩票项目")
+          }
+          $scope.lotteries = data;//$scope.lotteries.concat(data);
+          if(data.length == 20){
+            $scope.nextPage.$invalid = false;
+          }else{
+            $scope.nextPage.$invalid = true;
+          }
+        });
+
+
+    };
+    $scope.selectLottery=function(event){
+        var lottery = {
+            "id":$(event.target).attr("data-id"),
+            "name":$(event.target).attr("data-name")
+        }
+        for(var i = 0, l = $scope.checkedLotteries.length; i < l; i++) {
+            checkLottery = $scope.checkedLotteries[i]
+            console.log(checkLottery)
+            if (checkLottery.id == lottery.id){
+                alert("此项已被选择!");
+                return false;
+            }
+        }
+        $scope.checkedLotteries.push(lottery)
+    };
+    $scope.delLottery=function(event){
+
+        var lid = $(event.target).attr("data-id");
+        for(var i = 0, l = $scope.checkedLotteries.length; i < l; i++) {
+            if ($scope.checkedLotteries[i].id == lid){
+                $scope.checkedLotteries.splice(i,1)
+                return ;
+            }
+        }
+
+    }
+
+}
+</script>

@@ -1,0 +1,100 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="cupLeagueForm" name="cupLeagueForm" ng-controller="cupLeagueCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>杯赛联赛编辑</legend>
+    {% if cupLeague %}
+        <input type="hidden" name="id" value="{{ cupLeague.id }}">
+    {% endif %}
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">赛事名:</label>
+       <div class="col-sm-10">
+           <div class="input-group">
+               <input type="text"  required="required" value="{{ cupLeague.name }}" ng-model="cupLeague.name" class="form-control" id="name" name="name" placeholder="赛事名称">
+            </div>
+
+       </div>
+    </div>
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">球类:</label>
+       <div class="col-sm-10">
+           <div class="input-group">
+                  <select name="sport_type" id="sport_type" class="form-control" ng-model="cupLeague.sport_type">
+                      <option value="0">足球</option>
+                      <option value="1">篮球</option>
+                      <option value="2">网球</option>
+                  </select>
+            </div>
+
+       </div>
+    </div>
+
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">语言:</label>
+        <div class="col-sm-6">
+            <select name="project" id="project" class="form-control" ng-model="cupLeague.project">
+                <option value="M" >国语</option>
+                <option value="C">粤语</option>
+                <option value="E">英语</option>
+             </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postCupLeague()" class="btn btn-primary btn-lg" ng-disabled="cupLeagueForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+
+
+<script type="text/javascript">
+function cupLeagueCtrl($scope){
+    {% if cupLeague %}
+        $scope.cupLeague={
+            "name":"{{ cupLeague.name }}",
+            "sport_type": {{ cupLeague.sport_type }},
+            "project":"{{ cupLeague.project }}"
+        };
+    {%else%}
+        $scope.cupLeague={
+            "sport_type": 0
+        }
+
+    {% endif %}
+
+    $scope.postCupLeague=function(){
+      next = "/caishi/cup_league/";
+      $(".btn-primary img").show();
+      $.post("", $("#cupLeagueForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("保存成功!");
+              location = next;
+            }else{
+              alert("保存失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+}
+</script>
+{% endblock %}

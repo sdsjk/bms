@@ -1,0 +1,124 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline" method="get" action="/app/baoyuegoumai/" onsubmit="return checkValid()">
+  <fieldset>
+
+  <div class="form-group">
+        <input type="search" class="form-control" value="{{ nick_name }}" name="nick_name" id="nick_name" placeholder="请输入用户完整昵称">
+  </div>
+  <div class="form-group">
+      <label>付款时间:</label>
+      <input type="text" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+  </div>
+  <div class="form-group">
+      <label for="exampleInputEmail2">至</label>
+      <input type="text" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+  </div>
+  <div class="form-group">
+        <input type="checkbox" class="form-control" {{status|yesno:"checked,," }} id="status" name="status">交易成功
+
+    </div>
+      <div class="form-group">
+      <label>来源类型:</label>
+
+      <select name="paytype" id="paytype" class="form-control">
+          <option value="0">全部</option>
+          <option value="1">微信</option>
+          <option value="2">支付宝</option>
+          <option value="3">精彩币</option>
+          <option value="4">支付精彩币</option>
+          <option value="5">任务精彩币</option>
+
+      </select>
+      </div>
+          <div class="form-group">
+            <input type="search" class="form-control" name="anick_name" id="anick_name" value="{{ anick_name }}" placeholder="请输入老师完整昵称">
+          </div>
+      <button class="btn btn-primary" type="submit">搜索</button>
+  </fieldset>
+</form>
+<br>
+<div class="text-danger">该时间段内合计:{{ gold_sum|default_if_none:"0"|centesimal }}精彩币</div>
+<a class="btn btn-primary" target="_blank" href="{% export_link %}">导出数据</a>
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>用户</th>
+    <th>老师</th>
+    <th>天数</th>
+    <th>时间</th>
+    <th>来源</th>
+    <th>金额</th>
+    <th>状态</th>
+</tr>
+</thead>
+<tbody>
+{% for object in pager.object_list %}
+<tr>
+<td>{{ object.id }}</td>
+<td>{{ object.user.phonenumber }}</td>
+<td>{{ object.author.nick_name }}</td>
+<td>{{ object|purchasetarget_name|safe }}</td>
+<td>{{ object.cdate|notzdate }}</td>
+<td>{{ object.paytype|paytype_name }}</td>
+<td>{{ object.price|centesimal }}精彩币</td>
+<td>{{ object.status|yesno:"成功,失败,失败" }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+{% tablesorter %}
+<script type="text/javascript">
+  $(function() {
+    $("#paytype").val("{{ paytype }}");
+    $( "#from_date" ).datepicker({
+      defaultDate: "+0d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to_date" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    $( "#to_date" ).datepicker({
+      defaultDate: "+1d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from_date" ).datepicker( "option", "maxDate", selectedDate );
+      }
+    });
+  });
+  function  checkValid(){
+      if ($("#from_date").val().length<1){
+          alert("必须选择时间范围");
+          return false;
+      }
+      if($("#from_date").val().length!=$("#to_date").val().length){
+          alert("时间范围必须两个都要选!");
+          return false;
+      }else {
+          return true;
+      }
+  }
+</script>
+{% endblock %}

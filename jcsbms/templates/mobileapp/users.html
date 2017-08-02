@@ -1,0 +1,312 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+    {% load i18n %}
+{%load jauth_tags %}
+
+{% block postPageCss %}
+
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-12">
+<form class="form-inline" method="get" action="#">
+<fieldset>
+        <div class="form-group">
+      <label for="from_cdate">{% trans '注册时间' %}</label>
+      <input type="text" class="form-control" value="{{ from_cdatestr  }}" name="from_cdate" id="from_cdate" placeholder={% trans '点击选择开始日期' %}>
+      </div>
+      <div class="form-group">
+          <label for="to_cdate">{% trans '至' %}</label>
+          <input type="text" class="form-control" value="{{ to_cdatestr }}" name="to_cdate" id="to_cdate" placeholder= {% trans '点击选择结束日期' %}>
+      </div>
+    <!--div class="form-group">
+      <label>登录时间:</label>
+      <input type="text" class="form-control" value="{{ from_udatestr  }}" name="from_udate" id="from_udate" placeholder="点击选择开始日期">
+      </div>
+      <div class="form-group">
+          <label for="exampleInputEmail2">至</label>
+          <input type="text" class="form-control" value="{{ to_udatestr }}" name="to_udate" id="to_udate" placeholder="点击选择结束日期" >
+      </div-->
+    <input  name="action" value="search" type="hidden" />
+    <div class="form-group">
+      <input type="search" class="form-control" name="phonenumber" id="phonenumber" value="{{  phonenumber}}" placeholder="User Cell Phone Number">
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="userid" id="userid" value="{{  userid}}" placeholder="User ID">
+    </div>
+
+    <div class="form-group">
+        <input type="search" class="form-control" name="inviter" id="inviter" value="{{  inviter}}" placeholder="nvitation Code">
+    </div>
+    <div class="form-group">
+      <input type="search" class="form-control" name="channelname" id="channelname" value="{{channelname}}" placeholder={% trans '请输入渠道来源' %}>
+    </div>
+    <div class="form-group">
+        <label for="is_invited">{% trans '是否被邀请' %}:</label>
+        <select name="is_invited" class="form-control">
+            <option value="-1">{% trans '选择所有' %}</option>
+            <option value="1" {% if is_invited == 1 %}selected{% endif %}>{% trans '是' %}</option>
+            <option value="0" {% if is_invited == 0 %}selected{% endif %}>{% trans '否' %}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>{% trans '注册客户端' %}:</label>
+        <select class="form-control" name="language" id="language">
+            <option value="-1">{% trans '全部' %}</option>
+            <option {% if language == 1 %}selected{% endif %} value="1">{% trans '国语' %}</option>
+            <option {% if language == 0 %}selected{% endif %} value="0">{% trans '粤语' %}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="os">{% trans '操作系统' %}:</label>
+        <select name="os" class="form-control">
+            <option value="">{% trans '选择所有' %}</option>
+            <option value="Android" {% if os == 'Android' %}selected{% endif %}>Android</option>
+            <option value="IOS" {% if os == 'IOS' %}selected{% endif %}>IOS</option>
+
+        </select>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+    </div>
+
+</fieldset>
+</form>
+<br>
+<div class="row">
+<div class="col-md-12">
+    <a class="btn btn-primary" target="_blank" href="{% export_link %}">{% trans '导出数据' %}</a>
+</div></div>
+</br>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>{% trans '头像' %}</th>
+{#    <th>手机</th>#}
+    <th>{% trans '注册时间' %}</th>
+    <th>{% trans '最后登录' %}</th>
+    <th>{% trans '最后活动' %}</th>
+    <th>{% trans '操作系统' %}</th>
+    <th>{% trans 'app版本' %}</th>
+    <th>{% trans '邀请来源' %}</th>
+    <th>{% trans '渠道来源' %}</th>
+    <th>{% trans '注册客户端' %}</th>
+    <th>{% trans '关注数' %}</th>
+    <th>{% trans '状态' %}</th>
+    <th>{% trans '操作' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for auser in pager.object_list %}
+<tr>
+<td>{{ auser.userid }}</td>
+<td><img src="{{auser.picpath|default_if_none:"/static/img/default_avatar.png"}}" width="32px"> </td>
+{#<th>{{ auser.phonenumber}}</th>#}
+<td>{{ auser.cdate|notzdate }}</td>
+<td>{{ auser.udate|notzdate }}</td>
+<td>{{ userLastActiveTime|listvbyi:forloop.counter0 }}</td>
+<td>{{ auser.os }}&nbsp;{{ auser.version }}</td>
+<td>{{ auser.client_version }}</td>
+<td>{% if auser.inviter.nick_name != "梅花彩数" %}
+    {{ auser.inviter.nick_name }}
+    {% endif %}
+</td>
+<td>{{ auser.channelname }} </td>
+<td>{% if auser.appid == 'M' %}国语{% else %}粤语{% endif %}</td>
+<td>{{ auser.follow_set.all.count }}</td>
+<td>{{ auser.isactive|yesno:"可登录,不可登录,非法" }}</td>
+<td>
+   <div class="btn-group">
+
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">{% trans '操作' %}<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="/app/follow_analysts/?id={{ auser.userid }}">{% trans '关注老师列表' %}</a></li>
+           {% if auser.isactive %}
+          <li><a href="javascript:void(0)" onclick="deactivity({{auser.userid }})">{% trans '不可登录' %}</a></li>
+            {% else %}
+          <li><a href="javascript:void(0)" onclick="activity({{auser.userid }})">{% trans '可登录' %}</a></li>
+            {% endif %}
+          {% if perms.mobileapp.give_gold%}
+          <li><a href="javascript:void(0)" onclick="giveGold({{auser.userid }})">{% trans '赠送金币' %}</a></li>
+          {% endif %}
+             {% if perms.mobileapp.give_gold%}
+          <li><a href="javascript:void(0)" onclick="deductGold({{auser.userid }})">{% trans '扣除金币' %}</a></li>
+          {% endif %}
+        </ul>
+    </div>
+</td>
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+<link rel="stylesheet" href="/static/css/easydialog.css" type="text/css">
+<script src="/static/js/easydialog.js"></script>
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script type="text/javascript">
+function deactivity(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/app/wuxiao/", data,
+        function(data){
+            if(data.result){
+              alert("成功无效!");
+              location.reload()
+            }else{
+              alert("无效失败："+data.message);
+            }
+        }, "json");
+}
+
+function activity(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/app/youxiao/", data,
+        function(data){
+            if(data.result){
+              alert("成功可登录!");
+              location.reload()
+            }else{
+              alert("可登陆操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function deductGold(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    easyDialog.open({
+        container : {
+            header : '扣除金币',
+            content : '<form name="goldform"><input type="hidden" id="send_userid" value="'+id+'">'+
+                '扣除数量：<input type="text" id="send_gold"  style="width: 99%"></input>'+'<br>'+
+                '扣除理由：<input type="text" id="send_comment" style="width: 99%"></input>'+
+                '</form>',
+            yesFn : deduct ,
+            noFn : true ,
+            yesText : '保存' ,
+            noText : '取消'
+        }
+    });
+}
+
+function giveGold(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    easyDialog.open({
+        container : {
+            header : '赠送金币',
+            content : '<form name="goldform"><input type="hidden" id="send_userid" value="'+id+'">'+
+                '赠送数量：<input type="text" id="send_gold"  style="width: 99%"></input>'+'<br>'+
+                '赠送理由：<input type="text" id="send_comment" style="width: 99%"></input>'+
+                '</form>',
+            yesFn : btnFn ,
+            noFn : true ,
+            yesText : '保存' ,
+            noText : '取消'
+        }
+    });
+}
+
+var deduct = function(){
+        var gold = $('#send_gold').val();
+        if (Number(gold)<1){
+            alert("扣除金币数只能大于0!")
+            return false;
+        }
+        var comment=$('#send_comment').val();
+        if (comment==""){
+            alert("请输入理由！")
+            return false;
+        }
+        var data = {
+            "id":$('#send_userid').val(),
+            "csrfmiddlewaretoken": $("[name='csrfmiddlewaretoken']").val(),
+            "gold":$('#send_gold').val(),
+            "comment":$('#send_comment').val(),
+        };
+        $.post("/app/deduct/", data,
+            function(data){
+                if(data.result){
+                  alert("操作成功!");
+                  easyDialog.close();
+                }else{
+                  alert("操作失败："+data.message);
+                }
+            }, "json");
+        return false;
+    };
+    var btnFn = function(){
+        var gold = $('#send_gold').val();
+        if (Number(gold)<1){
+            alert("赠送金币数只能大于0!")
+            return false;
+        }
+        var comment=$('#send_comment').val();
+        if (comment==""){
+            alert("请输入理由！")
+            return false;
+        }
+        var data = {
+            "id":$('#send_userid').val(),
+            "csrfmiddlewaretoken": $("[name='csrfmiddlewaretoken']").val(),
+            "gold":$('#send_gold').val(),
+            "comment":$('#send_comment').val(),
+        };
+        $.post("/app/songjinbi/", data,
+            function(data){
+                if(data.result){
+                  alert("操作成功!");
+                  easyDialog.close();
+                }else{
+                  alert("操作失败："+data.message);
+                }
+            }, "json");
+        return false;
+    };
+
+$(function() {
+    $( "#from_cdate" ).datepicker({
+        defaultDate: "+0d",
+        dateFormat: "yy-mm-dd",
+        numberOfMonths: 1,
+        onClose: function( selectedDate ) {
+            $( "#to_cdate" ).datepicker( "option", "minDate", selectedDate );
+        }
+    });
+    $( "#to_cdate" ).datepicker({
+        defaultDate: "+1d",
+        dateFormat: "yy-mm-dd",
+        numberOfMonths: 1,
+        onClose: function( selectedDate ) {
+            $( "#from_cdate" ).datepicker( "option", "maxDate", selectedDate );
+        }
+    });
+});
+
+</script>
+{% endblock %}

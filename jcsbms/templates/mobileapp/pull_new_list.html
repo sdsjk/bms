@@ -1,0 +1,162 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+{% block postPageCss %}
+    <link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+    <style>
+
+{#    .ui-datepicker-calendar {#}
+{#    display: none;#}
+{##}
+{#}#}
+    .ui-datepicker-month {
+            color: #0a0a0a;
+        }
+    .ui-datepicker-year{
+          color: #0a0a0a;
+    }
+
+    </style>
+    <script >
+    </script>
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline" method="get" action="/app/pullnew/" onsubmit="return checkValid()">
+    <fieldset>
+{#       <div class="form-group">#}
+{#            <label>付款时间:</label>#}
+{#            <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />#}
+{#        </div>#}
+{#        <input type="hidden" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >#}
+{#        <input type="hidden" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >#}
+
+    <div class="form-group">
+        <label for="is_invited">年份:</label>
+        <select name="years" class="form-control">
+            <option value="1">2017</option>
+        </select>
+    </div>
+     <div class="form-group">
+        <label for="is_invited">月份:</label>
+        <select name="month" class="form-control">
+            <option value="4" {% if month == "4" %}selected{% endif %}>4</option>
+            <option value="5" {% if month == "5" %}selected{% endif %}>5</option>
+            <option value="6" {% if month == "6" %}selected{% endif %}>6</option>
+            <option value="7" {% if month == "7" %}selected{% endif %}>7</option>
+            <option value="8" {% if month == "8" %}selected{% endif %}>8</option>
+            <option value="9" {% if month == "9" %}selected{% endif %}>9</option>
+            <option value="10" {% if month == "10" %}selected{% endif %}>10</option>
+            <option value="11" {% if month == "11" %}selected{% endif %}>11</option>
+            <option value="12"{% if month == "12" %}selected{% endif %}>12</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">搜索</button>
+    </div>
+
+</fieldset>
+</form>
+<br>
+<a class="btn btn-primary" target="_blank" href="{% export_link %}">导出数据</a>
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>推荐老师</th>
+    <th>用户ID</th>
+    <th>注册时间</th>
+    <th>活动返现截止时间</th>
+    <th>当月返现开始时间</th>
+    <th>当月返现截止时间</th>
+    <th>当月返现天数</th>
+    <th>当月返现应计金额</th>
+    <th>当月返现返现金额</th>
+</tr>
+
+</thead>
+<tbody>
+{% for unionInfo in pager.object_list %}
+<tr>
+<td>{{ unionInfo.0 }}</td>
+<td>{{ unionInfo.2 }}</td>
+<td>{{ unionInfo.3 }}</td>
+<td>{{ unionInfo.4 }}</td>
+<td>{{ unionInfo.5 }}</td>
+<td>{{ unionInfo.6 }}</td>
+<td>{{ unionInfo.7 }}</td>
+<td>{{ unionInfo.8 }}</td>
+<td>{{ unionInfo.9 }}</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+
+<link rel="stylesheet" href="/static/css/easydialog.css" type="text/css">
+<script src="/static/js/easydialog.js"></script>
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<script type="text/javascript">
+$('#daterangepicker').daterangepicker({
+          timePicker: true,
+          timePickerIncrement: 1,
+          timePicker24Hour: true,
+          linkedCalendars: false,
+          locale:{
+              format: 'YYYY/MM/DD HH:mm',
+              applyLabel:"确定",
+              cancelLabel:"取消",
+              daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+              ],
+              monthNames: [
+                  "一月",
+                  "二月",
+                  "三月",
+                  "四月",
+                  "五月",
+                  "六月",
+                  "七月",
+                  "八月",
+                  "九月",
+                  "十月",
+                  "十一月",
+                  "十二月"
+              ],
+          }
+      },
+      function(start, end) {
+          var datefmt = "YYYY-MM-DD HH:mm";
+          console.log(start.format(datefmt), end.format(datefmt));
+          $("#from_date").val(start.format(datefmt + ":00"));
+          $("#to_date").val(end.format(datefmt + ":59"));
+
+      }
+  );
+  $('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+  $('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+
+</script>
+{% endblock %}

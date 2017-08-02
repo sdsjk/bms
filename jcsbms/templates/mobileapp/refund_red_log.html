@@ -1,0 +1,75 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-inline" method="get" action=".">
+                <input type="hidden" name="article_id" value="{{ article_id }}"/>
+                <fieldset>
+
+                    <div class="form-group">
+                        <label for="user_id">用户id</label>
+                        <input type="search" class="form-control" name="user_id" id="user_id" placeholder="请输入user id" value="{{ user_id }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="user_id">手机号</label>
+                        <input type="search" class="form-control" name="phonenumber" id="phonenumber" placeholder="请输入手机号" value="{{ phonenumber }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="status">状态</label>
+                        <select name="status" id="status" class="form-control">
+                            <option value="">全部</option>
+                            <option value="1">成功</option>
+                            <option value="-1">失败</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </fieldset>
+            </form>
+            <br>
+            退款人数:<span class="label label-info">{{ num_total }}</span>&nbsp;成功:<span class="label label-success">{{ num_success }}</span>&nbsp;失败:<span class="label label-danger">{{ num_failed }}</span>&nbsp;<a class="btn btn-primary" target="_blank" href="{% export_link %}">导出数据</a>
+            <table class="table table-bordered table-striped table-hover tablesorter">
+                <thead>
+                <tr>
+                    <th>用户ID</th>
+                    <th>手机号</th>
+                    <th>退款时间</th>
+                    <th>金额</th>
+                    <th>状态</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for obj in pager.object_list %}
+                    <tr>
+                        <td>{{ obj.user_id}}</td>
+                        <td>{{ obj.user.phonenumber }}</td>
+                        <td>{{ obj.create_time|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ obj.goldcoin }}</td>
+                        <td>{% if obj.status == 1 %}成功{% else %}<span style="color:red">失败</span>{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% csrf_token %}
+            {% pager %}
+        </div>
+    </div>
+{% endblock %}
+{% block postPageJS %}
+    {% tablesorter %}
+    <script type="text/javascript">
+        $("#status").val("{{ status }}");
+    </script>
+{% endblock %}

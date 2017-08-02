@@ -1,0 +1,224 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{%load app_tags %}
+{% block postPageCss %}
+    {% load i18n %}
+{%load jauth_tags %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+
+  <input  name="action" value="search" type="hidden" />
+
+    <div class="form-group">
+        <input type="search" class="form-control" name="author_word" value="{{ aword }}" id="author_word" placeholder={% trans '网络昵称' %}>
+    </div>
+
+    <div class="form-group">
+        <label>{% trans '创建时间' %}:</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />
+        <input type="hidden" value="{{ from_datestr }}" name="from_date" id="from_date">
+        <input type="hidden" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="articleid" id="articleid" value="{{ articleid }}" placeholder={% trans '文章ID' %}>
+    </div>
+    <div class="form-group">
+      <label>{% trans '删除否' %}:</label>
+       <select class="form-control" name="invisible" id="invisible">
+          <option value="-1">{% trans '全部' %}</option>
+          <option value="0" {% if invisible == 0 %}selected{% endif %}>{% trans '未删' %}</option>
+          <option value="1" {% if invisible == 1 %}selected{% endif %}>{% trans '已删' %}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>{% trans '收费否' %}:</label>
+       <select class="form-control" name="chargeable" id="chargeable">
+          <option value="-1">{% trans '全部' %}</option>
+          <option value="0" {% if chargeable == 0 %}selected{% endif %}>Free</option>
+          <option value="1" {% if chargeable == 1 %}selected{% endif %}>{% trans '收费否' %}</option>
+      </select>
+    </div>
+    <div class="form-group">
+        <label>{% trans '收费老师' %}:</label>
+        <select class="form-control" name="author_type" id="author_type">
+            <option value="-1">{% trans '全部' %}</option>
+            <option value="1" {% if author_type == 1 %}selected{% endif %}>{% trans '免费' %}</option>
+            <option value="0" {% if author_type == 0 %}selected{% endif %}>{% trans '收费' %}</option>
+            <option value="2" {% if author_type == 2 %}selected{% endif %}>{% trans '代发' %}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="key_word" id="key_word" value="{{ key_word }}" placeholder={% trans '请输入文章关键词' %}>
+    </div>
+    <div class="form-group">
+        <label>{% trans '标签' %}:</label>
+        <select class="form-control" name="portal_tag" id="portal_tag">
+            <option value="-1">{% trans '全部' %}</option>
+            <option value="0">无</option>
+            {% for tag in portalTags %}
+            <option value="{{ tag.id }}">{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>{% trans '语言' %}:</label>
+        <select class="form-control" name="language" id="language">
+            <option value="-1">{% trans '全部' %}</option>
+            <option {% if language == 1 %}selected{% endif %} value="1">{% trans '国语' %}</option>
+            <option {% if language == 0 %}selected{% endif %} value="0">{% trans '粤语' %}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>{% trans '审核状态' %}:</label>
+        <select class="form-control" name="status" id="status">
+            <option value="-1">{% trans '全部' %}</option>
+            <option {% if status == '10' %}selected{% endif %} value="10">{% trans '待审核' %}</option>
+            <option {% if status == '20' %}selected{% endif %} value="20">{% trans '通过' %}</option>
+            <option {% if status == '90' %}selected{% endif %} value="90">{% trans '驳回' %}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>{% trans '发布类型' %}:</label>
+        <select class="form-control" name="article_type" id="article_type">
+            <option value="-1">{% trans '全部' %}</option>
+            <option {% if article_type == 10 %}selected{% endif %} value="10">初盘</option>
+            <option {% if article_type == 20 %}selected{% endif %} value="20">竞彩串关</option>
+            <option {% if article_type == 40 %}selected{% endif %} value="40">直播</option>
+            <option {% if article_type == 50 %}selected{% endif %} value="50">其他</option>
+            <option {% if article_type == 60 %}selected{% endif %} value="60">晒战绩</option>
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+</fieldset>
+</form>
+<br>
+<div class="row">
+<div class="col-md-12">
+<a class="btn btn-primary" target="_blank" href="{% export_link %}">{% trans '导出数据' %}</a>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>{% trans '上首页' %}</th>
+    <th>{% trans '标签' %}</th>
+    <th>{% trans '发布类型' %}</th>
+    <th>{% trans '收费否' %}</th>
+    <th>{% trans '作者' %}</th>
+    <th>{% trans '语言' %}</th>
+    <th style="width: 10%">{% trans '创建时间' %}</th>
+    <th>Status</th>
+    <th>{% trans '驳回原因' %}</th>
+    <th>{% trans '操作' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for article_examine in pager.object_list %}
+<tr>
+<td><a href="/wenzhang/bianji/?id={{ article_examine.article.id }}" target="_blank">{{ article_examine.article.id }}</a>
+{% if article_examine.article.istop and article_examine.article.top_time > now  %}
+    <span class="glyphicon glyphicon-arrow-up text-danger" style="font-size: 18px;" aria-hidden="true"></span>
+{% endif %}
+</td>
+<td>{%  if article_examine.article.is_toppage %}
+    <span class="glyphicon glyphicon-arrow-up text-success" aria-hidden="true"></span>
+    {% endif %}</td>
+<td>{{ article_examine.article.tags }}</td>
+<td>{% if article_examine.article.type == '10' %}
+        初盘
+    {% elif article_examine.article.type == '20' %}
+        竞彩串关
+    {% elif article_examine.article.type == '40' %}
+        直播
+    {% elif article_examine.article.type == '50' %}
+        其他
+    {% elif article_examine.article.type == '60' %}
+        晒战绩
+    {% endif %}</td>
+<td>{% if article_examine.article.chargeable %}{% if article_examine.article.price %}{{ article_examine.article.price }}{% else %}是{% endif %}{% else %}否{% endif %}</td>
+<td>{{ article_examine.article.author.nick_name }}</td>
+<td>{% if article_examine.article.language == 'M' %}国语{% else %}粤语{% endif %}</td>
+<td>{{ article_examine.article.date_added|date:"m-d H:i" }}</td>
+<td>
+    {% if article_examine.status == '10' %}
+        待审核
+    {% elif article_examine.status == '20' %}
+        通过
+    {% elif article_examine.status == '90' %}
+        驳回
+    {% endif %}
+</td>
+<td>{{ article_examine.examine_opinion }}</td>
+<td>
+   <div class="btn-group">
+        <input class="btn btn-primary dropdown-toggle" type="button" value="审核" onclick="location.href='/wenzhang/article_istoppage_examine_detail/?article_id={{ article_examine.article_id }}'"/>
+   </div>
+</td>
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+{% tablesorter %}
+<script>
+$('#daterangepicker').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 1,
+            timePicker24Hour: true,
+            linkedCalendars: false,
+            locale:{
+                format: 'YYYY/MM/DD HH:mm',
+                applyLabel:"确定",
+                cancelLabel:"取消",
+                daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+                ],
+                monthNames: [
+                    "一月",
+                    "二月",
+                    "三月",
+                    "四月",
+                    "五月",
+                    "六月",
+                    "七月",
+                    "八月",
+                    "九月",
+                    "十月",
+                    "十一月",
+                    "十二月"
+                ],
+            }
+        },
+        function(start, end) {
+            var datefmt = "YYYY-MM-DD HH:mm";
+            console.log(start.format(datefmt), end.format(datefmt));
+            $("#from_date").val(start.format(datefmt + ":00"));
+            $("#to_date").val(end.format(datefmt + ":59"));
+
+        }
+);
+$('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+$('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+</script>
+{% endblock %}

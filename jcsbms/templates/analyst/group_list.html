@@ -1,0 +1,56 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+
+{% block description %}{% endblock %}
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-12">
+    <a class="btn btn-primary" href="/laoshi/zu/">新增分组</a><br>
+<table class="table table-bordered table-striped table-hover sortable">
+<thead>
+<tr><th>ID</th>
+    <th>组名</th>
+
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+{% for group in groups %}
+<tr>
+<td>{{ group.id }}</td>
+<td>{{ group.name }}</td>
+
+<td>
+    <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                操作 <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="/laoshi/zu/?id={{ group.id }}">修改</a></li>
+            </ul>
+    </div>
+</td>
+
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+<script type="text/javascript">
+
+</script>
+{% endblock %}

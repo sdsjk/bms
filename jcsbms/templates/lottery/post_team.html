@@ -1,0 +1,128 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="teamForm" name="teamForm" ng-controller="teamCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>赛队编辑</legend>
+    {% if team %}
+        <input type="hidden" name="id" value="{{ team.id }}">
+    {% endif %}
+
+    <div class="form-group" style="display: none">
+       <label  class="col-sm-2 control-label">上传图片:</label>
+       <div class="col-sm-6">
+           <input type="hidden" name="logo" value="" />
+           <iframe name="uploadf" id="uploadf" align="middle" marginwidth="0" marginheight="0" src="/yonghu/avatar_upload/" frameborder="0" width="500" scrolling="no" height="30" allowTransparency="true" border="0"></iframe>
+       </div>
+    </div>
+
+     <img alt="默认头像" id="avatar" src="/static/img/default_avatar.png"
+      style="width: 480px;margin-top: 20px; display: none"
+     >
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">赛队类型:</label>
+       <div class="col-sm-3">
+                  <select name="sport_type" id="sport_type" class="form-control">
+                      <option value="0">足球</option>
+                      <option value="1">篮球</option>
+                      <option value="2">网球</option>
+                  </select>
+       </div>
+
+    </div>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">队名:</label>
+       <div class="col-sm-3">
+           <input type="text"  required="required" value="{{ team.name }}" ng-model="team.name" class="form-control" id="name" name="name" placeholder="赛队名称">
+
+       </div>
+
+    </div>
+    <div class="form-group" style="display: none">
+       <label  class="col-sm-2 control-label">描述:</label>
+       <div class="col-sm-10">
+        <textarea name="introduction" ng-model="team.introduction" class="form-control" id="introduction"> {{ team.introduction }}</textarea>
+       </div>
+    </div>
+
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">语言:</label>
+        <div class="col-sm-6">
+            <select name="project" id="project" class="form-control">
+                <option value="M" >国语</option>
+                <option value="C">粤语</option>
+             </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postTeam()" class="btn btn-primary btn-lg" ng-disabled="teamForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+
+
+<script type="text/javascript">
+  function teamCtrl($scope){
+    {% if team %}
+        $scope.team={
+            "name":"{{ team.name }}",
+            "introduction":$("#introduction").val()
+        };
+        $("#sport_type").val("{{ team.sport_type }}")
+        $('input[name="logo"]').val("{{ team.logo }}");
+        $("#avatar").prop("src","{{ team.logo }}");
+        $('#project').val("{{ team.project }}");
+    {%else%}
+        $scope.team={}
+
+    {% endif %}
+
+    $scope.postTeam=function(){
+        /*
+      if ($('input[name="logo"]').val().length==0){
+          alert("图片尚未上传")
+          return;
+      }*/
+      next = "/caishi/saiduibiao/";
+      $(".btn-primary img").show();
+      $.post("", $("#teamForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+
+
+  }
+function image_preview(imageurl){
+  var url_prefix = "/static/";
+  imageurl = url_prefix + imageurl;
+  $('input[name="logo"]').val(imageurl);
+
+  $("#avatar").prop("src",imageurl);
+
+}
+</script>
+{% endblock %}

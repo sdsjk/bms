@@ -1,0 +1,204 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{%load app_tags %}
+
+
+
+{% block postPageCss %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+
+  <input  name="action" value="search" type="hidden" />
+    <div class="form-group">
+        <label for="article_id">文章ID</label>
+        <input type="text" class="form-control" value="{{ article_id }}" name="article_id" id="article_id" >
+    </div>
+    <div class="form-group">
+        <label>创建时间:</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />
+    </div>
+        <input type="hidden" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+        <input type="hidden" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    <div class="form-group">
+        <label for="nickname">讲师昵称</label>
+        <input type="text" class="form-control" value="{{ nickname }}" name="nickname" id="nickname" >
+    </div>
+    <div class="form-group">
+        <label>红黑结果:</label>
+        <select class="form-control" name="black_red_decide" id="black_red_decide">
+            <option value="-1">全部</option>
+            <option {% if black_red_decide == 0 %}selected{% endif %} value="0">红</option>
+            <option {% if black_red_decide == 1 %}selected{% endif %} value="1">黑</option>
+            <option {% if black_red_decide == 2 %}selected{% endif %} value="2">走水</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>语言:</label>
+        <select class="form-control" name="article_language" id="article_language">
+            <option value="-1">全部</option>
+            <option {% if article_language == 0 %}selected{% endif %} value="0">国语</option>
+            <option {% if article_language == 1 %}selected{% endif %} value="1">粤语</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>所属活动:</label>
+        <select class="form-control" name="article_activity" id="article_activity">
+            <option value="-1">全部</option>
+            {% for measuredactivity in measuredactivities %}
+            <option {% if activity_id == measuredactivity.id %}selected{% endif %} value="{{ measuredactivity.id }}">{{ measuredactivity.activity_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>发布类型:</label>
+        <select class="form-control" name="article_type" id="article_type">
+            <option value="-1">全部</option>
+            <option {% if article_type == 10 %}selected{% endif %} value="10">初盘</option>
+            <option {% if article_type == 20 %}selected{% endif %} value="20">竞彩串关</option>
+            <option {% if article_type == 40 %}selected{% endif %} value="40">直播</option>
+            <option {% if article_type == 50 %}selected{% endif %} value="50">其他</option>
+            <option {% if article_type == 60 %}selected{% endif %} value="60">晒战绩</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="comment">备注</label>
+        <input type="text" class="form-control" value="{{ comment }}" name="comment" id="comment" >
+    </div>
+    <button class="btn btn-primary" type="submit">搜索</button>
+
+
+</fieldset>
+</form>
+<br>
+<div class="row">
+<div class="col-md-12">
+<a class="btn btn-primary" target="_blank" href="{% export_link %}">导出数据</a>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>文章ID</th>
+    <th>上首页</th>
+    <th>标签</th>
+    <th>发布类型</th>
+    <th>是否收费</th>
+    <th>作者</th>
+    <th style="width: 10%">创建时间</th>
+    <th>联赛</th>
+    <th>赛队名称</th>
+    <th>比赛时间</th>
+    <th>玩法</th>
+    <th>预测结果</th>
+    <th>比分结果</th>
+    <th>红黑结果</th>
+    <th>备注</th>
+    <th>语言</th>
+</tr>
+</thead>
+<tbody>
+{% for articlelotteriesresult in pager.object_list %}
+<tr>
+<td>{{ articlelotteriesresult.article_id }}</td>
+<td>{% if articlelotteriesresult.article.is_toppage == True %}是{% else %}{% endif %}</td>
+<td>{{ articlelotteriesresult.article.tags }}</td>
+<td>{% if articlelotteriesresult.article.type == '10' %}
+        初盘
+    {% elif articlelotteriesresult.article.type == '20' %}
+        竞彩串关
+    {% elif articlelotteriesresult.article.type == '40' %}
+        直播
+    {% elif articlelotteriesresult.article.type == '50' %}
+        其他
+    {% elif articlelotteriesresult.article.type == '60' %}
+        晒战绩
+    {% endif %}</td>
+<td>{{ articlelotteriesresult.article.chargeable|yesno:'收费,免费,免费'}}</td>
+<td>{{ articlelotteriesresult.article.author.nick_name }}</td>
+<td>{{ articlelotteriesresult.article.date_added|date:"Y-m-d H:i" }}</td>
+<td>{{ articlelotteriesresult.league }}</td>
+<td>{{ articlelotteriesresult.match_name }}</td>
+<td>{{ articlelotteriesresult.match_time|date:"Y-m-d H:i" }}</td>
+<td>{{ articlelotteriesresult.playname }}</td>
+<td>{{ articlelotteriesresult.score_prediction }}</td>
+<td>{{ articlelotteriesresult.score_practical }}</td>
+<td>{{ articlelotteriesresult.black_red_decide }}</td>
+<td>{{ articlelotteriesresult.comment }}</td>
+<td>{% if articlelotteriesresult.article.language == 'M' %}国语{% else %}粤语{% endif %}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% csrf_token %}
+    <div>
+        <p style="display: inline;margin-right: 45px">总文章：{{ allarticlelen }}</p>
+        <p style="display: inline;margin-right: 45px;color: red">红文章：{{ red_article_len }}</p>
+        <p style="display: inline;margin-right: 45px;">黑文章：{{ black_article_len }}</p>
+        <p style="display: inline;margin-right: 45px">红单比率：{{ red_dev_all }}</p>
+    </div>
+{% pager %}
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+
+{% tablesorter %}
+<script type="text/javascript">
+
+$('#daterangepicker').daterangepicker({
+          timePicker: true,
+          timePickerIncrement: 1,
+          timePicker24Hour: true,
+          linkedCalendars: false,
+          locale:{
+              format: 'YYYY/MM/DD HH:mm',
+              applyLabel:"确定",
+              cancelLabel:"取消",
+              daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+              ],
+              monthNames: [
+                  "一月",
+                  "二月",
+                  "三月",
+                  "四月",
+                  "五月",
+                  "六月",
+                  "七月",
+                  "八月",
+                  "九月",
+                  "十月",
+                  "十一月",
+                  "十二月"
+              ],
+          }
+      },
+      function(start, end) {
+          var datefmt = "YYYY-MM-DD HH:mm";
+          console.log(start.format(datefmt), end.format(datefmt));
+          $("#from_date").val(start.format(datefmt + ":00"));
+          $("#to_date").val(end.format(datefmt + ":59"));
+
+      }
+  );
+  $('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+  $('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+
+</script>
+{% endblock %}

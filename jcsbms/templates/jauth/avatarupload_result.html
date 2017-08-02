@@ -1,0 +1,18 @@
+{%if result%}
+<script>
+fileurl="{{fileurl}}";
+window.parent.image_preview(fileurl);
+location="/yonghu/avatar_upload/";
+</script>
+{%else%}
+<script>
+message = "{{message}}";
+alert(message);
+location="/yonghu/avatar_upload/";
+</script>
+{%endif%}
+
+
+
+    
+

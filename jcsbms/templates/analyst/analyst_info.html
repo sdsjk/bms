@@ -1,0 +1,187 @@
+{% extends "col2base.html" %}
+{% load analyst_tags %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+
+{% load i18n %}
+{%load jauth_tags %}
+
+
+{% block sidebar %}
+{% analyst_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="well">
+<form class="form-horizontal" id="analystForm" name="analystForm" ng-controller="analystCtrl">
+
+{% csrf_token %}
+
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">{% trans '真实姓名' %}</label>
+    <div class=" col-sm-6">
+      <input type="text" name="real_name"  ng-minlength="2" ng-maxlength="4" ng-model="analyst.real_name" required="required" class="form-control" id="inputRealname" placeholder={% trans '输入真实姓名' %}>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.real_name.$error.required">{% trans '需要填写' %}</span>
+        <span class="text-danger" ng-show="analystForm.real_name.$error.minlength">{% trans '至少2个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.real_name.$error.maxlength">{% trans '至多4个字符' %}</span>
+      </div>
+  </div>
+
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">{% trans '身份证号' %}</label>
+    <div class=" col-sm-6">
+      <input type="text" name="id_number"  ng-minlength="18" ng-maxlength="18" ng-model="analyst.id_number" required="required" class="form-control" id="inputIDNumber" placeholder={% trans '请输入身份证号' %}>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.id_number.$error.required">{% trans '需要填写' %}</span>
+        <span class="text-danger" ng-show="analystForm.id_number.$error.minlength">{% trans '至少18个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.id_number.$error.maxlength">{% trans '至多18个字符' %}</span>
+      </div>
+  </div>
+
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">{% trans '银行卡号' %}</label>
+    <div class=" col-sm-6">
+      <input type="text" name="card_number" ng-pattern="/^[0-9]+$/" ng-minlength="16" ng-maxlength="19" ng-model="analyst.card_number" required="required" class="form-control" id="inputCardNumber" placeholder={% trans '请输入银行卡号' %}>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.card_number.$error.required">{% trans '需要填写' %}</span>
+        <span class="text-danger" ng-show="analystForm.card_number.$error.minlength">{% trans '至少16个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.card_number.$error.maxlength">{% trans '至多19个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.card_number.$error.pattern">{% trans '必须是数字' %}</span>
+      </div>
+  </div>
+
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">{% trans '开户分行' %}</label>
+    <div class=" col-sm-6">
+      <input type="text" name="bank_branch"  ng-minlength="8" ng-maxlength="100" ng-model="analyst.bank_branch" required="required" class="form-control" id="inputBankBranch" placeholder={% trans '请输入开户分行' %}>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.bank_branch.$error.required">{% trans '需要填写' %}</span>
+        <span class="text-danger" ng-show="analystForm.bank_branch.$error.minlength">{% trans '至少8个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.bank_branch.$error.maxlength">{% trans '至多100个字符' %}</span>
+      </div>
+  </div>
+
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">{% trans '邮箱' %}</label>
+    <div class=" col-sm-6">
+      <input type="email" rows="5" ng-disabled="is_update" required="required" ng-minlength="3" ng-maxlength="100" ng-model="analyst.email" class="form-control"  id="inputEmail" name="email" placeholder={% trans '输入老师邮箱' %}/>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.email.$error.required">{% trans '需要填写' %}</span>
+        <span class="text-danger" ng-show="analystForm.email.$error.email">{% trans '不符合email地址格式' %}</span>
+        <span class="text-danger" ng-show="analystForm.email.$error.minlength">{% trans '至少3个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.email.$error.maxlength">{% trans '至多100个字符' %}</span>
+
+      </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">{% trans '微信号' %}</label>
+    <div class=" col-sm-6">
+      <input type="text" name="weichat"  ng-minlength="6" ng-maxlength="100" ng-model="analyst.weichat" class="form-control" id="inputWeichat" placeholder={% trans '请输入微信号' %}>
+    </div>
+      <div class="col-sm-4">
+
+        <span class="text-danger" ng-show="analystForm.weichat.$error.minlength">{% trans '至少6个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.weichat.$error.maxlength">{% trans '至多100个字符' %}</span>
+      </div>
+  </div>
+   <div class="form-group">
+    <label  class="col-sm-2 control-label">{% trans '手机号' %}</label>
+    <div class=" col-sm-6">
+      <input type="tel" name="mobile" required="required" ng-minlength="11" ng-maxlength="11" ng-model="analyst.mobile" class="form-control" id="inputMobile" placeholder=""{% trans '请输入手机号码' %}>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.mobile.$error.required">{% trans '需要填写' %}</span>
+        <span class="text-danger" ng-show="analystForm.mobile.$error.minlength">{% trans '至11个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.mobile.$error.maxlength">{% trans '至多11个字符' %}</span>
+      </div>
+  </div>
+ <div class="form-group">
+    <label  class="col-sm-2 control-label">{% trans '邮寄地址' %}:</label>
+    <div class=" col-sm-6">
+      <input type="text" name="address" required="required"  ng-minlength="6" ng-maxlength="100" ng-model="analyst.address" class="form-control" id="inputAddress" placeholder=""{% trans '请输入邮寄地址' %}>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.address.$error.required">{% trans '需要填写' %}</span>
+        <span class="text-danger" ng-show="analystForm.address.$error.minlength">{% trans '至少6个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.address.$error.maxlength">{% trans '至多100个字符' %}</span>
+      </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">{% trans '邮政编码' %}:</label>
+    <div class=" col-sm-6">
+      <input type="text" name="post_code"  ng-minlength="6" ng-maxlength="6" ng-model="analyst.post_code" class="form-control" id="inputPostcode" placeholder=""{% trans '请输入邮政编码' %}>
+    </div>
+      <div class="col-sm-4">
+
+        <span class="text-danger" ng-show="analystForm.post_code.$error.minlength">{% trans '至少6个字符' %}</span>
+        <span class="text-danger" ng-show="analystForm.post_code.$error.maxlength">{% trans '至多6个字符' %}</span>
+      </div>
+  </div>
+
+  <!--div class="form-group">
+    <label  class="col-sm-2 control-label">老师简介</label>
+    <div class=" col-sm-6">
+      <textarea rows="3" class="form-control" required="required" ng-minlength="6" ng-maxlength="100"  id="inputBrief" name="brief" >{{ analyst.brief }}</textarea>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.brief.$error.required">需要填写</span>
+        <span class="text-danger" ng-show="analystForm.brief.$error.minlength">至少6个字符</span>
+        <span class="text-danger" ng-show="analystForm.brief.$error.maxlength">至多100个字符</span>
+
+      </div>
+  </div-->
+
+
+
+
+  <div class="form-group">
+    <div class="col-sm-6 col-sm-offset-2">
+      <button type="button" ng-disabled="analystForm.$invalid" ng-click="post_analyst()" class="btn btn-primary btn-block">{% trans '提交修改' %}</button>
+    </div>
+  </div>
+</form>
+</div>
+
+{% endblock %}
+
+{% block postPageJS %}
+<script type="text/javascript">
+function analystCtrl($scope){
+    {% if analyst %}
+      $scope.analyst = {
+          "real_name":"{{ analyst.real_name }}",
+          "id_number":"{{ analyst.id_number }}",
+          "card_number":"{{ analyst.card_number }}",
+          "bank_branch":"{{ analyst.bank_branch }}",
+          "weichat":    "{{ analyst.weichat }}",
+          "mobile":"{{ analyst.mobile }}",
+          "bank_branch":"{{ analyst.bank_branch }}",
+          "address":"{{ analyst.address }}",
+          "post_code":"{{ analyst.post_code }}",
+          "email":"{{ analyst.user.email }}",
+      };
+    {% endif %}
+
+   $scope.post_analyst=function(){
+      next = "/laoshi/wodewenzhang/";
+      //console.log($('#textdescription').val());
+      //$(".btn-primary img").show();
+      $.post("/laoshi/xinxi/", $("#analystForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+   };
+}
+</script>
+{% endblock %}

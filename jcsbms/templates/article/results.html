@@ -1,0 +1,33 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-8 col-md-offset-2">
+{% for result in results %}
+  <div class="panel panel-primary">
+  <div class="panel-heading">{{ result.title }}</div>
+  <div class="panel-body">
+    <div class="text-center">{{ result.author }}</div>
+    <div class="text-center text-muted"><a href="/wenzhang/pian/{{ result.id}}/">{{result.url }}</a>
+        <br>抓取时间:{{ result.updatetime }}
+        <br>作者发布时间:{{ result.date_added }} </div>
+      <blockquote>
+    {{ result.text|safe  }}
+      </blockquote>
+  </div>
+  </div>
+
+{% endfor %}
+
+</div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block content %}
+<div class="jumbotron">
+  <h1>&nbsp;&nbsp;&nbsp;&nbsp;首页公告</h1>
+<ul>
+{% for bulletin in bulletins %}
+
+    <li style="font-size: 28px;line-height: 36px">[{{ bulletin.date_added|date:"Y-m-d H:i" }}]&nbsp;<a href="/site/gonggao/?id={{ bulletin.id }}">{{ bulletin.title }}</a></li>
+{% endfor %}
+</ul>
+</div>
+
+
+
+{% endblock %}

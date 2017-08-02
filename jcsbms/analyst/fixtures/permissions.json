@@ -1,0 +1,1 @@
+[ {"model": "auth.permission", "pk": 87, "fields": {"name": "All the analyst edit action", "content_type": 12, "codename": "analyst_action"}}, {"model": "auth.permission", "pk": 85, "fields": {"name": "All the Operation edit action", "content_type": 20, "codename": "operation_editor"}}]

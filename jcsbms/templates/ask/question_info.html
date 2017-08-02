@@ -1,0 +1,215 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load ask_tags %}
+{%load analyst_tags %}
+{% block title %}付费问答-精彩说{% endblock %}
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/static/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.css">
+<style>
+ul.letters-list{
+    padding-left: 0px;
+}
+.letters-list .letter-item a{
+color:#333333;
+
+}
+.letters-list .letter-item a.btn-link{
+color: #08c;
+
+}
+.letters-list .letter-item{
+  background-color: #FFFFFF;
+  clear: both;
+    list-style: none
+}
+.letters-list .letter-item div {
+    padding: 15px;
+    max-width: 80%;
+    min-width: 50%;
+    float: left;
+    margin-top: 12px;
+    border-radius: 6px;
+}
+.letters-list .letter-item div.text-right {
+
+
+    float: right;
+}
+</style>
+{% endblock %}
+{% block sidebar %}
+{% analyst_side %}
+{% endblock %}
+{% block rightcontent %}
+<div ng-controller="questionCtrl">
+<div class="panel panel-primary" >
+  <div class="panel-heading container-fluid">
+      <div class="row">
+          <div class="col-sm-6">*******{{ question.from_user.username|slice:"-4:" }}提出的问题,付费价格:{{ question.to_analyst.answer_level.cost }}精彩币
+          </div>
+          <div class="col-sm-6 text-right">{{ question.date_added|date:"Y-m-d H:i"}}
+          </div>
+      </div>
+
+  </div>
+  <div class="panel-body">
+    {{ question.content }}
+  </div>
+  <div class="panel-footer">
+      <div class="row">
+          <div class="col-sm-4"><!--span>过期关闭时间:{{ question.expire_date|date:"Y-m-d H:i"  }}</span-->
+          </div>
+          <div class="col-sm-8 text-right">
+              {% question_lefttime %}
+
+          </div>
+      </div>
+
+  </div>
+</div>
+<div ng-controller="repliesCtrl">
+    <ul class="letters-list clearfix" >
+      <li ng-repeat="reply in replies" class="letter-item" >
+        {%verbatim%}
+            <div ng-class="{'text-right': reply.poster!=from_user,'bg-success':reply.poster!=from_user,'bg-info':reply.poster ==from_user}" >
+            <strong><span ng-if="reply.poster==from_user">来自{{ from_user }}</span><span ng-if="reply.poster!=from_user">发往{{from_user}}</span></strong>:
+            <br>
+            {{ reply.content }}
+            <span ></span>
+                <br>{{reply.date_added}}
+            </div>
+        {%endverbatim%}
+      </li>
+
+    </ul>
+    {% if question.status == QUESTION_STATUS_SUBMITED %}
+     <form ng-hide="question.left_count <= 0" class="form-horizontal text-center" action="" method="post" id="replyForm" name="replyForm" ng-controller="replyCtrl">
+       {% csrf_token %}
+
+       <input name="question_id" type="hidden" value="{{ question.id }}" />
+        <div class="control-group">
+        <textarea id="textdescription" class="form-control" ng-model="reply.content" name="content"   rows="6" required  ng-minlength="10" ng-maxlength="1000" placeholder="填写回复"></textarea>
+        <br>
+          {%verbatim%}
+         还能输入{{ 1000 - reply.content.length }}字
+
+         {% endverbatim %}
+        </div>
+        <div class="control-group">
+          <button type="button" ng-click="postReply()" class="btn btn-primary" ng-disabled="replyForm.$invalid" >回复</button>
+        </div>
+
+    </form>
+    {%else  %}
+     <div class="text-center bg-primary">此问答已被关闭,无需回复.</div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/static/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.js"></script>
+<script src="//cdn.bootcss.com/angular.js/1.2.29/angular-sanitize.min.js"></script>
+<script>
+function questionCtrl($scope){
+    $scope.question = {"tt":"2"};
+
+
+}
+var uiId = "{{user.id}}";
+angular.module('jcsApp.services', [])
+.factory('replyDataService', function() {
+  var user_id;
+  var reading_offset;
+  return {
+    getUserid: function() {
+      return user_id;
+    },
+    setUserid: function(userid) {
+      user_id = userid;
+    },
+    getOffset: function() {
+      return reading_offset;
+    },
+    setOffset: function(readingoffset) {
+      reading_offset = readingoffset;
+    }
+  };
+});
+function repliesCtrl($scope,$http){
+  $scope.qid = "{{ question.id }}"
+  $scope.from_user = "*******{{ question.from_user.username|slice:"-4:"}}"
+  $scope.getReplies=function(){
+      $http.get('/wenda/chahuifu/', {params: {"qid":$scope.qid}}).
+        success(function(data) {
+          //console.log(data)
+          $scope.replies=data;
+
+      });
+  };
+  $scope.getReplies()
+
+}
+function replyCtrl($scope,$http){
+  $scope.reply={}
+  $scope.postReply=function(){
+
+      $.post("/wenda/huifu/", $("#replyForm").serialize(),
+        function(data){
+          if(data.result){
+            alert("回复成功");
+            $("[name='content']").val("");
+            $scope.question.left_count = $scope.question.left_count-1
+            $scope.getReplies();
+          }else{
+            alert(data.message);
+          }
+      }, "json");
+    };
+
+}
+function postPubdate(){
+    if(!confirm("公开时间设置以后不可修改,如果不设置,问题关闭24小时后会被公开.")){
+        return
+    }
+    if($("#pub_date").val().length==0){
+        alert("请选择时间值");
+        return false;
+    }
+    $.post("/wenda/set_pubdate/", $("#pubdateForm").serialize(),
+        function(data){
+          if(data.result){
+            alert("设置成功");
+            location.reload();
+          }else{
+            alert(data.message);
+          }
+      }, "json")
+}
+$(function() {
+    $.datepicker.setDefaults( $.datepicker.regional[ "zh-CN" ] );
+    $( "#pub_date" ).datetimepicker({
+
+      dayNamesMin: [ "日","一", "二", "三", "四", "五", "六"],
+      monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+      defaultDate: "+0d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      timeOnlyTitle: 'ddd',
+	  timeText: '时间',
+	  hourText: '小时',
+	  minuteText: '分',
+	  secondText: '秒',
+	  currentText: '当前时间',
+	  closeText: '选择',
+      showOptions: { direction: "down" },
+      onSelect: function( selectedDate ) {
+
+      }
+    });
+  });
+
+</script>
+
+{% endblock %}

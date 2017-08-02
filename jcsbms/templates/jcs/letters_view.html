@@ -1,0 +1,325 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{#this template is replaced by home_login.djhtml #}
+{% block title %}阅读信件-精彩说{% endblock %}
+{% block postPageCss %}
+<style>
+.letters-list .letter-item a{
+color:#333333;
+
+}
+.letters-list .letter-item a.btn-link{
+color: #08c;
+
+}
+.letters-list .letter-item{
+  background-color: #FFFFFF;
+  clear: both;
+    list-style: none
+}
+.letters-list .letter-item div {
+    padding: 15px;
+    max-width: 80%;
+    min-width: 50%;
+    float: left;
+    margin-top: 12px;
+    border-radius: 6px;
+}
+.letters-list .letter-item div.text-right {
+
+
+    float: right;
+}
+</style>
+{% endblock %}
+{% block sidebar %}
+{% analyst_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<div class="well well-box" ng-controller="lettersCtrl">
+<ul class="nav nav-tabs" id="letterTab">
+   <li class="active"><a href="#unread">信息列表</a></li>
+   <li ><a href="#reading">对话信息</a></li>
+    {% if is_xiaomishu %}
+    <li><a href="#manually_send">主动发私信</a></li>
+    {% endif %}
+</ul>
+<div class="tab-content">
+  <div class="tab-pane active" id="unread" ng-controller="unreadCtrl">
+    <br>
+    <div class="form-group" style="width: 50%;">
+        <input type="search" class="form-control" ng-model='key_word' placeholder="请输入用户私信或用户ID,暂不支持老师私信搜索">
+    </div>
+    <div class="form-group" style="width: 20%;position: relative;top: -49px;left: 55%;">
+        <button class="btn btn-primary" ng-click="getUnreads(0)">搜索</button>
+    </div>
+    </br>
+    {%verbatim%}
+    <div ng-repeat="letter in unread_letters" class="panel panel-{{letter.unread}} container-fluid">
+      <div class="panel-heading row "><div class="col-sm-6"><span ng-if="letter.unread=='info'">未读</span><span ng-if="letter.unread=='default'">已读</span>消息</div><div class="col-sm-6 text-right">来自用户{{letter.fromuser_id}}({{ letter.project_c }})<button data-userid="{{letter.fromuser_id}}" ng-click="banUser($event)" class="btn btn-link">屏蔽此用户</button>  &nbsp;&nbsp;{{letter.timestamp}}</div></div>
+      <div class="panel-body">
+          <a href="javascript:void(0)" ng-click="seeLetters($event)" data-username="{{letter.fromuser_name}}" data-userid="{{letter.fromuser_id}}" data-project="{{ letter.project }}" title="阅读消息">
+            {{letter.content}}
+          </a>
+      </div>
+      <div class="panel-footer row text-right"></div>
+    </div>
+     {%endverbatim%}
+    <ul class="pager">
+
+    <li><a class="btn btn-default" ng-disabled="unreadprevPage.$invalid" ng-click="getUnreads(-1)"><i class="glyphicon glyphicon-hand-left"></i>前页</a></li>
+    <li><a class="btn btn-default" ng-disabled="unreadnextPage.$invalid" ng-click="getUnreads(1)">后页<i class="glyphicon glyphicon-hand-right"></i></a></li>
+
+    </ul>
+
+  </div>
+  <div class="tab-pane" id="reading" ng-controller="readingCtrl"  >
+
+    <ul class="letters-list clearfix">
+      <li ng-repeat="letter in reading_letters" class=" letter-item" >
+        {%verbatim%}
+            <div ng-class="{'text-right': letter.from_user_name!=from_username,'bg-primary':letter.from_user_name!=from_username,'bg-info':letter.from_user_name ==from_username}" >
+            <strong><span ng-if="letter.from_user_name==from_username">来自用户</span><span ng-if="letter.from_user_name!=from_username">发往用户</span>{{from_user}}</strong>:
+            <br>
+
+            <span ng-bind-html="letter.content"></span>
+                <br>{{letter.timestamp}}
+            </div>
+        {%endverbatim%}
+      </li>
+
+    </ul>
+
+    <ul class="pager">
+    <li><a class="btn btn-default" ng-disabled="readingprevPage.$invalid" ng-click="getLetters(-1)"><span class="glyphicon glyphicon-hand-left"></span>前页</a></li>
+    <li><a class="btn btn-default" ng-disabled="readingnextPage.$invalid" ng-click="getLetters(1)">后页<span class="glyphicon glyphicon-hand-right"></span></a></li>
+    </ul>
+     <form class="form-horizontal text-center" action="" method="post" id="letterForm" name="letterForm" ng-if="from_user" ng-controller="letterCtrl">
+       {% csrf_token %}
+       <input name="to_auser" type="hidden" ng-value="from_user" />
+       <input name="project" type="hidden" ng-value="project" />
+        <div class="control-group">
+        <textarea id="textdescription" class="form-control col-sm-offset-2" ng-model="letter.content" name="content"  style="width: 600px;" rows="6" required  ng-minlength="2" ng-maxlength="1000" placeholder="期待您的关注"></textarea>
+        <br>
+          {%verbatim%}
+         还能输入{{ 1000 - letter.content.length }}字
+
+         {% endverbatim %}
+        </div>
+        <div class="control-group">
+          <button type="button" ng-click="postLetter()" class="btn btn-primary" ng-disabled="letterForm.$invalid" >回复</button>
+        </div>
+
+    </form>
+  </div>
+    {% if is_xiaomishu %}
+    <div id="manually_send" class="tab-pane" style="margin-top: 5px">
+        <form class="form-horizontal text-center" action="" method="post" id="manuallyLetterForm" name="letterForm" ng-controller="manuallyLetterCtrl">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="col-xs-2 control-label" for="cellphones">用户ID:</label>
+                <div class="col-xs-8">
+                    <input type="text" class="form-control" name="cellphones" placeholder="多个用户ID用空格分隔" ng-model="letter.cellphones">
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="textcontent" class="col-xs-2 control-label">内容:</label>
+                <textarea id="textcontent" class="form-control col-sm-offset-2" ng-model="letter.content" name="content"  style="width: 600px;" rows="6" required  ng-minlength="2" ng-maxlength="1000" placeholder="期待您的关注"></textarea>
+                <br>
+                {%verbatim%}
+                还能输入{{ 1000 - letter.content.length }}字
+
+                {% endverbatim %}
+            </div>
+            <div class="control-group">
+                <button type="button" ng-click="postLetter()" class="btn btn-primary" ng-disabled="letterForm.$invalid" >回复</button>
+            </div>
+
+        </form>
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/angular.js/1.2.29/angular-sanitize.min.js"></script>
+<script>
+$(function () {
+  $('#letterTab a').click(function (e) {
+    e.preventDefault();
+    $(this).tab('show');
+  });
+});
+var uiId = "{{user.id}}";
+angular.module('jcsApp.services', [])
+.factory('readDataService', function() {
+  var user_id;
+  var reading_offset;
+  var project;
+  return {
+    getUserid: function() {
+      return user_id;
+    },
+    setUserid: function(userid) {
+      user_id = userid;
+    },
+    getOffset: function() {
+      return reading_offset;
+    },
+    setOffset: function(readingoffset) {
+      reading_offset = readingoffset;
+    },
+    getProject: function() {
+        return project;
+    },
+    setProject: function(project_c){
+        project = project_c;
+    }
+  };
+});
+angular.module('jcsApp', ['jcsApp.services','ngSanitize']).config(function($httpProvider) {
+
+          // for xsrf token filter
+          $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+          $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+          //for post data encoding
+          $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+          $httpProvider.defaults.transformRequest = function(data){
+                  if (data === undefined) {
+                        return data;
+                  }
+                  return $.param(data);
+          }
+}).controller('lettersCtrl',
+  function($scope,$http,readDataService){
+    $scope.readingprevPage={};
+    $scope.readingnextPage={};
+    $scope.from_user = "";
+    $scope.seeLetters=function(event){
+      var target = $(event.target);
+      var user_id = target.attr("data-userid");
+      $scope.from_user = user_id;
+      $scope.from_username =target.attr("data-username");
+      $scope.project=target.attr("data-project");
+      readDataService.setOffset(0);
+      readDataService.setUserid(user_id);
+      readDataService.setProject(target.attr('data-project'));
+      $scope.getLetters(0);
+      $('#letterTab a[href="#reading"]').tab('show');
+    };
+
+
+    $scope.getLetters = function(next){
+
+      readDataService.setOffset(readDataService.getOffset() + next*20);
+
+      $http.get('/site/chaxiaoxi/', {params: {"offset":readDataService.getOffset(),"action":"reading",
+                "from_auser":readDataService.getUserid(), "project": readDataService.getProject() }}).
+          success(function(data) {
+            //console.log(data);
+            if (readDataService.getOffset() >0){
+              $scope.readingprevPage.$invalid = false;
+            }else{
+              $scope.readingprevPage.$invalid = true;
+            }
+            if(data.length > 20){
+              $scope.reading_letters = data.slice(1,21);
+              $scope.readingnextPage.$invalid = false;
+            }else{
+              $scope.reading_letters=data;
+              $scope.readingnextPage.$invalid= true;
+            }
+
+        });
+
+    };
+
+});
+function unreadCtrl($scope,$http){
+  $scope.unread_offset =0 ;
+  $scope.unreadprevPage={};
+  $scope.unreadnextPage={};
+  $scope.getUnreads=function(next){
+      $scope.unread_offset = $scope.unread_offset + next*20;
+      $http.get('/site/chaxiaoxi/', {params: {"offset":$scope.unread_offset,"action":"unread",'key_word':$scope.key_word}}).
+        success(function(data) {
+          //console.log(data);
+          if ($scope.unread_offset >0){
+            $scope.unreadprevPage.$invalid = false;
+
+          }else{
+            $scope.unreadprevPage.$invalid = true;
+
+          }
+          if(data.length > 20){
+
+            $scope.unread_letters = data.slice(0,20);
+            $scope.unreadnextPage.$invalid = false;
+          }else{
+
+            $scope.unread_letters=data;
+            $scope.unreadnextPage.$invalid= true;
+          }
+      });
+  };
+  $scope.getUnreads(0);
+    $scope.banUser=function(event){
+        if(!confirm("此用户被屏蔽后,不可恢复,确认屏蔽?")){
+            return;
+        }
+        var target = $(event.target);
+        auserid = target.attr("data-userid");
+        $http.post("/site/pingbi/",{"auserid":auserid}).success(function(data){
+            if(data.result){
+              alert("屏蔽成功")
+              $scope.getUnreads(0)
+            }else{
+                alert("屏蔽失败")
+
+
+            }
+        });
+
+    }
+}
+function readingCtrl($scope){
+
+}
+function letterCtrl($scope){
+  $scope.letter={}
+  $scope.postLetter=function(event){
+
+      $.post("/site/faxiaoxi/", $("#letterForm").serialize(),
+        function(data){
+          if(data.result){
+            alert("回复成功");
+            $("[name='content']").val("")
+          }else{
+            alert(data.message);
+          }
+      }, "json");
+    };
+}
+{% if is_xiaomishu %}
+function manuallyLetterCtrl($scope){
+    $scope.letter={}
+    $scope.postLetter=function(event){
+
+        $.post("/site/send_letter/", $("#manuallyLetterForm").serialize(),
+                function(data){
+                    if(data.result){
+                        alert("发送成功");
+                        $("[name='content']").val("");
+                    }else{
+                        alert(data.message);
+                    }
+                }, "json");
+    };
+}
+{% endif %}
+</script>
+{% endblock %}

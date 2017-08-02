@@ -1,0 +1,35 @@
+{% load i18n %}
+{%load jauth_tags %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">导航切换</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">精彩说</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            {% if perms.article.junior_editor%}
+            <li><a title="正式文章" href="/wenzhang/sousuo/" >{% trans '编辑工作台' %}</a></li>
+            {% elif perms.article.junior_editor_translate%}
+
+
+            <li><a title="正式文章" href="/wenzhang/translate/" >{% trans '编辑工作台' %}</a></li>
+            {% else%}
+           <li><a title="正式文章" href="/wenzhang/sousuo/" >{% trans '编辑工作台' %}</a></li>
+            {% endif %}
+            {% if perms.analyst.analyst_action%}
+            <li><a title="我的文章" href="/laoshi/wodewenzhang/">{% trans '老师工作台'%}</a></li>
+            {% endif %}
+
+
+          </ul>
+          {% user_info %}
+        </div><!--/.nav-collapse -->
+
+    </div>
+    </div>

@@ -1,0 +1,452 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{%load app_tags %}
+
+
+
+{% block postPageCss %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+
+  <input  name="action" value="search" type="hidden" />
+
+    <div class="form-group">
+        <input type="search" class="form-control" name="author_word" value="{{ aword }}" id="author_word" placeholder="请输入作者网络昵称">
+    </div>
+      &nbsp; &nbsp;
+    <div class="form-group">
+        <label>创建时间:</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />
+        <input type="hidden" value="{{ from_datestr }}" name="from_date" id="from_date">
+        <input type="hidden" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="articleid" id="articleid" value="{{ articleid }}" placeholder="请输入文章ID">
+    </div>
+    <div class="form-group">
+      <label>上首页:</label>
+      <select class="form-control" name="is_toppage" id="is_toppage">
+          <option value="-1">全部</option>
+          <option value="0" {% if is_toppage == 0 %}selected{% endif %}>不上</option>
+          <option value="1" {% if is_toppage == 1 %}selected{% endif %}>上</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>删除否:</label>
+       <select class="form-control" name="invisible" id="invisible">
+          <option value="-1">全部</option>
+          <option value="0" {% if invisible == 0 %}selected{% endif %}>未删</option>
+          <option value="1" {% if invisible == 1 %}selected{% endif %}>已删</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>收费否:</label>
+       <select class="form-control" name="chargeable" id="chargeable">
+          <option value="-1">全部</option>
+          <option value="0" {% if chargeable == 0 %}selected{% endif %}>免费</option>
+          <option value="1" {% if chargeable == 1 %}selected{% endif %}>收费</option>
+      </select>
+    </div>
+    <div class="form-group">
+        <label>收费老师:</label>
+        <select class="form-control" name="author_type" id="author_type">
+            <option value="-1">全部</option>
+            <option value="1" {% if author_type == 1 %}selected{% endif %}>免费</option>
+            <option value="0" {% if author_type == 0 %}selected{% endif %}>收费</option>
+            <option value="2" {% if author_type == 2 %}selected{% endif %}>代发</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>关联比赛:</label>
+        <select class="form-control" name="match_related" id="match_related">
+            <option value="-1">全部</option>
+            <option value="1" {% if match_related == 1 %}selected{% endif %}>是</option>
+            <option value="0" {% if match_related == 0 %}selected{% endif %}>否</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="key_word" id="key_word" value="{{ key_word }}" placeholder="请输入文章关键词">
+    </div>
+    <div class="form-group">
+        <label>标签:</label>
+        <select class="form-control" name="portal_tag" id="portal_tag">
+            <option value="-1">全部</option>
+            <option value="0">无标签</option>
+            {% for tag in portalTags %}
+            <option value="{{ tag.id }}">{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>红单退费:</label>
+        <select class="form-control" name="refund_red" id="refund_red">
+            <option value="-1">全部</option>
+            <option value="1">是</option>
+            <option value="0">否</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>语言:</label>
+        <select class="form-control" name="language" id="language">
+            <option value="-1">全部</option>
+            <option {% if language == 1 %}selected{% endif %} value="1">国语</option>
+            <option {% if language == 0 %}selected{% endif %} value="0">粤语</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>红黑结果:</label>
+        <select class="form-control" name="black_red_count" id="black_red_count">
+            <option value="-1">全部</option>
+            <option {% if black_red_count == 1 %}selected{% endif %} value="1">有</option>
+            <option {% if black_red_count == 0 %}selected{% endif %} value="0">无</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>所属活动:</label>
+        <select class="form-control" name="article_activity" id="article_activity">
+            <option value="-1">全部</option>
+            {% for measuredactivity in measuredactivities %}
+            <option {% if activity_id == measuredactivity.id %}selected{% endif %} value="{{ measuredactivity.id }}">{{ measuredactivity.activity_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>发布类型:</label>
+        <select class="form-control" name="article_type" id="article_type">
+            <option value="-1">全部</option>
+            <option {% if article_type == 10 %}selected{% endif %} value="10">初盘</option>
+            <option {% if article_type == 20 %}selected{% endif %} value="20">竞彩串关</option>
+            <option {% if article_type == 40 %}selected{% endif %} value="40">直播</option>
+            <option {% if article_type == 50 %}selected{% endif %} value="50">其他</option>
+            <option {% if article_type == 60 %}selected{% endif %} value="60">晒战绩</option>
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">搜索</button>
+</fieldset>
+</form>
+<br>
+<div class="row">
+<div class="col-md-12">
+<h5>置顶文章区</h5>
+<table class="table table-bordered table-striped table-hover tablesorter" id="top_articles_table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>标签</th>
+            <th>概要</th>
+            <th>作者</th>
+            <th>创建时间</th>
+            <th>操作</th>
+            <th>排序</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for article in top_articles %}
+        <tr>
+            <td><a href="/wenzhang/bianji/?id={{ article.id }}" target="_blank">{{ article.id }}</a></td>
+            <td>{{ article.tags }}</td>
+            <td>{{ article.digest }}</td>
+            <td>{{ article.author }}</td>
+            <td>{{ article.date_added|date:"Y-m-d H:i" }}</td>
+            <td><a href="javascript:void(0);" onclick="cancelTop({{ article.id }})">取消置顶</a></td>
+            <td>{{ article.top_order }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>上首页</th>
+    <th>标签</th>
+    <th>发布类型</th>
+    <th>概要</th>
+    <th>收费</th>
+    <th>作者</th>
+    <th>语言</th>
+    <th style="width: 10%">创建时间</th>
+    <th>红黑数量</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+{% for article in pager.object_list %}
+<tr>
+<td><a href="/wenzhang/bianji/?id={{ article.id }}" target="_blank">{{ article.id }}</a>
+{% if article.istop and article.top_time > now  %}
+    <span class="glyphicon glyphicon-arrow-up text-danger" style="font-size: 18px;" aria-hidden="true"></span>
+{% endif %}
+</td>
+<td>{%  if article.is_toppage %}
+    <span class="glyphicon glyphicon-arrow-up text-success" aria-hidden="true"></span>
+    {% endif %}</td>
+<td>{{ article.tags }}</td>
+<td>{% if article.type == '10' %}
+        初盘
+    {% elif article.type == '20' %}
+        竞彩串关
+    {% elif article.type == '40' %}
+        直播
+    {% elif article.type == '50' %}
+        其他
+    {% elif article.type == '60' %}
+        晒战绩
+    {% endif %}</td>
+<td>{{ article.digest }}</td>
+<td>{% if article.chargeable %}{% if article.price %}{{ article.price }}{% else %}是{% endif %}{% else %}否{% endif %}</td>
+<td>{{ article.author.nick_name }}</td>
+<td>{% if article.language == 'M' %}国语{% else %}粤语{% endif %}</td>
+<td>{{ article.date_added|date:"m-d H:i" }}</td>
+<td>{{ article.articlelotteriesresult_count }}</td>
+<td>
+   <div class="btn-group">
+        <input class="btn btn-primary dropdown-toggle" type="button" value="红黑判定列表" onclick="window.open('/wenzhang/black_red_list/?article_id={{ article.id }}')" />
+   </div>
+</td>
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+{% tablesorter %}
+<script>
+$("#portal_tag").val({{ portal_tag }});
+$("#refund_red").val({{ refund_red }});
+function delArticle(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/shanchu/", data,
+        function(data){
+            if(data.result){
+              alert("成功删除!");
+              location.reload()
+            }else{
+              alert("删除失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function recoverArticle(id){
+    if(!confirm("文章恢复以后，相关的比赛信息和标签可能无法恢复，如果需要请手动添加！\n确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/huifu/", data,
+        function(data){
+            if(data.result){
+              alert("成功恢复!");
+              location.reload()
+            }else{
+              alert("恢复失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function makeTop(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/zhiding/", data,
+        function(data){
+            if(data.result){
+              alert("成功置顶!");
+              location.reload()
+            }else{
+              alert("置顶失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function cancelTop(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/cancel_top/", data,
+            function(data){
+                if(data.result){
+                    alert("成功取消置顶!");
+                    location.reload()
+                }else{
+                    alert("取消置顶失败："+data.message);
+                    //$(".btn-primary img").hide();
+                }
+            }, "json");
+
+}
+function make_toppage(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/shangshouye/", data,
+        function(data){
+            if(data.result){
+              alert("操作成功!");
+              location.reload()
+            }else{
+              alert("操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function cancel_toppage(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/xiashouye/", data,
+        function(data){
+            if(data.result){
+              alert("操作成功!");
+              location.reload()
+            }else{
+              alert("操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+
+var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+//修改置顶排序
+$("#top_articles_table tbody td:nth-child(7)").dblclick(function (e) {
+    if ($(this).find("input").length > 0) {
+        return;
+    }
+    var orderStr = $(this).html();
+    $(this).html("<input type='text' style='width:50px' value='" + orderStr + "'/><button class='btn btn-primary btn-sm' style='margin-left:3px'>保存</button>");
+    $(this).find("button").click(function(e){
+        var articleId = $(this).parent().parent().find("td:first-child a").html();
+        var orderStr = $(this).parent().find("input").val();
+        var elem = $(this);
+        $.post("/wenzhang/top_order/", {"article_id":articleId, "order":orderStr, "csrfmiddlewaretoken":csrfmiddlewaretoken}, function(data){
+            if(data.result) {
+                $(elem).parent().html(orderStr);
+                alert(data.message);
+                location.reload();
+            }else{
+                alert(data.message);
+            }
+        });
+    });
+});
+
+var is_refunding = false;
+function refund_red(article_id) {
+    if (is_refunding) {
+        return;
+    }
+    if (confirm("确认要退款?")) {
+        is_refunding = true;
+        $.post("/app/refund_red/", {"article_id": article_id, "csrfmiddlewaretoken":csrfmiddlewaretoken}, function(data){
+            alert(data.message);
+            if (data.result) {
+                location.reload();
+            }
+            is_refunding = false;
+        });
+    }
+}
+
+$('#daterangepicker').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 1,
+            timePicker24Hour: true,
+            linkedCalendars: false,
+            locale:{
+                format: 'YYYY/MM/DD HH:mm',
+                applyLabel:"确定",
+                cancelLabel:"取消",
+                daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+                ],
+                monthNames: [
+                    "一月",
+                    "二月",
+                    "三月",
+                    "四月",
+                    "五月",
+                    "六月",
+                    "七月",
+                    "八月",
+                    "九月",
+                    "十月",
+                    "十一月",
+                    "十二月"
+                ],
+            }
+        },
+        function(start, end) {
+            var datefmt = "YYYY-MM-DD HH:mm";
+            console.log(start.format(datefmt), end.format(datefmt));
+            $("#from_date").val(start.format(datefmt + ":00"));
+            $("#to_date").val(end.format(datefmt + ":59"));
+
+        }
+);
+$('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+$('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+</script>
+{% endblock %}

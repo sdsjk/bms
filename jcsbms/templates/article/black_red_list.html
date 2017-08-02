@@ -1,0 +1,94 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{%load app_tags %}
+
+
+
+{% block postPageCss %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<h2>文章赛事红黑判定列表</h2>
+<br>
+<div class="row">
+<div class="col-md-12">
+    <a class="btn btn-primary" href="/wenzhang/set_black_red/?article_id={{ article.id }}">红黑判定</a>
+</div>
+</div>
+</br>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>联赛</th>
+    <th>赛队名称</th>
+    <th>比赛时间</th>
+    <th>玩法</th>
+    <th>预测结果</th>
+    <th>比分结果</th>
+    <th>红黑结果</th>
+    <th>备注</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+    {% for decides in decide_list %}
+    <tr>
+        <td>{{ decides.league }}</td>
+        <td>{{ decides.match_name }}</td>
+        <td>{{ decides.match_time }}</td>
+        <td>{{ decides.playname }}</td>
+        <td>{{ decides.score_prediction }}</td>
+        <td>{{ decides.score_practical }}</td>
+        <td>{{ decides.black_red_decide }}</td>
+        <td>{{ decides.comment }}</td>
+        <td>
+       <div class="btn-group">
+            <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">操作<span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a href="/wenzhang/set_black_red/?article_id={{ article.id }}&id={{ decides.id }}">修改</a></li>
+              {% if not article.invisible %}
+              <li><a href="javascript:void(0)" onclick="del_black_red('{{ decides.id }}')">删除</a></li>
+              {% endif %}
+            </ul>
+        </div>
+    </td>
+    </tr>
+
+    {% endfor %}
+    </tbody>
+</table>
+    {% csrf_token %}
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript" src="/static/js/bootstrap-multiselect.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+
+    function del_black_red(id){
+        if(!confirm("确认做此操作")){
+            return false;
+        }
+        var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+        var data = {
+            "id":id,
+            "csrfmiddlewaretoken":csrfmiddlewaretoken,
+        };
+        console.log(data)
+        $.post("/wenzhang/del_black_red/", data,
+            function(data) {
+                if (data.result) {
+                    alert("成功删除!");
+                    location.reload()
+                } else {
+                    alert("删除失败：" + data.message);
+                }
+            }, "json");
+    }
+</script>
+{% endblock %}

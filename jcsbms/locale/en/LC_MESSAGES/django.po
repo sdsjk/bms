@@ -1,0 +1,757 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-05-26 17:27+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/topnavbar.html:17
+msgid "编辑工作台"
+msgstr "Operation Workbench"
+
+
+msgid "老师工作台"
+msgstr "Analyst Workbench"
+
+
+msgid "编辑管理"
+msgstr "Article Management"
+
+msgid "正式文章库"
+msgstr "Article Repository"
+
+
+msgid "网络昵称"
+msgstr "NickName"
+
+
+
+msgid "创建时间"
+msgstr "Creation Time"
+
+msgid "文章ID"
+msgstr "Article ID"
+
+
+msgid "收费否"
+msgstr "Charge"
+
+msgid "标签"
+msgstr "Lable"
+
+msgid "搜索"
+msgstr "Search"
+
+msgid "导出数据"
+msgstr "Export Data"
+
+msgid "概要"
+msgstr "Abstract"
+
+msgid "作者"
+msgstr "Author"
+
+msgid "排序"
+msgstr "Order By"
+
+
+
+
+
+
+
+msgid "修改"
+msgstr "Modify"
+
+msgid "置顶"
+msgstr "Stick"
+
+msgid "设计渠道"
+msgstr "Delivery Channle"
+
+msgid "上首页"
+msgstr "Go to Front Page"
+
+msgid "删除"
+msgstr "Del."
+
+msgid "首页审核表"
+msgstr "Front Page Review form"
+
+msgid "审核状态"
+msgstr "ReviewStatus"
+
+msgid "待审核"
+msgstr "In Review"
+
+msgid "通过"
+msgstr "Passed"
+
+msgid "驳回"
+msgstr "Rejected"
+
+msgid "广告管理"
+msgstr "Banner Managment"
+
+
+
+
+msgid "新增广告"
+msgstr "New Banner"
+
+msgid "链接类型"
+msgstr "Link Type"
+
+msgid "链接ID"
+msgstr "Link ID"
+
+msgid "在线状态"
+msgstr "Online Status"
+
+
+msgid "下线"
+msgstr "Offline"
+
+msgid "入口管理"
+msgstr "Portal Managment"
+
+msgid "用户可选"
+msgstr "Available for choose"
+
+msgid "名字"
+msgstr "Portal Name"
+
+msgid "序号"
+msgstr "Display Sequence"
+
+msgid "老师和用户"
+msgstr "Analyst&User Management"
+
+msgid "分析师管理"
+msgstr "Analyst Management"
+
+
+msgid "用户管理"
+msgstr "UserManagment"
+
+msgid "渠道用户"
+msgstr "User Channel Search"
+
+msgid "财务管理"
+msgstr "Finance Management"
+
+msgid "文章购买"
+msgstr "Purchased Articles"
+
+msgid "目标"
+msgstr "Article Link"
+
+msgid "来源"
+msgstr "Payment Method"
+
+
+
+
+msgid "状态"
+msgstr "Payment Status"
+
+msgid "文章赠送"
+msgstr "Complimentary Articles"
+
+
+
+
+msgid "优惠券额度"
+msgstr "Coupon Value"
+
+msgid "现金金额"
+msgstr "User Balance"
+
+msgid "截止时间"
+msgstr "Last Modify Time"
+
+msgid "手机号或ID"
+msgstr "PhoneNo./ UserID"
+
+msgid "剩余金额"
+msgstr "User Balance"
+
+msgid "操作时间"
+msgstr "Last Modify Time"
+
+msgid "账户流水明细"
+msgstr "Transaction Details"
+
+
+msgid "来源类型"
+msgstr "Event Name"
+
+msgid "充值方案"
+msgstr "Topup Management"
+
+msgid "添加充值方案"
+msgstr "Add New Topup Entry"
+
+msgid "编辑"
+msgstr "Edit"
+
+
+
+
+msgid "金币包价格"
+msgstr "Sold Price"
+
+msgid "老师收入"
+msgstr "Analyst Income"
+
+msgid "付款时间"
+msgstr "Payment Time"
+
+msgid "渠道"
+msgstr "Business  Channel "
+
+msgid "老师ID"
+msgstr "Analyst ID"
+
+msgid "老师"
+msgstr "Analyst Name"
+
+msgid "金额"
+msgstr "Total Amount"
+
+msgid "邀请人数"
+msgstr "Invited User Number"
+
+msgid "操作日志"
+msgstr "Operation Logs"
+
+msgid "操作人"
+msgstr "Operater"
+
+msgid "动作名称"
+msgstr "Action"
+
+msgid "缓存工具"
+msgstr "Redis Tool"
+
+msgid "缓存操作"
+msgstr "Redis Data Management"
+
+msgid "删除文章缓存"
+msgstr "Delete an article from cache"
+
+msgid "发布文章消息"
+msgstr "Publish an article to cache"
+
+
+msgid "删除用户登录状态"
+msgstr "Delete User Login state from cache"
+
+msgid "删除Hash缓存"
+msgstr "Delete a HASH Key from cache"
+msgid "删除Zest缓存"
+msgstr "Delete a ZEST Key from cache"
+
+
+msgid "修改Hash缓存"
+msgstr "Modify a HASH Key from cache"
+
+msgid "我的文章"
+msgstr "My Articles"
+
+msgid "内容"
+msgstr "Content"
+
+msgid "是否删除"
+msgstr "Deleted?"
+
+msgid "删除原因"
+msgstr "Delete Reason"
+
+msgid "驳回原因"
+msgstr "Reject Reason"
+
+msgid "发布文章"
+msgstr "Publish Articles"
+
+msgid "文章编辑"
+msgstr "Compostion"
+
+
+msgid "发表收费文章"
+msgstr "Compose fee articles"
+
+msgid "以下为免费内容,所有用户皆可阅读"
+msgstr "Below content is free of charge ,and open for all users"
+
+msgid "定价区间"
+msgstr "Price Range"
+
+msgid "文章价格"
+msgstr "Price"
+
+msgid "以下为收费内容,用户购买后才可阅读.比赛开始3小时后，收费内容将免费公布"
+msgstr "The below part is in the charge , and only available for paid users .The charged part will be free for all users in 3 hours of the match start. "
+
+
+msgid "我的信息"
+msgstr "Profile"
+
+msgid "身份证号"
+msgstr "ID No."
+
+msgid "银行卡号"
+msgstr "Bank Account:"
+
+msgid "开户分行"
+msgstr "Bank Branch:"
+msgid "邮箱"
+msgstr "E-Mail:"
+msgid "微信号"
+msgstr "IM(Line ):"
+
+msgid "金币数量"
+msgstr "Coin"
+
+msgid "手机号"
+msgstr "Mobile Phone:"
+
+msgid "邮寄地址"
+msgstr "Mailing Address:"
+msgid "邮政编码"
+msgstr "Post Code:"
+
+msgid "免费私信"
+msgstr "Private Chat"
+
+msgid "文章销售"
+msgstr "My Orders"
+
+
+msgid "用户ID"
+msgstr "UserID"
+
+msgid "语言"
+msgstr "Language"
+
+msgid "我的邀请"
+msgstr "My invitation"
+
+msgid "我的邀请码"
+msgstr "My Invitation Code:"
+
+msgid "注册时间"
+msgstr "Registration Date:"
+
+msgid "消费时间"
+msgstr "Sale Date："
+
+msgid "手机"
+msgstr "Mobile Phone"
+
+msgid "消费总额"
+msgstr "Total Amount"
+
+msgid "红黑结果"
+msgstr "Red black result"
+
+msgid "发布类型"
+msgstr "Publication Type"
+
+msgid "翻译状态"
+msgstr "Translation State"
+
+msgid "时间"
+msgstr "Date"
+
+msgid "全部"
+msgstr "All"
+
+msgid "可登录"
+msgstr "Normal"
+
+msgid "已删除"
+msgstr "Deleted"
+
+msgid "选择合作类型"
+msgstr "Fee Type"
+
+
+
+
+
+msgid "代发"
+msgstr "Copy"
+
+msgid "选择客户端"
+msgstr "Client"
+
+
+msgid "国语"
+msgstr "Chinese"
+
+msgid "粤语"
+msgstr "Cantonese"
+
+
+msgid "选择渠道"
+msgstr "Channel"
+
+
+msgid "查询"
+msgstr "Search"
+
+
+msgid "新增分析师"
+msgstr "Add Analyst"
+
+
+
+msgid "头像"
+msgstr "Avatar"
+
+
+msgid "真实姓名"
+msgstr "Real Name"
+
+msgid "昵称"
+msgstr "Nick Name"
+
+
+msgid "收费类型"
+msgstr "Fee type"
+
+msgid "彩种"
+msgstr "Gambling Type"
+
+msgid "老师等级"
+msgstr "Analyst Rank"
+
+msgid "被禁状态"
+msgstr "Ban Status"
+
+msgid "添加时间"
+msgstr "Creating Time"
+
+
+msgid "操作"
+msgstr "Operation"
+
+
+msgid "头像编辑"
+msgstr "Avatar Edit"
+
+msgid "粉丝列表"
+msgstr "Follower list"
+
+msgid "禁止发国语收费"
+msgstr "Ban send payable Chinese article"
+
+msgid "禁止发国语免费"
+msgstr "Ban send free Chinese article"
+
+msgid "禁止发私信"
+msgstr "Ban send message"
+
+msgid "禁止发粤语收费"
+msgstr "Ban send payable Cantonese article"
+
+msgid "禁止发粤语免费"
+msgstr "Ban send free Cantonese article"
+
+msgid "请输入用户手机号"
+msgstr "User Cell Phone Number"
+
+
+msgid "请输入用户ID"
+msgstr "User ID"
+
+msgid "请输入邀请来源"
+msgstr "Invitation Code"
+msgid "邀请来源"
+msgstr "Invitation Code"
+msgid "请输入渠道来源"
+msgstr "Channel"
+
+msgid "是否被邀请"
+msgstr "Invitation Type"
+
+msgid "选择所有"
+msgstr "All"
+
+
+
+
+msgid "否"
+msgstr "No"
+
+msgid "注册客户端"
+msgstr "Client Channel"
+
+
+msgid "操作系统"
+msgstr "System"
+
+
+msgid "最后登录"
+msgstr "Last Login"
+
+
+msgid "最后活动"
+msgstr "Last activity"
+
+
+msgid "app版本"
+msgstr "APP Version"
+
+
+msgid "渠道来源"
+msgstr "Channel"
+
+
+msgid "关注老师列表"
+msgstr "Followed Analyst"
+
+
+msgid "不可登录"
+msgstr "Ban Login"
+
+msgid "请输入渠道邀请码"
+msgstr "Enter channel invitaion code"
+
+msgid "客户端"
+msgstr "Client"
+
+
+
+msgid "请输入文件关键词或标签"
+msgstr "Article keyword or tag"
+
+msgid "价格"
+msgstr "Price"
+
+msgid "金币数"
+msgstr "Win Coin"
+
+msgid "银行"
+msgstr "Payment Method"
+
+
+msgid "备注理由"
+msgstr "Remark"
+
+
+msgid "当前价格"
+msgstr "Current Price"
+
+
+
+msgid "置顶文章区"
+msgstr "Sticked Articles"
+
+
+
+msgid "不上"
+msgstr "Not in front page"
+
+
+msgid "上"
+msgstr "In Front Page"
+
+msgid "免费"
+msgstr "Free"
+
+msgid "收费"
+msgstr "Charge"
+msgid "有"
+msgstr "YES"
+msgid "红黑数量"
+msgstr "Red Black Amount"
+msgid "审阅"
+msgstr "Review"
+msgid "设置渠道"
+msgstr "Set Channel"
+
+msgid "已翻译发布"
+msgstr "Already Translated And Released"
+
+
+msgid "未翻译发布"
+msgstr "NOT Translated or Released"
+
+msgid "删除否"
+msgstr "Delete Status"
+
+msgid "未删"
+msgstr "Not Deleted"
+
+msgid "已删"
+msgstr "Deleted"
+msgid "收费老师"
+msgstr "Analyst Status"
+
+msgid "请输入文章关键词"
+msgstr "Enter Article Keyword"
+msgid "无"
+msgstr "None"
+msgid "选择登陆状态"
+msgstr "Select Login Status"
+
+msgid "关注数"
+msgstr "Followers"
+msgid "微信"
+msgstr "AWeChat"
+msgid "支付宝"
+msgstr "Alipay"
+
+msgid "支付精彩币"
+msgstr "Paid with Win Coin"
+
+
+msgid "任务竞猜币"
+msgstr "Paid with Quest Win Coin"
+
+msgid "购买类型"
+msgstr "Paid Target"
+
+msgid "精彩问"
+msgstr "Q & A"
+
+msgid "金额(精彩币)"
+msgstr "Amount（Win Coin)"
+
+
+msgid "视频"
+msgstr "Video"
+
+msgid "买花"
+msgstr "Gift：Flower"
+
+
+msgid "请输入文章ID"
+msgstr "Enter Article ID"
+
+msgid "共"
+msgstr "Total"
+
+msgid "页"
+msgstr "Page"
+
+msgid "条记录"
+msgstr "Entry"
+
+msgid "请输入用户完整昵称或者ID号"
+msgstr "Enter User Full Nickname OR UserID"
+
+msgid "头像上传"
+msgstr "Avatar Upload"
+msgid "每日打开"
+
+msgstr "Daily Active"
+msgid "分享"
+msgstr "Share"
+msgid "注册"
+msgstr "Registration"
+msgid "退钱"
+msgstr "Refund"
+msgid "系统赠送"
+msgstr "System Gift"
+
+
+msgid "红单退款"
+msgstr "No-Red Refund"
+msgid "金是否成功"
+msgstr "Transaction Status"
+
+msgid "成功"
+msgstr "Successful"
+msgid "失败"
+msgstr "Failed"
+msgid "请选择"
+msgstr "Select"
+msgid "是"
+msgstr "Yes"
+
+msgid "选择登录状态"
+msgstr "Select Login Status"
+
+msgid "批量修改首页数量"
+msgstr "Batch Edit Front Page Article Amount"
+
+msgid "至"
+msgstr "To"
+
+msgid "赠送金币"
+msgstr "Gift Coin"
+
+msgid "扣除金币"
+msgstr "Consumption of Coin"
+
+msgid "交易成功"
+msgstr "Successful Transaction"
+
+msgid "该时间段内合计"
+msgstr "Sum of the period"
+
+msgid "精彩币"
+msgstr "Win Coin"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

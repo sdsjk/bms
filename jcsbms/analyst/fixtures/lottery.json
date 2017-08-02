@@ -1,0 +1,1 @@
+[{"model": "lottery.lotteryentry", "pk": 14665, "fields": {"taskid": "568e8b81c7d1c1a4b7353c59", "type": 6}}, {"model": "lottery.lotteryentry", "pk": 14669, "fields": {"taskid": "5676d08145b851621b1bae8e", "type": 6}}]

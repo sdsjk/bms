@@ -1,0 +1,22 @@
+ {% load i18n %}
+{%load jauth_tags %}
+<nav class="text-center">
+  {% if pager.has_other_pages %}
+  <ul class="pagination ">
+    {% if pager.has_previous %}
+    <li><a href="{{ pager.previous_url }}"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a></li>
+    {% endif %}
+    {% for page_url in pager.page_urls %}
+            <li {% if pager.number == page_url.index %}class="active" {% endif %}><a href="{{ page_url.url }}"  >{{ page_url.index }}</a></li>
+    {% endfor %}
+    {% if pager.has_next %}
+    <li><a href="{{ pager.next_url }}"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a></li>
+    {% endif %}
+
+  </ul>
+  {% endif %}
+ <div>{% if pager.has_other_pages %}
+        <a ng-href="{{ pager.nopageindex_url }}&page_index={% verbatim %}{{ page_index }}{% endverbatim %}" ng-disabled="page_index.$error" class="btn btn-default">Jump</a ><input style="height: 32px;width: 60px;" type="number" min="1" max="{{ pager.paginator.num_pages }}" name="page_index" ng-model="page_index" />{% trans '页' %}
+     {% endif %}
+{% trans '共' %}{{ pager.paginator.num_pages }}{% trans '页' %},{{ pager.paginator.count }}{% trans '条记录' %}</div>
+</nav>

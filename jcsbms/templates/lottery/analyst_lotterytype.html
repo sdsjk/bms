@@ -1,0 +1,6 @@
+<select class="form-control"  id="selectLotterytype" name="lottery_type">
+    {% for lottery_type in lottery_types %}
+    <option value="{{ lottery_type.id }}">{{ lottery_type.name }}</option>
+    {% endfor %}
+
+</select>

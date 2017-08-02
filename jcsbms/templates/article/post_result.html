@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{%load ueditor_tags %}
+{%load lottery_tags %}
+{%load app_tags %}
+
+{% block postPageCss %}
+<style>
+
+
+</style>
+{% endblock %}
+{% block content %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="resultForm" name="resultForm" ng-controller="ResultCtrl">
+{% csrf_token %}
+ <input name="taskid" type="hidden" value="{{ result.id }}">
+<fieldset>
+          <div class="form-group">
+
+                <div class="col-sm-8">
+                  <div class="checkbox">
+                    <label ng-init="checkLeft()">
+                      <input id="is_toppage" name="is_toppage" type="checkbox" ng-model="article.is_toppage" />上首页(今天还可上{% verbatim %}{{ result.toppage_leftcount }}篇{% endverbatim %}免费文章)
+                    </label>
+                  </div>
+                </div>
+              </div>
+    <div class="form-group">
+       <div class="col-sm-6">
+         <input type="text" id="inputTitle"  class="form-control "  name="title" ng-model="result.title" placeholder="请输入日记标题"  required  ng-minlength="2" ng-maxlength="100">
+       </div>
+       <div class="col-sm-6">
+        <span class="text-danger" ng-show="resultForm.title.$error.required">需要填写</span>
+        <span class="text-danger" ng-show="resultForm.title.$error.minlength">至少2个字符</span>
+        <span class="text-danger" ng-show="resultForm.title.$error.maxlength">至多100个字符</span>
+        </div>
+
+    </div>
+    <ul>
+        <li>作者:{{ result.author }}
+        <input type="hidden" name="author_name" value="{{ result.author }}">
+    <li>原文链接: <a target="_blank" href="{{ result.url }}"> {{ result.url }}</a></li>
+    <li>发布时间:{{result.date_added  }}</li>
+    <li>抓取时间:{{result.updatetime  }}</li>
+    </ul>
+<div class="form-group">
+        <div class="col-sm-8">
+        <script id="textdescription" name="text"  style="display: inline-block;" type="text/plain">{{result.text|safe}}</script>
+        </div>
+        <div class="col-sm-4">
+          {% lottery_select %}
+        </div>
+</div>
+    <div class="form-group input-lg">
+        <div class="col-sm-2">
+            相关标签:
+        </div>
+        <div>
+            {% portal_checks %}
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+         <button type="button" id="postButton" ng-click="postResult()" class="btn btn-primary btn-lg" ng-disabled="resultForm.$invalid" >爬虫库保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+         {% if not result.is_synced %}
+            <button type="button" id="syncButton" ng-click="syncResult()" class="btn btn-primary btn-lg" ng-disabled="resultForm.$invalid" >同步至内容库 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+         {% endif %}
+        </div>
+        </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+{% ueditor %}
+<script type="text/javascript">
+    var ueditor = UE.getEditor('textdescription',{'initialFrameWidth': 720, 'initialFrameHeight': 600, 'serverUrl': '/ueditor/controller/?imagePathFormat=&filePathFormat='});
+     ueditor.ready(function(){
+
+     });
+</script>
+<script type="text/javascript">
+  function ResultCtrl($scope,$http){
+    $scope.result={"title":"{{ result.title }}"};
+
+
+    $scope.postResult=function(){
+      //$('#textdescription').val(ueditor.getContent());
+      if(ueditor.getContent().length<16){
+        alert("内容不得少于16个字符");
+        return false;
+      }
+      if(ueditor.getContent().length>65518){
+        alert("内容不得多于65518个字符");
+        return false;
+      }
+
+
+      next = "/riji/ben/support/";
+
+      $("#postButton.btn-primary img").show();
+      $("#postButton").prop("disabled", true);
+      $.post("", $("#resultForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              //location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $("#postButton").prop("disabled", false);
+              $("#postButton.btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+    $scope.checkLeft = function(){
+        $http.get("/wenzhang/jinrifawen/",{params:{"author_name":"{{result.author}}"}}).success(function(data){
+                    $scope.result.toppage_leftcount= data.left_count;
+
+                }
+            );
+
+    }
+    $scope.has_banned=function(){
+        $http.post("/wenzhang/has_banned/", {"text":ueditor.getContent()}).success(
+        function(data){
+            if(data.result){
+              alert("文字中包含敏感词:"+data.message);
+              return true;
+            }else{
+              return false
+
+            }
+        });
+    }
+    $scope.syncResult=function(){
+      //$('#textdescription').val(ueditor.getContent());
+      if(ueditor.getContent().length<16){
+        alert("内容不得少于16个字符");
+        return false;
+      }
+      if(ueditor.getContent().length>65518){
+        alert("内容不得多于65518个字符");
+        return false;
+      }
+      if($(":checked[name='portaltags']").length>1){
+         alert("最多只能选1个标签");
+         return false;
+
+      }
+      next = "/wenzhang/authorsearch/";
+      //console.log($('#textdescription').val());
+      $("#syncButton.btn-primary img").show();
+      $("#syncButton").prop("disabled", true);
+      $.post("/wenzhang/tongbu/", $("#resultForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("同步成功!");
+              location = next;
+            }else{
+              alert("同步失败："+data.message);
+              $("#syncButton").prop("disabled", false);
+              $("#syncButton.btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+
+  }
+</script>
+{% endblock %}

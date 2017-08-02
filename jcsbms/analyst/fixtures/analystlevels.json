@@ -1,0 +1,1 @@
+[{"model": "analyst.analystlevel", "pk": 1, "fields": {"level_number": 0, "name": "\u666e\u901a"}}, {"model": "analyst.analystlevel", "pk": 2, "fields": {"level_number": 1, "name": "1\u7ea7"}}, {"model": "analyst.analystlevel", "pk": 3, "fields": {"level_number": 2, "name": "2\u7ea7"}}, {"model": "analyst.analystlevel", "pk": 4, "fields": {"level_number": 3, "name": "3\u7ea7"}}]

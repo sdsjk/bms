@@ -1,0 +1,221 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+
+
+
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<div class="row">
+<div class="col-md-12">
+<form class="form-inline" method="get" action="#">
+<fieldset>
+    <div class="form-group">
+        <label for="cup_name">赛事:</label>
+        <input type="text" class="form-control" name="cup_name" placeholder="输入赛事名称" value="{{ cup_name }}"/>
+    </div>
+    <div class="form-group team">
+        <label for="team">球队:</label>
+        <input type="text" class="form-control" name="team" placeholder="输入球队名称" value="{{ team }}"/>
+    </div>
+    <div class="form-group">
+        <label>时间:</label>
+        <input type="text" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+    </div>
+    <div class="form-group">
+        <label for="exampleInputEmail2">至</label>
+        <input type="text" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    </div>
+    <div class="form-group">
+        <label for="lotterytypeSelect">球类:</label>
+        <select class="form-control" name="sport_type">
+            <option value="-1">全部</option>
+            <option value="0" {% if sport_type == 0 %}selected{% endif %}>足球</option>
+            <option value="1" {% if sport_type == 1 %}selected{% endif %}>篮球</option>
+            <option value="2" {% if sport_type == 2 %}selected{% endif %}>网球</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>彩种:</label>
+        {% alllotterytype_selector actual_type.id %}
+    </div>
+    <div class="form-group">
+        <label for="lotterytypeSelect">赛事范围:</label>
+        <select class="form-control" name="lottery_scope">
+            <option value="1" {% if lottery_scope == 1 %}selected{% endif %}>未过期有效赛事</option>
+            <option value="0" {% if lottery_scope == 0 %}selected{% endif %}>全部</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="lotterytypeSelect">语言:</label>
+        <select class="form-control" name="project">
+            <option value="-1">全部</option>
+            <option value="2" {% if project == 2 %}selected{% endif %}>英语</option>
+            <option value="1" {% if project == 1 %}selected{% endif %}>国语</option>
+            <option value="0" {% if project == 0 %}selected{% endif %}>粤语</option>
+        </select>
+    </div>
+
+  <button type="submit" class="btn btn-default">搜索</button>
+
+
+
+</fieldset>
+</form>
+    <br>
+    <a href="/caishi/edit_match" class="btn btn-primary">新增赛事</a>
+    <h3 class="text-primary">当前彩种:{{ type.name }}</h3>
+{% if type.name == "竞技彩" %}
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>赛事</th>
+    <th>主队VS客队</th>
+    <th>球类</th>
+    <th>开赛时间</th>
+    <th>彩种</th>
+    <th>语言</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+
+{% for match in pager.object_list %}
+<tr>
+<td>{{ match.id}}</td>
+<th>{{ match.cup_name }}</th>
+<td>{{ match.home_team }}vs{{ match.away_team }}</td>
+<td>{% for k,v in cup_map_dict.items %}{% if k == match.cup_name %}{{ v }}{% endif %}{% endfor %}</td>
+<td>{{ match.start_time|date:"Y-m-d H:i"}}</td>
+<td>{%  for lt in match.lotterytypes.all %} {{ lt.name }} {% endfor %}</td>
+<td>
+    {% if match.project == 'M' %}
+        国语
+    {% elif match.project == 'C' %}
+        粤语
+    {% elif match.project == 'E' %}
+        英语
+    {% endif %}
+</td>
+<td>
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">操作<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+            <li><a href="/caishi/edit_match/?id={{ match.id }}">修改</a></li>
+            <li><a href="javascript:void(0)" onclick="delMatch('{{ match.id }}')">删除</a></li>
+        </ul>
+    </div>
+</td>
+
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+{% if type.name == "数字彩" %}
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>彩季</th>
+    <th>时间</th>
+
+</tr>
+</thead>
+<tbody>
+
+{% for lottery in pager.object_list %}
+<tr>
+<td>{{ lottery.lottery_entry.id }}</td>
+<td>{{ lottery.season }}</td>
+<td>{{ lottery.end_time|date:"Y-m-d H:i"}}</td>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+{% tablesorter %}
+<script type="text/javascript">
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var toggleTeamnameInput = function(lottery_type_parent) {
+        if (lottery_type_parent == 3) {
+            $("div[class*='team']").css("display", "").find("input").prop("disabled", false);
+        }else{
+            $("div[class*='team']").css("display", "none").find("input").prop("disabled", true);
+        }
+    };
+    var delMatch = function(match_id) {
+        $.post('/caishi/del_match/', {match_id: match_id, "csrfmiddlewaretoken":csrfmiddlewaretoken}, function(data){
+            alert(data.message);
+            if (data.result) {
+                location.reload();
+            }
+        });
+    };
+    $(document).ready(function(){
+
+        $( "#from_date" ).datepicker({
+            defaultDate: "+0d",
+            dateFormat: "yy-mm-dd",
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#to_date" ).datepicker( "option", "minDate", selectedDate );
+            }
+        });
+        $( "#to_date" ).datepicker({
+            defaultDate: "+1d",
+            dateFormat: "yy-mm-dd",
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#from_date" ).datepicker( "option", "maxDate", selectedDate );
+            }
+        });
+
+        $("select[name='lottery_type']").change(function(e){
+            var parent_id = $(this).find(":selected").attr("parent_id") || $(this).val();
+            toggleTeamnameInput(parseInt(parent_id));
+
+        });
+
+        //修改日期的功能
+        $("tbody td:nth-child(4)").dblclick(function (e) {
+            if ($(this).find("input").length > 0) {
+                return;
+            }
+            var timeStr = $(this).html();
+            $(this).html("<input type='text' value='" + timeStr + "'/><button class='btn btn-primary btn-sm' style='margin-left:3px'>保存</button>");
+            $(this).find("button").click(function(e){
+                var entryId = $(this).parent().parent().find("td:first-child").html();
+                var timeStr = $(this).parent().find("input").val();
+                var elem = $(this);
+                $.post("/caishi/modify_match_time/", {"entry_id":entryId, "start_time":timeStr, "csrfmiddlewaretoken":csrfmiddlewaretoken}, function(data){
+                    if(data.result) {
+                        $(elem).parent().html(timeStr);
+                        alert(data.message);
+                    }else{
+                        alert(data.message);
+                    }
+                });
+            });
+        });
+        toggleTeamnameInput({{ type.id }});
+    });
+</script>
+{% endblock %}

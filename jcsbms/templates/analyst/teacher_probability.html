@@ -1,0 +1,225 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{%load app_tags %}
+
+
+{% block postPageCss %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-12">
+<form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+  <input  name="action" value="search" type="hidden" />
+    <div class="form-group">
+        <label>创建时间:</label>
+        <input type="text" style="width: 305px" class="form-control" value="" id="daterangepicker" />
+        <input type="hidden" value="{{ from_datestr }}" name="from_date" id="from_date">
+        <input type="hidden" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    </div>
+    <div class="form-group" >
+         <label>讲师昵称或ID:</label>
+        <input type="search" class="form-control" name="author_word" value="{{ author_word }}" id="author_word" placeholder="讲师昵称或ID">
+    </div>
+     <div class="form-group" >
+         <label>联赛:</label>
+        <input type="search" class="form-control" name="lian_sai" value="{{ lian_sai }}" id="lian_sai" placeholder="联赛名称">
+    </div>
+<br/><br/>
+    <div class="form-group" >
+         <label>查询天数:</label>
+        <select class="form-control" name="days" id="days">
+            <option value="0" {% if days == "0" %}selected{% endif %}>无</option>
+            <option value="1" {% if days == "1" %}selected{% endif %}>1天</option>
+            <option value="2" {% if days == "2" %}selected{% endif %}>2天</option>
+            <option value="3" {% if days == "3" %}selected{% endif %}>3天</option>
+            <option value="4" {% if days == "4" %}selected{% endif %}>4天</option>
+            <option value="5" {% if days == "5" %}selected{% endif %}>5天</option>
+            <option value="6" {% if days == "6" %}selected{% endif %}>6天</option>
+            <option value="7" {% if days == "7" %}selected{% endif %}>7天</option>
+            <option value="15" {% if days == "15" %}selected{% endif %}>15天</option>
+            <option value="20" {% if days == "20" %}selected{% endif %}>20天</option>
+            <option value="30" {% if days == "30" %}selected{% endif %}>30天</option>
+        </select>
+    </div>
+    <div class="form-group" >
+      <label>收费否:</label>
+       <select class="form-control" name="chargeable" id="chargeable">
+          <option value="-1">全部</option>
+          <option value="0" {% if chargeable == "0" %}selected{% endif %}>免费</option>
+          <option value="1" {% if chargeable == "1" %}selected{% endif %}>收费</option>
+      </select>
+    </div>
+    <div class="form-group" >
+        <label>玩法:</label>
+        <select class="form-control" name="portal_tag" id="portal_tag">
+
+            <option value="-1">不含滚球</option>
+            <option value="-2">全部</option>
+            <option value="0">亚盘</option>
+            <option value="1">竞彩</option>
+            <option value="2">滚球</option>
+            <option value="3">比分</option>
+            <option value="4">大小球</option>
+            <option value="5">大小分</option>
+            <option value="6">篮彩</option>
+            <option value="7">竞足串</option>
+            <option value="8">竞篮串</option>
+            <option value="9">福彩3D</option>
+{#            {% for tag in portalTags  %}#}
+{##}
+{#            <option value="{{ tag.id }}">{{ tag.name }}</option>#}
+{#            {% endfor %}#}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>语言:</label>
+        <select class="form-control" name="language" id="language">
+            <option value="-1">全部</option>
+            <option {% if language == "0" %}selected{% endif %} value="0">国语</option>
+            <option {% if language == "1" %}selected{% endif %} value="1">粤语</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>渠道:</label>
+        <select class="form-control" name="analyst_channel" id="analyst_channel">
+            <option value="-1">全部</option>
+                {% for analystchannel in analystchannels %}
+                     <option {% if analyst_channel_id == analystchannel.id%}selected{% endif %} value="{{ analystchannel.id }}">{{ analystchannel.channel_name }}</option>
+                {% endfor %}
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">搜索</button>
+</fieldset>
+</form>
+<br>
+<div class="row">
+<div class="col-md-12">
+    <a class="btn btn-primary" target="_blank" href="{% export_link %}">导出数据</a>
+</div></div>
+</br>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>老师ID</th>
+    <th>老师昵称</th>
+    <th>总料数</th>
+    <th>红</th>
+    <th>黑</th>
+    <th>走水</th>
+    <th>胜率(%)</th>
+</tr>
+</thead>
+<tbody>
+
+{% for unionInfo in unionInfos%}
+
+    <tr>
+        <td>{{ unionInfo.0 }}</td>
+        <td><a href="/wenzhang/black_red_search/?nickname={{unionInfo.1}}&from_date={{ from_datestr }}&to_date={{ to_datestr }}&article_language={{language}}">{{unionInfo.1}}</a></td>
+        <td>{{unionInfo.2}}</td>
+        <td>{{unionInfo.3}}</td>
+        <td>{{unionInfo.4 }}</td>
+        <td>{{unionInfo.5 }}</td>
+        <td>{{unionInfo.6}}</td>
+        <tr></tr>
+
+{% endfor %}
+
+
+</tbody>
+</table>
+{% csrf_token %}
+{#{% pager %}#}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+<link rel="stylesheet" href="/static/css/easydialog.css" type="text/css">
+<script src="/static/js/easydialog.js"></script>
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<script type="text/javascript">
+$("#portal_tag").val({{ portal_tag }});
+$("#refund_red").val({{ refund_red }});
+
+var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+//修改置顶排序
+$("#top_articles_table tbody td:nth-child(7)").dblclick(function (e) {
+    if ($(this).find("input").length > 0) {
+        return;
+    }
+    var orderStr = $(this).html();
+    $(this).html("<input type='text' style='width:50px' value='" + orderStr + "'/><button class='btn btn-primary btn-sm' style='margin-left:3px'>保存</button>");
+    $(this).find("button").click(function(e){
+        var articleId = $(this).parent().parent().find("td:first-child a").html();
+        var orderStr = $(this).parent().find("input").val();
+        var elem = $(this);
+        $.post("/wenzhang/top_order/", {"article_id":articleId, "order":orderStr, "csrfmiddlewaretoken":csrfmiddlewaretoken}, function(data){
+            if(data.result) {
+                $(elem).parent().html(orderStr);
+                alert(data.message);
+                location.reload();
+            }else{
+                alert(data.message);
+            }
+        });
+    });
+});
+$('#daterangepicker').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 1,
+            timePicker24Hour: true,
+            linkedCalendars: false,
+            locale:{
+                format: 'YYYY/MM/DD HH:mm',
+                applyLabel:"确定",
+                cancelLabel:"取消",
+                daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+                ],
+                monthNames: [
+                    "一月",
+                    "二月",
+                    "三月",
+                    "四月",
+                    "五月",
+                    "六月",
+                    "七月",
+                    "八月",
+                    "九月",
+                    "十月",
+                    "十一月",
+                    "十二月"
+                ],
+            }
+        },
+        function(start, end) {
+            var datefmt = "YYYY-MM-DD HH:mm";
+            console.log(start.format(datefmt), end.format(datefmt));
+            $("#from_date").val(start.format(datefmt + ":00"));
+            $("#to_date").val(end.format(datefmt + ":59"));
+            $("#days").val("0")
+        }
+);
+
+$('#daterangepicker').data("daterangepicker").setStartDate("{{from_datestr }}");
+$('#daterangepicker').data("daterangepicker").setEndDate("{{to_datestr }}");
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "col2base.html" %}
+
+{%load jauth_tags %}
+
+{% block sidebar %}
+{% user_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="jumbotron">
+
+    <img src="/static/{{ user.userinfo.avatar|default_if_none:"img/default_avatar.png" }}">
+
+
+<br>
+用户名:{{ user.username }}
+</div>
+
+{% endblock %}
+
+{% block postPageJS %}
+<script type="text/javascript">
+
+</script>
+{% endblock %}

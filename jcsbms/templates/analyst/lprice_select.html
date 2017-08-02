@@ -1,0 +1,5 @@
+<select class="form-control"  id="selectLivePriceplan" name="livepriceplan">
+    {% for object in liveprices %}
+    <option value="{{ object.id }}">{{ object.cost }}/{{object.period_name}}</option>
+    {% endfor %}
+</select>

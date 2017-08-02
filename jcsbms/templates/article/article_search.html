@@ -1,0 +1,31 @@
+{% extends "col2base.html" %}
+{% load jcs_tags %}
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {%   staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<form class="form-horizontal" method="get" action="#">
+<fieldset>
+    <legend>内容库文章搜索</legend>
+    <br><br><br>
+  <input  name="action" value="search" type="hidden" />
+  <div class="form-group">
+
+    <div class="col-sm-offset-3 col-sm-6 input-group">
+
+      <input type="search" class="form-control" name="author_word" id="author_word" placeholder="请输入作者网络昵称">
+      <span class="input-group-btn">
+        <button class="btn btn-primary" type="submit">搜索</button>
+      </span>
+    </div>
+
+  </div>
+</fieldset>
+</form>
+
+{% endblock %}

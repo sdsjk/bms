@@ -1,0 +1,114 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+{% block postPageCss %}
+    <link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+    <form class="form-inline" method="GET" action="." enctype="multipart/form-data" >
+        <fieldset>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="from_date">日期:</label>
+                <input type="text" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+            </div>
+            <div class="form-group">
+                <label for="to_date">至</label>
+                <input type="text" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+            </div>
+            <div class="form-group">
+                <label for="nick_name">昵称:</label>
+                <input type="text" class="form-control" value="{{ nick_name }}" name="nick_name" id="nick_name" >
+            </div>
+            <div class="form-group">
+                <label for="cheat_type">作弊类型:</label>
+                <select class="form-control" name="cheat_type" id="cheat_type">
+                    <option value="">全部</option>
+                    <option value="马甲" memo="6个月内 一个相同的设备注册了三个不同的用户">马甲</option>
+                    <option value="骗现马甲" memo="一年内 一个相同的设备被三个不同的用户登录使用，且精彩币收入支出都>0且没有充值">骗现马甲</option>
+                    <option value="假粉专家" memo="一年内 1个邀请码在同一个设备上，注册3个以上用户">假粉专家</option>
+                    <option value="骗现专家a" memo="注册时间小于6个月的专家，精彩币（赠送）收入占总收入>0.5">骗现专家a</option>
+                    <option value="骗现专家b" memo="注册时间大于6个月的专家，精彩币（赠送）收入占总收入>0.3">骗现专家b</option>
+                    <option value="恶意注册a" memo="10分钟内 手机号前6位相同">恶意注册a</option>
+                    <option vblue="恶意注册b" memo="1天内 手机号前7位相同">恶意注册b</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="deviceno">设备号:</label>
+                <input type="text" class="form-control" value="{{ deviceno }}" name="deviceno" id="deviceno" >
+            </div>
+
+            <div class="form-group">
+
+                <button class="btn btn-primary" type="submit" id="up_btn">搜索</button>
+            </div>
+
+        </fieldset>
+    </form>
+    <div style="margin-top: 3px; display: none" class="alert alert-info" role="alert" id="cheat_type_memo"></div>
+    <a class="btn btn-primary" target="_blank" href="{% export_link %}">导出数据</a>
+    <br>
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+            <tr>
+                {% for column in columns %}
+                <th>{{ column.memo }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in datas %}
+                <tr>
+                {% for column in columns %}
+                    <td>{{ row|dictvbyk:column.name }}</td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% pager %}
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+{% tablesorter %}
+<script type="text/javascript">
+//绑定时间后立即触发一次事件完成初始页面显示
+$("#cheat_type").val("{{ cheat_type }}").change(function (e) {
+    var v = $(this).val();
+    var el = $("#cheat_type_memo");
+    if (v == "") {
+        $(el).css("display", "none");
+    } else {
+        $(el).html($(this).find(":selected").attr("memo"));
+        $(el).css("display", "");
+    }
+}).change();
+
+$(function(){
+    $( "#from_date" ).datepicker({
+        defaultDate: "+0d",
+        dateFormat: "yy-mm-dd",
+        numberOfMonths: 1,
+        onClose: function( selectedDate ) {
+            $( "#to_date" ).datepicker( "option", "minDate", selectedDate );
+        }
+    });
+    $( "#to_date" ).datepicker({
+        defaultDate: "+1d",
+        dateFormat: "yy-mm-dd",
+        numberOfMonths: 1,
+        onClose: function( selectedDate ) {
+            $( "#from_date" ).datepicker( "option", "maxDate", selectedDate );
+        }
+    });
+
+});
+</script>
+{% endblock %}

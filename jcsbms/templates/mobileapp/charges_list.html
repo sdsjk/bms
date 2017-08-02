@@ -1,0 +1,159 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+{% load i18n %}
+{%load jauth_tags %}
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline" method="get" action="/app/chongzhi/">
+  <fieldset>
+     <div class="form-group">
+        <input type="search" class="form-control" value="{{ nick_name }}" name="nick_name" id="nick_name" placeholder="NickName  UserID">
+  </div>
+   <div class="form-group">
+      <label>{% trans '创建时间' %}:</label>
+      <input type="text" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+  </div>
+  <div class="form-group">
+      <label for="exampleInputEmail2">{% trans '至' %}</label>
+      <input type="text" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+  </div>
+  <div class="form-group">
+      <label>{% trans '来源类型' %}:</label>
+
+      <select name="type" class="form-control">
+          <option value="0">{% trans '全部' %}</option>
+          <option value="1" {% if type == 1 %}selected{% endif %}>{% trans '微信' %}</option>
+          <option value="2" {% if type == 2 %}selected{% endif %}>{% trans '支付宝' %}</option>
+          <option value="3" {% if type == 3 %}selected{% endif %}>{% trans '头像上传' %}</option>
+          <option value="4" {% if type == 4 %}selected{% endif %}>{% trans '每日打开' %}</option>
+          <option value="5" {% if type == 5 %}selected{% endif %}>{% trans '分享' %}</option>
+          <option value="6" {% if type == 6 %}selected{% endif %}>{% trans '注册' %}</option>
+          <option value="7" {% if type == 7 %}selected{% endif %}>{% trans '退钱' %}</option>
+          <option value="8" {% if type == 8 %}selected{% endif %}>{% trans '系统赠送' %}</option>
+          <option value="9" {% if type == 9 %}selected{% endif %}>{% trans '红单退款' %}</option>
+
+      </select>
+  </div>
+
+      <div class="form-group">
+          <label>{% trans '是否成功' %}:</label>
+
+          <select name="status" class="form-control">
+              <option value="-1">{% trans '全部' %}</option>
+              <option value="1" {% if status == 1 %}selected{% endif %}>{% trans '成功' %}</option>
+              <option value="0" {% if status == 0 %}selected{% endif %}>{% trans '失败' %}</option>
+          </select>
+      </div>
+        <div class="form-group">
+            <label>{% trans '语言' %}：</label>
+            <select class="form-control" name="language" id="language">
+                <option value="-1">{% trans '全部' %}</option>
+                <option value="1" {% if language == 1 %}selected{% endif %}>{% trans '国语' %}</option>
+                <option value="0" {% if language == 0 %}selected{% endif %}>{% trans '粤语' %}</option>
+
+            </select>
+        </div>
+      <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+  </fieldset>
+</form>
+<br>
+
+<a class="btn btn-primary" target="_blank" href="{% export_link %}">{% trans '导出数据' %}</a>
+{% if request.GET.for_export %}
+    <strong style="color:red">{% trans '你可能没有导出权限,所以导出行为无效.' %}</strong>
+{% endif %}
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>{% trans '用户ID' %}</th>
+    <th>{% trans '价格' %}</th>
+    <th>{% trans '金币数' %}</th>
+    <th>{% trans '银行' %}</th>
+    <th>{% trans '来源类型' %}</th>
+    <th>{% trans '语言' %}</th>
+    <th>{% trans '状态' %}</th>
+    <th>{% trans '创建时间' %}</th>
+    <th>{% trans '备注理由' %}</th>
+    <th>{% trans '操作' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for object in pager.object_list %}
+<tr>
+<td>{{ object.id }}</td>
+<td>{{ object.user.userid }}</td>
+<td>{{ object.money|centesimal }}</td>
+<td>{{ object.gold }}</td>
+<td>{{ object.bank }}</td>
+<td>{{ object.type|charge_type }}</td>
+<td>{% if object.order.appid == 'C' %}粤语{% else %}国语{% endif %}</td>
+<td>{{ object.status|yesno:"成功,失败,失败"}}</td>
+<td>{{ object.cdate|date }}</td>
+<td>{{ object.comment }}</td>
+<td>
+    {% if object.type == 1 and object.status == 0 %}
+        <button class="btn btn-primary" type="submit" id="btn_submit" onclick="check_order({{ object.id }},'charge')">查询订单状态</button>
+    {% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+{% tablesorter %}
+<script>
+$(function(){
+    $( "#from_date" ).datepicker({
+      defaultDate: "+0d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to_date" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    $( "#to_date" ).datepicker({
+      defaultDate: "+1d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from_date" ).datepicker( "option", "maxDate", selectedDate );
+      }
+    });
+
+});
+function check_order(id,page) {
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "page":page,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+        $.post("/app/wx_checkorder/", data,
+            function(data) {
+                var i = '';
+                if(data['trade_state'] == 'NOTPAY' || data['trade_state'] == null)
+                {
+                    i = '失败';
+                }
+                alert('订单状态：'+i+'\n订单号：'+data['orderid']);
+            }, "json");
+    }
+</script>
+{% endblock %}

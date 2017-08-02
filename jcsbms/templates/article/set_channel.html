@@ -1,0 +1,67 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="renXuanForm" name="renXuanForm">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>设置文章渠道关联</legend>
+    <input type="hidden" name="article_id" value="{{ article_id }}">
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">渠道:</label>
+       <div class="col-sm-10">
+           <div class="input-group">
+               {% for channel in channels %}
+                   <input type="checkbox" name="channel_id" id="c_{{ channel.id }}" value="{{ channel.id }}">{{ channel.name }}<br/>
+               {% endfor %}
+            </div>
+
+       </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" onclick="postRenXuan()" class="btn btn-primary btn-lg"  >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        {% for ac in article_channels %}
+            $('#c_{{ ac.channel_id }}').prop('checked', true);
+        {% endfor %}
+    });
+
+    function postRenXuan(){
+      var next = "/wenzhang/sousuo/";
+      $(".btn-primary img").show();
+      $.post("", $("#renXuanForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("保存成功!");
+              location = next;
+            }else{
+              alert("保存失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    }
+
+</script>
+{% endblock %}

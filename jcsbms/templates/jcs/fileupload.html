@@ -1,0 +1,40 @@
+<link href="http://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+<form action="" id="uploadform" class="form-inline" method="post" enctype="multipart/form-data" style="background-color: #f5f5f5;">
+ {% csrf_token %}
+ <input name="action" value="upload" type="hidden" />
+<div class="form-group well" style="padding-top:6px;">
+<div class="col-xs-5">
+ <input  type="file" name="file"  style="width: 220px;" id="file" accept="image/gif,image/jpeg,image/png"  onchange="submit_file()" />
+</div>
+ <div class="col-xs-7" style="font-family: 微软雅黑, Verdana,宋体, Arial, Tahoma, sans-serif, serif;">
+ 只能上传jpg\gif\png文件,且小于2M
+ </div>
+ <br>
+ <br>
+</div>
+</form>
+<script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+<script>
+  function valid_check(){
+    if($("#file").val()==""){
+      alert("请选择上传文件");
+      return false;
+    }
+    return true;
+  }
+  function submit_file(){
+    if(!valid_check()){
+      return false;
+    }
+    $("submitbtn").text("上传中...");
+    $("submitbtn").prop("disabled",true);
+    $("#uploadform").submit();
+    
+  }
+  
+</script>
+
+
+    
+

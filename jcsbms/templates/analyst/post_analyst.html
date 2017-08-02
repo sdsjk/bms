@@ -1,0 +1,269 @@
+{% extends "col2base.html" %}
+{% load analyst_tags %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load ask_tags %}
+
+
+
+{% block sidebar %}
+{% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="jumbotron">
+<form class="form-horizontal" id="analystForm" name="analystForm" ng-controller="analystCtrl">
+
+{% csrf_token %}
+  {% if analyst %}
+
+      <input type="hidden" name="id" value="{{ analyst.id }}">
+  {% endif %}
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">老师登录名</label>
+    <div class=" col-sm-6">
+      <input type="text" name="username" ng-disabled="is_update" ng-minlength="6" ng-maxlength="30" ng-model="analyst.username" required="required" class="form-control" id="inputUsername" placeholder="输入用户登录名称">
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.username.$error.required">需要填写</span>
+        <span class="text-danger" ng-show="analystForm.username.$error.minlength">至少6个字符</span>
+        <span class="text-danger" ng-show="analystForm.username.$error.maxlength">至多30个字符</span>
+      </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">老师昵称</label>
+    <div class=" col-sm-6">
+      <input type="text"
+             {% if analyst %}
+                 readonly="readonly"
+              {% endif %}
+             ng-model="analyst.nick_name" required="required" ng-minlength="2" ng-maxlength="16" class="form-control" id="inputNickname" name="nick_name" placeholder="输入老师昵称">
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.nick_name.$error.required">需要填写</span>
+        <span class="text-danger" ng-show="analystForm.nick_name.$error.minlength">至少2个字符</span>
+        <span class="text-danger" ng-show="analystForm.nick_name.$error.maxlength">至多16个字符</span>
+      </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">简介</label>
+    <div class=" col-sm-6">
+      <textarea rows="3" class="form-control" ng-model="analyst.brief"  required="required" ng-minlength="6" ng-maxlength="160"  id="inputBrief" name="brief" >{{ analyst.brief }}</textarea>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-info" ng-hide="analystForm.brief.$error.maxlength">
+            {% verbatim %}{{ analyst.brief.length }}{% endverbatim %}个字数
+        </span>
+        <span class="text-danger" ng-show="analystForm.brief.$error.required">需要填写</span>
+        <span class="text-danger" ng-show="analystForm.brief.$error.minlength">至少6个字符</span>
+        <span class="text-danger" ng-show="analystForm.brief.$error.maxlength">至多160个字符</span>
+      </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">邮箱</label>
+    <div class=" col-sm-6">
+      <input type="email" rows="5" ng-disabled="is_update"
+             {% if not  analyst %}
+             required="required"
+             ng-minlength="3"
+             {% endif %}
+              ng-maxlength="100" ng-model="analyst.email" class="form-control"  id="inputEmail" name="email" placeholder="输入老师邮箱"/>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.email.$error.required">需要填写</span>
+        <span class="text-danger" ng-show="analystForm.email.$error.email">不符合email地址格式</span>
+        <span class="text-danger" ng-show="analystForm.email.$error.minlength">至少3个字符</span>
+        <span class="text-danger" ng-show="analystForm.email.$error.maxlength">至多100个字符</span>
+
+      </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">合作类型</label>
+    <div class=" col-sm-6">
+      <select class="form-control" ng-model="analyst.analyst_type" ng-change="typeSelected()" name="analyst_type" id="selectType"
+              {% if change_analyst_type == False %}disabled{% endif %}>
+          <option value="0" >收费</option>
+          <option value="1" >免费</option>
+          <option value="2" >代发</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">分析彩种</label>
+    <div class=" col-sm-6">
+     {% analyst_lotterytype %}
+    </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">文章收费等级</label>
+    <div class=" col-sm-6">
+     {% analyst_level %}
+    </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">问答收费等级</label>
+    <div class=" col-sm-6">
+     {% answer_level %}
+    </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">包时价格组:</label>
+    <div class=" col-sm-6">
+     {% analyst_group %}
+    </div>
+  </div>
+  <div class="form-group">
+      <label class="col-sm-2 control-label">渠道:</label>
+      <div class="col-sm-6">
+          <select name="channel" id="channel" class="form-control">
+                <option value="-1">请选择</option>
+            {% for channel in channels %}
+                <option value="{{ channel.id }}">{{ channel.channel_name }}</option>
+            {% endfor %}
+          </select>
+
+      </div>
+  </div>
+    <div class="form-group" ng-if="analyst.analyst_type == 0" ng-diabled="analyst.analyst_type != 0">
+        <label class="col-sm-2 control-label">定价范围:</label>
+        <div class="col-sm-2">
+            <input type="number" class="form-control" name="low_price" value="{{ price_range.low_price }}" min="0" placeholder="最低价"/>
+        </div>
+        <label class="col-sm-1 control-label" style="width: 3px">-</label>
+        <div class="col-sm-2">
+            <input type="number" class="form-control" name="high_price" value="{{ price_range.high_price }}" min="0" placeholder="最高价"/>
+        </div>
+        <label class=" control-label">精彩币</label>
+    </div>
+    <div class="form-group" ng-if="analyst.analyst_type == 0" ng-diabled="analyst.analyst_type != 0">
+        <label class="col-sm-2 control-label">默认价格:</label>
+        <div class="col-sm-2">
+            <input type="number" class="form-control" name="default_price" value="{{ price_range.default_price }}" placeholder="默认价格"/>
+        </div>
+        <div class="col-sm-3">
+            <span class="help-block" style="display: inline-block;">文章发布页默认定价</span>
+        </div>
+    </div>
+  <div class="form-group">
+      <label class="col-sm-2 control-label">国语收费文章上首页数量:</label>
+      <div class="col-sm-2">
+            <input type="number" class="form-control" name="m_top_page_charge_max" value="{{ configMap.m_top_page_charge_max|default:2 }}" min="0" />
+      </div>
+      <label class="col-sm-2 control-label">国语免费文章上首页数量:</label>
+      <div class="col-sm-2">
+            <input type="number" class="form-control" name="m_top_page_free_max" value="{{ configMap.m_top_page_free_max|default:4 }}" min="0" />
+      </div>
+  </div>
+  <div class="form-group">
+      <label class="col-sm-2 control-label">粤语收费文章上首页数量:</label>
+      <div class="col-sm-2">
+            <input type="number" class="form-control" name="c_top_page_charge_max" value="{{ configMap.c_top_page_charge_max|default:2 }}" min="0" />
+      </div>
+      <label class="col-sm-2 control-label">粤语免费文章上首页数量:</label>
+      <div class="col-sm-2">
+            <input type="number" class="form-control" name="c_top_page_free_max" value="{{ configMap.c_top_page_free_max|default:4 }}" min="0" />
+      </div>
+  </div>
+  <div class="form-group">
+      <label class="col-sm-2 control-label">国语版权限:</label>
+      <div class="col-sm-2">
+            <input type="checkbox" class="form-control" name="is_mandarin_perm" id="is_mandarin_perm" ng-model="analyst.is_mandarin_perm"/>
+      </div>
+      <label class="col-sm-2 control-label">粤语版权限:</label>
+      <div class="col-sm-2">
+            <input type="checkbox" class="form-control" name="is_cantonese_perm" id="is_cantonese_perm" ng-model="analyst.is_cantonese_perm"/>
+      </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-6 col-sm-offset-2">
+      <button type="button" ng-disabled="analystForm.$invalid" ng-click="post_analyst()" class="btn btn-primary btn-block">提交修改</button>
+    </div>
+  </div>
+</form>
+</div>
+
+{% endblock %}
+
+{% block postPageJS %}
+<script type="text/javascript">
+function analystCtrl($scope){
+    $scope.typeSelected=function(){
+
+       i = $scope.analyst.analyst_type;
+       console.log(i)
+       $('#selectAnalystlevel>option').show();
+       if(i=="0"){
+           $('#selectAnalystlevel>option[value="1"]').hide();
+           $('#selectAnalystlevel>option[value="2"]').prop("selected",true);
+
+       }else{
+           $('#selectAnalystlevel>option[value!="1"]').hide();
+           $('#selectAnalystlevel>option[value="1"]').prop("selected",true);
+
+       }
+   };
+    {% if analyst %}
+      $scope.analyst = {"username":"{{ analyst.user.username }}",
+                        "nick_name":"{{ analyst.nick_name }}",
+                        "email":"{{ analyst.user.email }}",
+                        "analyst_type":"{{ analyst.analyst_type }}",
+                        "brief":$("#inputBrief").val(),
+                        "is_mandarin_perm": {{ analyst.is_mandarin_perm|yesno:"true,false,false" }},
+                        "is_cantonese_perm": {{ analyst.is_cantonese_perm|yesno:"true,false,false" }}
+                       };
+      $("#selectAnalystlevel").val("{{ analyst.level.id }}");
+      $("#selectLotterytype").val("{{ analyst.lottery_type.id }}");
+      $("#selectAnalystgroup").val("{{ analyst.analyst_group.id }}");
+      $("#channel").val("{{ channel_id }}");
+        {% if analyst.answer_level %}
+            $("#selectAnswerlevel").val("{{ analyst.answer_level.id }}")
+        {% endif %}
+      $scope.is_update = true;
+
+    {% else %}
+      $scope.analyst = {"analyst_type":"0"};
+      $scope.is_update = false;
+      $scope.typeSelected();
+    {% endif %}
+
+
+
+
+   $scope.post_analyst=function(){
+       $("#selectType").attr("disabled",false);
+      next = "/laoshi/sousuo/";
+
+       var low_price = $.trim( $("input[name='low_price']").val() );
+       var high_price = $.trim( $("input[name='high_price']").val() );
+       var default_price = $.trim( $("input[name='default_price']").val() );
+       if (low_price == '' && high_price != '' || low_price != '' && high_price == '') {
+           alert('最低价和最高价必须一起设置!');
+           return;
+       }
+       low_price = parseInt(low_price);
+       high_price = parseInt(high_price);
+       if (low_price == '' && high_price == '') {
+           default_price = '';
+       }
+       default_price = default_price == '' ? low_price : parseInt(default_price);
+       if (default_price < low_price || default_price > high_price) {
+           alert('默认定价必须大于等于最低价,小于等于最高价!');
+           return;
+       }
+       if (low_price >= high_price) {
+           alert('最低价赶上最高价了!搞笑吗?');
+           return;
+       }
+      $.post("/laoshi/bianji/", $("#analystForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+   };
+}
+</script>
+{% endblock %}

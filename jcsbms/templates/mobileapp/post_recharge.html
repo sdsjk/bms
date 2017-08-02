@@ -1,0 +1,86 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="rechargeForm" name="rechargeForm" ng-controller="rechargeCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>充值方案</legend>
+    {% if recharge %}
+        <input type="hidden" name="id" value="{{ recharge.id }}">
+    {% endif %}
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">金币数量:</label>
+       <div class="col-sm-3">
+           <input type="number" min="1" max="10000" ng-model="recharge.gold_number" class="form-control" id="gold_number" name="gold_number" placeholder="金币数量">
+       </div>
+       <div class="col-sm-3">
+       </div>
+    </div>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">金币包价格:</label>
+       <div class="col-sm-3">
+           <div class="input-group">
+              <div class="input-group-addon">￥</div>
+              <input type="number" min="1" max="10000" class="form-control" ng-model="recharge.cost" id="cost" name="cost" placeholder="金币包价格">
+              <div class="input-group-addon">.00</div>
+            </div>
+       </div>
+       <div class="col-sm-3">
+
+       </div>
+    </div>
+
+
+
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postRecharge()" class="btn btn-primary btn-lg" ng-disabled="rechargeForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+
+
+<script type="text/javascript">
+  function rechargeCtrl($scope){
+    {% if recharge %}
+        $scope.recharge={
+            gold_number:{{ recharge.gold_number }},
+            cost:{{ recharge.cost }}
+        };
+    {% endif %}
+
+    $scope.postRecharge=function(){
+      next = "/app/chongzhiplan/";
+      $(".btn-primary img").show();
+      $.post("", $("#rechargeForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+
+
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+
+
+{% block sidebar %}
+{% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h3>{{ appuser.userid }}关注的老师</h3>
+<table class="table table-bordered table-striped table-hover sortable">
+<thead>
+<tr><th>ID</th>
+    <th>头像</th>
+    <th>真实姓名</th>
+    <th>昵称</th>
+    <th>收费类型</th>
+    <th>彩种</th>
+    <th>老师等级</th>
+    <th>状态</th>
+
+</tr>
+</thead>
+<tbody>
+{% for analyst in pager.object_list %}
+    <tr>
+    <td>{{ analyst.id }}</td>
+    <td><img width="32px" src="/static/{{analyst.user.userinfo.avatar|default_if_none:"img/default_avatar.png" }}"></td>
+    <td>{{ analyst.real_name|default_if_none:"未设置" }}</td>
+    <td>{{ analyst.nick_name }}</td>
+    <td>{{ analyst.analyst_type }}</td>
+    <td>{{ analyst.lottery_type.name }}</td>
+    <td>{{ analyst.level.name }}</td>
+    <td>{{ analyst.user.is_active|yesno:"可登录,不可登录,非法" }}</td>
+
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+{% pager %}
+{% csrf_token %}
+{% endblock %}
+
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+<script type="text/javascript">
+function deactivity(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/laoshi/wuxiao/", data,
+        function(data){
+            if(data.result){
+              alert("成功无效!");
+              location.reload()
+            }else{
+              alert("无效失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+{% load i18n %}
+{%load jauth_tags %}
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/static/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.css">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline" method="get" action="/app/xianjingliushui/">
+  <fieldset>
+
+  <div class="form-group">
+      <label for="exampleInputEmail2">{% trans '截止时间' %}:</label>
+      <input type="text" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+  </div>
+
+      <div class="form-group">
+          <label for="phonenumber">{% trans '手机号或ID' %}:</label>
+          <input type="text" class="form-control" value="{{ phonenumber }}" name="phonenumber" id="phonenumber" >
+      </div>
+
+      <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+  </fieldset>
+</form>
+<br>
+<!--div class="text-danger">该时间段内合计:精彩币</div-->
+<a class="btn btn-primary" target="_blank" href="{% export_link %}">{% trans '导出数据' %}</a>
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+
+<tr><th>ID</th>
+    <th>{% trans '用户ID' %}</th>
+    <th>{% trans '剩余金额' %}</th>
+    <th>{% trans '操作时间' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for object in pager.object_list %}
+<tr>
+<td>{{ object.id }}</td>
+<td>{{ object.user_id }}</td>
+<td>{{ object.leftmoney|centesimal }}</td>
+<td>{{ object.cdate|notzdate }}</td>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/static/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.js"></script>
+{% tablesorter %}
+<script>
+$(function() {
+    $.datepicker.setDefaults( $.datepicker.regional[ "zh-CN" ] );
+    $( "#to_date" ).datetimepicker({
+
+      dayNamesMin: [ "日","一", "二", "三", "四", "五", "六"],
+      monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+      defaultDate: "+0d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      timeOnlyTitle: 'ddd',
+	  timeText: '时间',
+	  hourText: '小时',
+	  minuteText: '分',
+	  secondText: '秒',
+	  currentText: '当前时间',
+	  closeText: '选择',
+      showOptions: { direction: "down" },
+      onSelect: function( selectedDate ) {
+        console.log("1111");
+      }
+    });
+  });
+
+</script>
+{% endblock %}

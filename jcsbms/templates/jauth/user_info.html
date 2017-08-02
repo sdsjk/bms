@@ -1,0 +1,56 @@
+{%if user.is_authenticated %}
+<ul class="nav navbar-nav navbar-right">
+   <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.username}}
+        {%if letters%}
+      ({{letters|length}})
+    {%endif%}
+
+    <span class="caret"></span></a>
+    <ul class="dropdown-menu" role="menu">
+      <!--li><a href="/yonghu/">用户信息</a></li-->
+            {%if letters%}
+      <li><a href="/site/wodexiaoxi/">未读消息
+      {%if letters%}
+      ({{letters|length}})
+      {%endif%}</a>
+      </li>
+      {%endif%}
+        <li><a href="/yonghu/mima/">修改密码</a></li>
+
+      <!--li><a href="/yonghu/wodetouxiang/">修改头像</a></li-->
+      <li><a href="#" onclick="login_out()">退出登录</a></li>
+
+    </ul>
+  </li>
+  <li><a href="#"></a></li>
+</ul>
+
+{%else%}
+<ul class="nav pull-right">
+  <li>
+    <button  class="btn btn-default" onclick="location='/yonghu/denglu/'"> 登录</button>
+  </li>
+</ul>
+
+
+{%endif%}
+
+<script>
+
+    function login_out(){
+        $.ajax({
+            url: "{{ login_out_url }}",
+            type: 'get',
+            dataType: 'jsonp',
+            success: function(data){
+                window.console && console.log(data);
+            },
+            error:function(XMLResponse){alert(XMLResponse.responseText)}
+        });
+
+
+        window.location.href="/yonghu/tuichu/";
+
+    }
+</script>

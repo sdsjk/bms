@@ -1,0 +1,155 @@
+{%load lottery_tags %}
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport"/>
+<title>欧洲杯</title>
+<link href="/static/img/euro/styles.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<div class="bgbox"><img src="/static/img/euro/mailbg.jpg">
+<div class="cnbox">
+	<div class="toplin">
+    	<span class="before"><a href="/caishi/ouguan/?action=prev&date={{ day|date:"Y-m-d"  }}&inapp={{ request.GET.inapp }}"><i><img src="/static/img/euro/befor.png"></i>前一天</a></span>
+        <span class="time">{{ day|date:"Y-m-d" }}{{ day|date:"l" }}</span>
+        <span class="before after"><a href="/caishi/ouguan/?action=next&date={{ day|date:"Y-m-d"  }}&inapp={{ request.GET.inapp }}">后一天<i><img src="/static/img/euro/ater.png"></i></a></span>
+    </div>
+    <div class="conlist">
+        {% for match  in fixtures %}
+        <a href="/caishi/saishi/?id={{match.id  }}&inapp={{ request.GET.inapp }}"">
+    	<div class="list"><img src="/static/img/euro/conbg.png">
+        	<div class="conbox">
+            	<div class="txt">点击看<span class="f14">0</span>名专家预测</div>
+                <dl>
+        			<dt><img src="{{ match.home_team|team_logo }}"></dt>
+            		<dd>{{ match.home_team }}</dd>
+       			</dl>
+                <div class="time_num">
+                	<span class="time">{{ match.start_time|date:"H:i" }}开赛</span>
+                    <span class="time num">?  :  ?</span>
+                </div>
+                <dl>
+        			<dt><img src="{{ match.away_team|team_logo }}"></dt>
+            		<dd>{{ match.away_team }}</dd>
+       			</dl>
+            </div>
+        </div>
+        </a>
+        {% endfor %}
+
+        <!--div class="list"><img src="/static/img/euro/conbg.png">
+        	<div class="conbox">
+            	<div class="txt">点击看<span class="f14">125</span>名专家预测</div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+                <div class="time_num">
+                	<span class="time">12:30开赛</span>
+                    <span class="time num">04  :  05</span>
+                </div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+            </div>
+        </div>
+        <div class="list"><img src="/static/img/euro/conbg.png">
+        	<div class="conbox">
+            	<div class="txt">点击看<span class="f14">125</span>名专家预测</div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+                <div class="time_num">
+                	<span class="time">12:30开赛</span>
+                    <span class="time num">04  :  05</span>
+                </div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+            </div>
+        </div>
+        <div class="list"><img src="/static/img/euro/conbg.png">
+        	<div class="conbox">
+            	<div class="txt">点击看<span class="f14">125</span>名专家预测</div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+                <div class="time_num">
+                	<span class="time">12:30开赛</span>
+                    <span class="time num">04  :  05</span>
+                </div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+            </div>
+        </div>
+        <div class="list"><img src="/static/img/euro/conbg.png">
+        	<div class="conbox">
+            	<div class="txt">点击看<span class="f14">125</span>名专家预测</div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+                <div class="time_num">
+                	<span class="time">12:30开赛</span>
+                    <span class="time num">04  :  05</span>
+                </div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+            </div>
+        </div>
+        <div class="list"><img src="/static/img/euro/conbg.png">
+        	<div class="conbox">
+            	<div class="txt">点击看<span class="f14">125</span>名专家预测</div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+                <div class="time_num">
+                	<span class="time">12:30开赛</span>
+                    <span class="time num">04  :  05</span>
+                </div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+            </div>
+        </div>
+        <div class="list"><img src="/static/img/euro/conbg.png">
+        	<div class="conbox">
+            	<div class="txt">点击看<span class="f14">125</span>名专家预测</div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+                <div class="time_num">
+                	<span class="time">12:30开赛</span>
+                    <span class="time num">04  :  05</span>
+                </div>
+                <dl>
+        			<dt><img src="/static/img/euro/img.jpg"></dt>
+            		<dd>德国</dd>
+       			</dl>
+            </div>
+        </div-->
+    </div>
+</div>
+{%  if  request.GET.inapp != "on"%}
+<div class="foot"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.xycentury.jcs.jcsand"><img src="/static/img/euro/foot.jpg"></a><span class="close"><a href="#">关闭</a></span></div>
+{% endif %}
+</div>
+
+<script>
+
+</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+{% extends "col2base.html" %}
+{% load analyst_tags %}
+{%load jcs_tags %}
+{%load app_tags %}
+{% block postPageCss %}
+    {% load i18n %}
+{%load jauth_tags %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+{% endblock %}
+{% block sidebar %}
+    {% analyst_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+  <input  name="action" value="search" type="hidden" />
+    <div class="form-group">
+        <label>{% trans '赠送时间' %}:</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />
+    </div>
+        <input type="hidden" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+        <input type="hidden" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+</fieldset>
+</form>
+<br>
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr>
+    <th>ID</th>
+    <th>{% trans '用户ID' %}</th>
+    <th>{% trans '老师' %}</th>
+    <th>{% trans '文章ID' %}</th>
+    <th>{% trans '时间' %}</th>
+    <th>{% trans '语言' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for order in pager.object_list %}
+<tr>
+<td>{{ order.id }}</td>
+<td>{{ order.userid }}</td>
+<td>{{ order.author.nick_name }}</td>
+<td><a target="_blank"  href="{{ SERVER_HOST }}/wenzhang/fenxiang/?key={{ order.product.sign_key }}">{% trans '文章' %}:{{ order.product.id }}</a></td>
+<td>{{ order.createtime|date:"Y-m-d H:i:s" }}</td>
+<td>
+    {% if order.appid == 'M' %}
+        国语
+    {% elif order.appid == 'C' %}
+        粤语
+    {% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+
+{% tablesorter %}
+<script type="text/javascript">
+
+$('#daterangepicker').daterangepicker({
+          timePicker: true,
+          timePickerIncrement: 1,
+          timePicker24Hour: true,
+          linkedCalendars: false,
+          locale:{
+              format: 'YYYY/MM/DD HH:mm',
+              applyLabel:"确定",
+              cancelLabel:"取消",
+              daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+              ],
+              monthNames: [
+                  "一月",
+                  "二月",
+                  "三月",
+                  "四月",
+                  "五月",
+                  "六月",
+                  "七月",
+                  "八月",
+                  "九月",
+                  "十月",
+                  "十一月",
+                  "十二月"
+              ],
+          }
+      },
+      function(start, end) {
+          var datefmt = "YYYY-MM-DD HH:mm";
+          console.log(start.format(datefmt), end.format(datefmt));
+          $("#from_date").val(start.format(datefmt + ":00"));
+          $("#to_date").val(end.format(datefmt + ":59"));
+
+      }
+  );
+  $('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+  $('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+
+</script>
+{% endblock %}

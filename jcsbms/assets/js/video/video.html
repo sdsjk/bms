@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="zh-cn" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="jcsApp">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport"/>
+<title>欧洲杯</title>
+<link href="images/styles.css" rel="stylesheet" type="text/css">
+<!--script src="js/jquery-1.7.2.min.js"></script-->
+
+</head>
+
+<body class="mbox" ng-controller="videoCtrl">
+	<div class="topvid"><img src="images/top_logo.png"></div>
+
+    <div class="video"><img src="images/img2.jpg"></div>
+    <div class="vit_box">
+    	<div class="select_box">
+                              <span class="select_txt"><input name="" type="text" value="黄健翔解说"></span>
+                              <a class="selet_open"><b><img src="images/sebg.png"></b></a>
+                              <div class="posR">
+                                <div class="option">
+                                  <a>黄健翔解说</a>
+                                  <a>黄健翔解说</a>
+                                  <a>黄健翔解说</a>
+                                </div>
+                              </div>
+                            </div>
+        <div class="tit">
+        	<span class="txt">罗马尼亚VS阿尔巴尼亚</span>
+            <span class="time">开播时间：2016-06-06  03:00</span>
+        </div>
+        <div class="share"><a href="javascript:void(0)" ng-click="sharePage()"><i><img src="images/shre.png"></i>分享</a></div>
+    </div>
+    <div class="ipt_box">
+    	<span class="ipnt"><input name="message" ng-model="message" type="text" placeholder="发送弹幕"></span>
+        <span class="btn"><a href="javascript:void(0)" ng-click="sendMessage()">发 送</a></span>
+    </div>
+    <div class="tablist tabt">
+    	<div class="hd">
+        	<ul class="jTabs">
+            	<li><a href="javascript:">本场专家解盘</a></li>
+                <li><a href="javascript:">评论</a></li>
+            </ul>
+        </div>
+        <div class="bd">
+        	<div class="jCons">
+            <div class="listbd">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd>带彩大哥</dd>
+                </dl>
+                <div class="txtcon" data-id="1" ng-click="openArticle($event)">无论是从联赛，还是双方交战往绩来看，这都是一场旗鼓相当的比赛。不过即使如此...</div>
+                <div class="time">
+                	<span class="t_xt">05-28 23:00</span>
+                    <span class="btn"><a href="javascript:void(0)" data-id="15" ng-click="leaveMessage($event)">给他留言</a></span>
+                </div>
+            </div>
+            <!--div class="listbd">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd>带彩大哥</dd>
+                </dl>
+                <div class="txtcon">无论是从联赛，还是双方交战往绩来看，这都是一场旗鼓相当的比赛。不过即使如此...</div>
+                <div class="time">
+                	<span class="t_xt">05-28 23:00</span>
+                    <span class="btn"><a href="#">给他留言</a></span>
+                </div>
+            </div>
+            <div class="listbd">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd>带彩大哥</dd>
+                </dl>
+                <div class="txtcon">无论是从联赛，还是双方交战往绩来看，这都是一场旗鼓相当的比赛。不过即使如此...</div>
+                <div class="time">
+                	<span class="t_xt">05-28 23:00</span>
+                    <span class="btn"><a href="#">给他留言</a></span>
+                </div>
+            </div-->
+            </div>
+            <div class="jCons">
+             <div class="comment" ng-repeat="message in messages">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd><span class="title">{{ message.user }}</span><span class="time">{{ message.ctime }}</span></dd>
+                    <dd>{{ message.content }}</dd>
+                </dl>
+            </div>
+            <!--div class="comment">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd><span class="title">7890</span><span class="time">05-28 23:00</span></dd>
+                    <dd>精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩！</dd>
+                </dl>
+            </div>
+            <div class="comment">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd><span class="title">7890</span><span class="time">05-28 23:00</span></dd>
+                    <dd>精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩！</dd>
+                </dl>
+            </div>
+            <div class="comment">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd><span class="title">7890</span><span class="time">05-28 23:00</span></dd>
+                    <dd>精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩！</dd>
+                </dl>
+            </div-->
+            </div>
+        </div>
+    </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/javascript" src="js/tabs.js"></script>
+    <script src="//cdn.bootcss.com/angular.js/1.2.29/angular.min.js"></script>
+    <!--script src="//cdn.bootcss.com/socket.io/1.4.6/socket.io.min.js"></script-->
+    <script src="http://cdn.ronghub.com/RongIMLib-2.1.2.min.js"></script>
+
+    <script>
+$(".select_box").click(function (event) {
+      event.stopPropagation();
+      $(this).find(".option").toggle();
+      $(this).css('z-index', 2).parent().siblings().find(".option").hide();
+    });
+    $(document).click(function (event) {
+      var eo = $(event.target);
+      if ($(".select_box").is(":visible")
+        && eo.attr("class") != "option" && !eo.parent(".option").length) {
+        $('.option').hide();
+        $(".select_box").css('z-index', 1);
+      }
+    });
+</script>
+<script>
+	new Tabs($('.tabt'),{
+        tabs : '.jTabs li',
+        views : '.jCons',
+        nextBtn : '.slider-btnnext',
+        prevBtn : '.slider-btnprev',
+        evtType : 'mouseover',
+        onTabChange : $.noop,
+        tabClass : 'now',
+        showIndex : 0,
+        loop : false,
+        autoPlay : false
+        //interval : 2*1000
+    })
+</script>
+<script>
+/**
+ * Created by dengel on 15/11/11.
+ */
+
+
+var jcsApp = angular.module('jcsApp',[]);
+jcsApp.config(function($httpProvider) {
+});
+function videoCtrl($scope){
+
+  $scope.messages=[]
+  // 设置连接监听状态 （ status 标识当前连接状态）
+  // 连接状态监听器
+
+  RongIMLib.RongIMClient.init("cpj2xarljzaun");
+  // 设置连接监听状态 （ status 标识当前连接状态 ）
+  // 连接状态监听器
+  RongIMClient.setConnectionStatusListener({
+    onChanged: function (status) {
+        switch (status) {
+            case RongIMLib.ConnectionStatus.CONNECTED:
+                console.log('链接成功');
+                break;
+            case RongIMLib.ConnectionStatus.CONNECTING:
+                console.log('正在链接');
+                break;
+            case RongIMLib.ConnectionStatus.DISCONNECTED:
+                console.log('断开连接');
+                break;
+            case RongIMLib.ConnectionStatus.KICKED_OFFLINE_BY_OTHER_CLIENT:
+                console.log('其他设备登陆');
+                break;
+              case RongIMLib.ConnectionStatus.DOMAIN_INCORRECT:
+                console.log('域名不正确');
+                break;
+            case RongIMLib.ConnectionStatus.NETWORK_UNAVAILABLE:
+              console.log('网络不可用');
+              break;
+            }
+    }});
+
+     // 消息监听器
+     RongIMClient.setOnReceiveMessageListener({
+        // 接收到的消息
+        onReceived: function (message) {
+            console.log(message);
+            // 判断消息类型
+            switch(message.messageType){
+                case RongIMClient.MessageType.TextMessage:
+                     message.content.content=JSON.parse(message.content.content);
+                     $scope.messages.push(message.content.content);
+                     $scope.$apply()
+                     console.log(message.content);
+                    // message.content.content => 消息内容
+                    break;
+                case RongIMClient.MessageType.VoiceMessage:
+                    // 对声音进行预加载
+                    // message.content.content 格式为 AMR 格式的 base64 码
+                    break;
+                case RongIMClient.MessageType.ImageMessage:
+                   // message.content.content => 图片缩略图 base64。
+                   // message.content.imageUri => 原图 URL。
+                   break;
+                case RongIMClient.MessageType.DiscussionNotificationMessage:
+                   // message.content.extension => 讨论组中的人员。
+                   break;
+                case RongIMClient.MessageType.LocationMessage:
+                   // message.content.latiude => 纬度。
+                   // message.content.longitude => 经度。
+                   // message.content.content => 位置图片 base64。
+                   break;
+                case RongIMClient.MessageType.RichContentMessage:
+                   // message.content.content => 文本消息内容。
+                   // message.content.imageUri => 图片 base64。
+                   // message.content.url => 原图 URL。
+                   break;
+                case RongIMClient.MessageType.InformationNotificationMessage:
+                    // do something...
+                   break;
+                case RongIMClient.MessageType.ContactNotificationMessage:
+                    // do something...
+                   break;
+                case RongIMClient.MessageType.ProfileNotificationMessage:
+                    // do something...
+                   break;
+                case RongIMClient.MessageType.CommandNotificationMessage:
+                    // do something...
+                   break;
+                case RongIMClient.MessageType.CommandMessage:
+                    // do something...
+                   break;
+                case RongIMClient.MessageType.UnknownMessage:
+                    // do something...
+                   break;
+                default:
+                    // do something...
+            }
+        }
+    });
+    token="1+/JiuG6VZB0wFtCq66y3oh//z6Re9E2AXFm/8uKDY0nu66j/kQ2GdD5RcV/7bwwMDbyWEjkMa0="
+    RongIMClient.connect(token, {
+        onSuccess: function(userId) {
+
+          console.log("Login successfully." + userId);
+            var chatRoomId = "beijing"; // 聊天室 Id。
+          var count = 10;// 拉取最近聊天最多 20 条。
+          RongIMClient.getInstance().joinChatRoom(chatRoomId, count, {
+                onSuccess: function() {
+                    console.log("join successed")
+                    var msg = new RongIMLib.TextMessage({content:"hello RongCloud!",extra:"附加信息"});
+                     var conversationtype = RongIMLib.ConversationType.CHATROOM; // 私聊,其他会话选择相应的消息类型即可。
+                     var targetId = "beijing"; // 目标 Id
+                    /*
+                     RongIMClient.getInstance().sendMessage(conversationtype, targetId, msg, {
+                                    onSuccess: function (message) {
+                                        //message 为发送的消息对象并且包含服务器返回的消息唯一Id和发送消息时间戳
+                                        console.log("Send successfully");
+                                    },
+                                    onError: function (errorCode,message) {
+                                        var info = '';
+                                        switch (errorCode) {
+                                            case RongIMLib.ErrorCode.TIMEOUT:
+                                                info = '超时';
+                                                break;
+                                            case RongIMLib.ErrorCode.UNKNOWN_ERROR:
+                                                info = '未知错误';
+                                                break;
+                                            case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
+                                                info = '在黑名单中，无法向对方发送消息';
+                                                break;
+                                            case RongIMLib.ErrorCode.NOT_IN_DISCUSSION:
+                                                info = '不在讨论组中';
+                                                break;
+                                            case RongIMLib.ErrorCode.NOT_IN_GROUP:
+                                                info = '不在群组中';
+                                                break;
+                                            case RongIMLib.ErrorCode.NOT_IN_CHATROOM:
+                                                info = '不在聊天室中';
+                                                break;
+                                            default :
+                                                info = x;
+                                                break;
+                                        }
+                                        console.log('发送失败:' + info);
+                                    }
+                                }
+                            );*/
+
+
+
+                },
+                onError: function(error) {
+                // 加入聊天室失败
+                }
+            });
+        },
+        onTokenIncorrect: function() {
+          console.log('token无效');
+        },
+        onError:function(errorCode){
+              var info = '';
+              switch (errorCode) {
+                case RongIMLib.ErrorCode.TIMEOUT:
+                  info = '超时';
+                  break;
+                case RongIMLib.ErrorCode.UNKNOWN_ERROR:
+                  info = '未知错误';
+                  break;
+                case RongIMLib.ErrorCode.UNACCEPTABLE_PaROTOCOL_VERSION:
+                  info = '不可接受的协议版本';
+                  break;
+                case RongIMLib.ErrorCode.IDENTIFIER_REJECTED:
+                  info = 'appkey不正确';
+                  break;
+                case RongIMLib.ErrorCode.SERVER_UNAVAILABLE:
+                  info = '服务器不可用';
+                  break;
+              }
+              console.log(errorCode);
+            }
+      });
+
+
+    // 定义消息类型,文字消息使用 RongIMLib.TextMessage
+
+
+
+
+  $scope.sendMessage=function(){
+      app.sendMessage($scope.message)
+  }
+  $scope.leaveMessage=function(event) {
+      var target = $(event.target);
+      console.log(target.attr("data-id"));
+      app.leaveMessage(target.attr("data-id"));
+  }
+  $scope.sharePage=function () {
+      app.sharePage();
+  }
+  $scope.openArticle=function(event) {
+      var target = $(event.target);
+      console.log(target.attr("data-id"));
+      app.openArticle(target.attr("data-id"));
+  }
+}
+
+
+
+
+
+</script>
+</body>
+</html>

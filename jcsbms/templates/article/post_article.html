@@ -1,0 +1,335 @@
+{% extends "col2base.html" %}
+{%load ueditor_tags %}
+{%load lottery_tags %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+{% block postPageCss %}
+<style>
+
+
+</style>
+{% endblock %}
+{% block sidebar %}
+{% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<iframe src="http://123.57.59.76:9743/Article/GetTranslatedArticle?articleId=136494&callback=http://www.baidu.com" width="100%" height="1000px" frameborder=0  marginheight=0 marginwidth=0 scrolling=auto></iframe>
+
+{#<h2></h2>#}
+{#<form class="form-horizontal" action="" method="post" id="articleForm" name="articleForm" ng-controller="articleCtrl">#}
+{#{% csrf_token %}#}
+{# {% if article %}#}
+{# <input name="id" type="hidden" value="{{ article.id }}">#}
+{# {% endif %}#}
+{#<fieldset>#}
+{#    <legend>内容库文章编辑</legend>#}
+{#    {% if not article %}#}
+{#    <div class="form-group">#}
+{#        <div class="col-sm-8">#}
+{#          <div class="checkbox">#}
+{#            <label>#}
+{#              <input id="is_toppage" name="is_toppage" type="checkbox" ng-model="article.is_toppage" />上首页#}
+{#            </label>#}
+{#          </div>#}
+{#        </div>#}
+{#      </div>#}
+{#    {% endif %}#}
+{#    <div class="form-group">#}
+{#       <div class="col-sm-6">#}
+{#         <input type="text" id="inputTitle"  class="form-control "  name="title" ng-model="article.title" placeholder="请输入文章标题"  required  ng-minlength="2" ng-maxlength="100">#}
+{#       </div>#}
+{#       <div class="col-sm-6">#}
+{#        <span class="text-danger" ng-show="resultForm.title.$error.required">需要填写</span>#}
+{#        <span class="text-danger" ng-show="resultForm.title.$error.minlength">至少2个字符</span>#}
+{#        <span class="text-danger" ng-show="resultForm.title.$error.maxlength">至多100个字符</span>#}
+{#        </div>#}
+{##}
+{#    </div>#}
+{#    {% if article.chargeable or article.type %}#}
+{#    <div class="form-group">#}
+{#        <div class="col-sm-8">#}
+{#            <textarea class="form-control" required  ng-minlength="6" ng-maxlength="300" ng-model="article.digest" id="digestText" name="digest" rows="4" placeholder="收费文章摘要可免费观看,请勿泄露任何关键收费内容">{{ article.digest_origin }}</textarea>#}
+{#        </div>#}
+{#        <br>#}
+{#        <div>#}
+{#            <div class="col-sm-6">#}
+{#                <span class="text-info">{% verbatim %}{{ article.digest.length }}{% endverbatim %}</span>#}
+{#                <span class="text-danger" ng-show="articleForm.digest.$error.required">需要填写</span>#}
+{#                <span class="text-danger" ng-show="articleForm.digest.$error.minlength">至少6个字符</span>#}
+{#                <span class="text-danger" ng-show="articleForm.digest.$error.maxlength">至多300个字符</span>#}
+{#            </div>#}
+{##}
+{#        </div>#}
+{##}
+{#    </div>#}
+{#        <div style="font-weight: bold">#}
+{##}
+{#            <span class="text-danger">请把比赛时间改为泰国时间（北京时间基础上减1小时，如果是0点的比赛记得改日期）</span>#}
+{#            <br>#}
+{#            <br>#}
+{#        </div>#}
+{#    {% endif %}#}
+{#    <div class="form-group form-inline">#}
+{#       <div class="col-sm-2 ">#}
+{#         <input type="text" id="inputNickname"  class="form-control" ng-keypress="keyPress($event)"  name="nick_name" ng-model="nick_name" placeholder="输入昵称搜索"   >#}
+{##}
+{#       </div>#}
+{#       <div class="col-sm-1">#}
+{#           <button class="btn btn-default" ng-click="getAnalysts()">搜索</button>#}
+{#         </div>#}
+{#       <div class="col-sm-3">#}
+{##}
+{#           <select id="authorSelect" name="author_id" class="form-control" ng-model="article.author"#}
+{#           ng-options="analyst.nick_name  for analyst in analysts track by analyst.id">#}
+{#           <option value="">输入昵称搜索后再选择</option>#}
+{#           </select>#}
+{#       </div>#}
+{#    </div>#}
+{#    <div>#}
+{#        讲师：<input type="text" value={{ article.author.nick_name }} name="teacher" id="teacher">#}
+{#         讲师：#}
+{#        <select class="form-control" name="teacher" id="teacher" style="width: 40%">#}
+{#            <option value="0">未选择</option>#}
+{#            {% for analyst in analysts %}#}
+{#            <option value="{{ analyst.nick_name }}">{{ analyst.nick_name }}</option>#}
+{#            {% endfor %}#}
+{#        </select>#}
+{#    </div>#}
+{#    <div>#}
+{#     {% if article %}#}
+{#    <br>发布时间:{{article.date_added|date:"Y-m-d H:i" }}#}
+{#    <br>最迟修改时间:{{article.end_time|date:"Y-m-d H:i" }}#}
+{#      {% endif %}#}
+{#    {% if article.taskid %}#}
+{#    <br><a target="_blank" href="/wenzhang/yuantie/?taskid={{ article.taskid }}">跳转原文页面</a>#}
+{#      {% endif %}#}
+{##}
+{#    </div>#}
+{#<div class="form-group">#}
+{#        <div class="col-sm-8">#}
+{#        <script id="textdescription" name="text"   style="display: inline-block;" type="text/plain">#}
+{#                  {{article.text_origin|check_banned_words|safe}}</script>#}
+{#        </div>#}
+{#        <div class="col-sm-4">#}
+{#          {% lottery_select %}#}
+{#        </div>#}
+{#</div>#}
+{#    <div class="form-group input-lg" style="height: auto">#}
+{#        <div class="col-sm-2">#}
+{#            相关标签:#}
+{#        </div>#}
+{#        <div>#}
+{#            {% portal_checks %}#}
+{#        </div>#}
+{#    </div>#}
+{#    <div style="font-weight: bold">#}
+{##}
+{#            <span class="text-danger">请把比赛时间改为泰国时间（北京时间基础上减1小时，如果是0点的比赛记得改日期）</span>#}
+{#            <br>#}
+{#            <br>#}
+{#        </div>#}
+{#    <div class="form-group">#}
+{#        <div class="col-sm-3">#}
+{#         <button type="button" ng-click="postArticle()" class="btn btn-primary btn-lg" ng-disabled="articleForm.$invalid" >允许翻译 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>#}
+{##}
+{#        </div>#}
+{##}
+{#         <div class="col-sm-3">#}
+{#         <button type="button" ng-click="delArticle('{{ article.id }}')" class="btn btn-primary btn-lg">删除文章 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>#}
+{#        </div>#}
+{#        </div>#}
+{##}
+{#</fieldset>#}
+{#</form>#}
+{#    <form class="form-horizontal" action="" method="post" id="DelArticleForm" name="DelArticleForm">#}
+{#    {% csrf_token %}#}
+{#    <input name="id" type="hidden" id="article_id" value="" />#}
+{#    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">#}
+{#        <div class="modal-dialog">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <h4 class="modal-title" id="myModalLabel">请选择原因</h4>#}
+{#                </div>#}
+{#                <div class="modal-body">#}
+{#                        <label><input name="reason" type="checkbox" value="商务申请删除" />商务申请删除</label><br />#}
+{#                        <label><input name="reason" type="checkbox" value="战绩无图" />战绩无图</label><br />#}
+{#                        <label><input name="reason" type="checkbox" value="图片使用不当" />图片使用不当</label><br />#}
+{#                        <label><input name="reason" type="checkbox" value="战绩虚假宣传" />战绩虚假宣传</label><br />#}
+{#                        <label><input name="reason" type="checkbox" value="用词不雅" />用词不雅</label><br />#}
+{#                        <label><input name="reason" type="checkbox" value="侮辱骂人身攻击" />侮辱骂人身攻击</label><br />#}
+{#                        <label><input name="reason" type="checkbox" value="分析推荐不明确" />分析推荐不明确</label><br />#}
+{#                        <label><input name="other" type="checkbox" value="其他" onclick="on_hide()" id="other"/>其他</label>#}
+{#                        <label><input name="reason_custom" type = "text" id="hide" style="display:none" placeholder="必须填写自定义原因"/></label>#}
+{#                </div>#}
+{#                <div class="modal-footer">#}
+{#                    <button type="button" class="btn btn-default"  onclick="funclose()" >关闭</button>#}
+{#                    <button type="button" class="btn btn-primary" onclick="make_sure()">确定</button>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</form>#}
+{% endblock %}
+
+
+{% block postPageJS %}
+{% ueditor %}
+<script type="text/javascript">
+    var ueditor = UE.getEditor('textdescription',{'initialFrameWidth': 620, 'initialFrameHeight': 600, 'serverUrl': '/ueditor/controller/?imagePathFormat=&filePathFormat='});
+     ueditor.ready(function(){
+
+     });
+</script>
+<script type="text/javascript">
+
+var  funclose=function (){
+      $('#myModal').modal('hide');
+      $("#myModal").find("input[name='reason']").each(function (e,v) {
+          $(this).attr("checked",false);
+      });
+      $("#other").attr("checked",false);
+      $("#hide").val('');
+      $("#hide").hide();
+    }
+
+
+var  make_sure=function(){
+        var flag=false;
+         $("#myModal").find("input[name='reason']:checked").each(function () {
+           flag=true;
+            return ;
+      });
+         if($("#other").is(':checked')){
+               if($("#hide").val()==''){
+                   flag=false;
+               }else{
+                   flag=true;
+               }
+         }
+
+        if(!flag){
+            return alert('请选择原因');
+        }
+
+      var next = "/wenzhang/shanchu/";
+      $(".btn-primary img").show();
+      $.post("/wenzhang/shanchu/", $("#DelArticleForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("保存成功!");
+              funclose();
+              window.location='/wenzhang/sousuo/';
+            }else{
+              alert("保存失败："+data.message);
+              $(".btn-primary img").hide();
+
+            }
+        }, "json");
+    }
+
+
+
+
+
+
+
+  function articleCtrl($scope,$http){
+    $scope.analysts=[]
+    $scope.article={}
+    {% if article %}
+        $scope.article={"title":"{{ article.title }}",
+                        "digest":$("#digestText").val()};
+        $scope.analysts=[{
+            "id":"{{ article.author.id}}",
+            "nick_name":"{{article.author.nick_name}}"
+        }]
+        $scope.article.author=$scope.analysts[0]
+        {% for portal in article.portal_tags.all %}
+
+            $(":checkbox[value='{{ portal.id }}']").prop( "checked", true );
+        {% endfor %}
+
+
+    {% endif %}
+    /*
+    $scope.getAnalysts=function(){
+        console.log($scope.article.author)
+        if((!$scope.nick_name) || $scope.nick_name.length<2){
+            alert("请至少输入两个关键字");
+            return false;
+        }
+        $http.get('/laoshi/author_sousuo/', {params: {"nick_name":$scope.nick_name}}).
+        success(function(data) {
+            console.log(data);
+            $scope.analysts=data;
+
+        });
+    }
+    */
+
+    $scope.delArticle= function (id){
+    $('#myModal').modal('show');
+    $("#article_id").val(id);
+    }
+
+    $scope.keyPress=function(event){
+      if(event.keyCode==13 ||event.keyCode==32){
+
+        $scope.getAnalysts()
+      }
+    };
+    $scope.postArticle=function(){
+      //$('#textdescription').val(ueditor.getContent());
+      if(ueditor.getContent().length<16){
+        alert("内容不得少于16个字符");
+        return false;
+      }
+      if(ueditor.getContent().length>65518){
+        alert("内容不得多于65518个字符");
+        return false;
+      }
+      if($('#teacher').val()==0){
+         alert("请选择作者");
+         return false;
+      }
+      /*
+      if($("#authorSelect").val().length==0){
+         alert("请选择作者");
+         return false;
+      }
+
+      if($(":checked[name='portaltags']").length>1){
+         alert("最多只能选1个标签");
+         return false;
+
+      }
+      */
+      next = "/wenzhang/sousuo/";
+      //console.log($('#textdescription').val());
+      $(".btn-primary img").show();
+      $.post("", $("#articleForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+    };
+    $scope.has_banned=function(){
+        $http.post("/wenzhang/has_banned/", {"text":ueditor.getContent()}).success(
+        function(data){
+            if(data.result){
+              alert("文字中包含敏感词:"+data.message);
+              return true;
+            }else{
+              return false;
+            }
+        });
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/static/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.css">
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="#" method="post" id="prizeForm" name="prizeForm" ng-controller="prizeCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>编辑竞猜</legend>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+               <label  class="col-sm-2 control-label">总数:</label>
+               <div class="col-sm-10">
+                   <div class="input-group">
+                      <div class="input-group-addon">￥</div>
+                      <input type="number" min="1" max="100000" required="required" ng-model="prize.reward" class="form-control" id="reward" name="reward" placeholder="奖金总额">
+                      <div class="input-group-addon">.00元</div>
+                    </div>
+
+               </div>
+
+            </div>
+            <div class="form-group">
+               <label  class="col-sm-2 control-label">描述:</label>
+               <div class="col-sm-10">
+                <textarea name="description" required="required" ng-model="prize.description" class="form-control" id="description"> {{ prize.description }}</textarea>
+
+               </div>
+
+            </div>
+            <div class="form-group">
+               <label  class="col-sm-2 control-label">时间段:</label>
+               <div class="col-sm-5">
+                <input type="text" class="form-control" required="required" ng-model="prize.start_time" value="{{ prize.start_time|date:"Y-m-d H:i:s" }}" name="start_time" id="start_time" >
+               </div>
+               <div class="col-sm-5">
+                <input type="text" class="form-control" required="required" ng-model="prize.end_time"  value="{{ prize.end_time|date:"Y-m-d H:i:s" }}" name="end_time" id="end_time" >
+               </div>
+            </div>
+
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+
+               <div class="col-sm-12">
+                   {% prizematch_select %}
+
+               </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postPrize()" class="btn btn-primary btn-lg" ng-disabled="prizeForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/static/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.js"></script>
+<script type="text/javascript">
+$(function() {
+    $.datepicker.setDefaults( $.datepicker.regional[ "zh-CN" ] );
+    $( "#start_time" ).datetimepicker({
+
+      dayNamesMin: [ "日","一", "二", "三", "四", "五", "六"],
+      monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+      defaultDate: "+0d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      timeOnlyTitle: 'ddd',
+	  timeText: '时间',
+	  hourText: '小时',
+	  minuteText: '分',
+	  secondText: '秒',
+	  currentText: '当前时间',
+	  closeText: '选择',
+      showOptions: { direction: "down" },
+      onSelect: function( selectedDate ) {
+        $( "#end_time" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    $( "#end_time" ).datetimepicker({
+
+      dayNamesMin: [ "日","一", "二", "三", "四", "五", "六"],
+      monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+      defaultDate: "+0d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      timeOnlyTitle: 'ddd',
+	  timeText: '时间',
+	  hourText: '小时',
+	  minuteText: '分',
+	  secondText: '秒',
+	  currentText: '当前时间',
+	  closeText: '选择',
+      showOptions: { direction: "down" },
+      onSelect: function( selectedDate ) {
+        $( "#start_time" ).datepicker( "option", "maxDate", selectedDate );
+      }
+    });
+  });
+
+function prizeCtrl($scope,$http){
+    {% if prize %}
+        $scope.prize={
+            "reward":{{ prize.reward }},
+            "description":$("#description").val(),
+            "start_time":"{{ prize.start_time|date:"Y-m-d H:i:s" }}",
+            "end_time":"{{ prize.end_time|date:"Y-m-d H:i:s" }}"
+        }
+
+    {% else %}
+        $scope.prize={};
+
+    {% endif %}
+
+
+    $scope.postPrize=function(){
+          if ($('[name="relLottery"]').length!=1){
+                alert("必须且只能选择一个赛事");
+                return false;
+          }
+        $http.post("/caishi/jincaibianji/",$("#prizeForm").serializeArray()).success(function(data){
+            if(data.result){
+                alert("添加成功");
+            }else{
+                alert(data.message);
+            }
+
+        })
+
+    }
+}
+</script>
+{% endblock %}

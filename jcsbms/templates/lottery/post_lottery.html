@@ -1,0 +1,145 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block postPageCss %}
+<link rel="stylesheet" href="/static/css/bootstrap-multiselect.css" type="text/css">
+<link rel="stylesheet" href="/static/datetimepicker/bootstrap-datetimepicker.min.css" type="text/css">
+{% endblock %}
+{% block rightcontent %}
+<style>
+    button.multiselect {
+        width: 100%
+    }
+</style>
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="matchForm" name="matchForm" ng-controller="matchCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>赛事编辑</legend>
+    {% if match %}
+        <input type="hidden" name="id" value="{{ match.id }}">
+    {% endif %}
+
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">语言:</label>
+        <div class="col-sm-4">
+            <select name="project" ng-model="match.project" class="form-control" required>
+                <option value="M" >国语</option>
+                <option value="C">粤语</option>
+                <option value="E">英语</option>
+             </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">赛事名:</label>
+        <input type="text" name="cup_league" ng-model="match.cup_league" class="col-sm-4 control-label" style="border-radius: 8px;outline:none;text-align: left;" autofocus="ture">
+    </div>
+{#    <div class="form-group">#}
+{#       <label  class="col-sm-2 control-label">赛事名:</label>#}
+{#       <div class="col-sm-4">#}
+{#           <select name="cup_league" class="form-control" ng-model="match.cup_league">#}
+{#               {% for obj in cup_leagues %}#}
+{#                   <option value="{{ obj.name }}">{{ obj.name }}({% if obj.project == 'M' %}国语 {% else %} 粤语 {% endif %})</option>#}
+{#               {% endfor %}#}
+{#           </select>#}
+{#       </div>#}
+{#    </div>#}
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">开赛时间:</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" readonly required name="start_time" ng-model="match.start_time" data-date-format="yyyy-mm-dd hh:ii:00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">主队:</label>
+        <input type="text" name="home_team" ng-model="match.home_team" class="col-sm-4 control-label" style="border-radius: 8px;outline:none;text-align: left;" autofocus="ture">
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">客队:</label>
+        <input type="text" name="away_team" ng-model="match.away_team" class="col-sm-4 control-label" style="border-radius: 8px;outline:none;text-align: left;">
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">彩种:</label>
+        <div class="col-sm-4">
+            <select name="lottery_types" ng-model="match.lottery_types" required multiple>
+                {% for type in lottery_types %}
+                    <option value="{{ type.id }}">{{ type.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">彩期:</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="match_id" ng-model="match.match_id">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postMatch()" class="btn btn-primary btn-lg" ng-disabled="matchForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+            <a class="btn btn-warning btn-lg" href="/caishi/">返回</a>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+<script type="text/javascript" src="/static/js/bootstrap-multiselect.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("select").multiselect({
+        enableCaseInsensitiveFiltering: true,
+        buttonContainer: '<div class="btn-group" style="width:100%"/>',
+        nonSelectedText: '请选择'
+    });
+
+});
+$("input[name='start_time']").datetimepicker({autoclose: true});
+function matchCtrl($scope){
+    {% if match %}
+        $scope.match={
+            "cup_league": "{{ match.cup_league }}",
+            "start_time": "{{ match.start_time|date:'Y-m-d H:i:s' }}",
+            "home_team" : "{{ match.home_team }}",
+            "away_team" : "{{ match.away_team }}",
+            "lottery_types" : "{{ match.lottery_types }}",
+            "match_id"  : "{{ match.match_id }}",
+            "project": "{{ match.project }}"
+        };
+    {%else%}
+        $scope.match={}
+
+    {% endif %}
+
+    $scope.postMatch=function(){
+        if ($scope.match.home_team == $scope.match.away_team) {
+            alert("主客队同名了!");
+            return;
+        }
+      next = "/caishi/";
+      $(".btn-primary img").show();
+      $.post("", $("#matchForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("保存成功!");
+              location = next;
+            }else{
+              alert("保存失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+}
+</script>
+{% endblock %}

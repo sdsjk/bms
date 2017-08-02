@@ -1,0 +1,147 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/static/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.css">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="fixtureForm" name="fixtureForm" ng-controller="fixtureCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>赛程编辑</legend>
+    {% if fixture %}
+        <input type="hidden" name="id" value="{{ fixture.id }}">
+    {% endif %}
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">杯赛名称:</label>
+       <div class="col-sm-10">
+           <div class="input-group">
+               <input type="text"  required="required" value="{{ fixture.cup_name }}" ng-model="fixture.cup_name" class="form-control" id="cup_name" name="cup_name" placeholder="杯赛名称">
+            </div>
+
+       </div>
+
+    </div>
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">主队队名:</label>
+       <div class="col-sm-10">
+           <div class="input-group">
+               <input type="text" class="form-control" required="required" value="{{ fixture.home_team }}" ng-model="fixture.home_team" class="form-control" id="home_team" name="home_team" placeholder="主队赛队名称">
+            </div>
+
+       </div>
+
+    </div>
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">客队队名:</label>
+       <div class="col-sm-10">
+           <div class="input-group">
+               <input type="text"  required="required" value="{{ fixture.away_team }}" ng-model="fixture.away_team" class="form-control" id="away_team" name="away_team" placeholder="客队赛队名称">
+            </div>
+       </div>
+    </div>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">备注:</label>
+       <div class="col-sm-10">
+           <div class="input-group">
+        <input type="text"  required="required" value="{{ fixture.remark }}" ng-model="fixture.remark" class="form-control" id="remark" name="remark" placeholder="备注">
+            </div>
+           </div>
+    </div>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">开赛时间:</label>
+       <div class="col-sm-10">
+           <div class="input-group">
+        <input type="text" class="form-control" required="required" ng-model="fixture.start_time" value="{{ fixture.start_time|date:"Y-m-d H:i:s" }}" name="start_time" id="start_time" >
+            </div>
+           </div>
+    </div>
+
+
+
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postFixture()" class="btn btn-primary btn-lg" ng-disabled="fixtureForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/static/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.js"></script>
+<script type="text/javascript">
+$(function() {
+    $.datepicker.setDefaults( $.datepicker.regional[ "zh-CN" ] );
+    $( "#start_time" ).datetimepicker({
+
+      dayNamesMin: [ "日","一", "二", "三", "四", "五", "六"],
+      monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+      defaultDate: "+0d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      timeOnlyTitle: 'ddd',
+	  timeText: '时间',
+	  hourText: '小时',
+	  minuteText: '分',
+	  secondText: '秒',
+	  currentText: '当前时间',
+	  closeText: '选择',
+      showOptions: { direction: "down" },
+      onSelect: function( selectedDate ) {
+        $( "#end_time" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+ });
+
+
+  function fixtureCtrl($scope){
+    {% if fixture %}
+        $scope.fixture={
+            "cup_name":"{{ fixture.cup_name }}",
+            "home_team":"{{ fixture.home_team }}",
+            "away_team":"{{ fixture.away_team}}",
+            "start_time":"{{ fixture.start_time|date:"Y-m-d H:i:s"}}",
+            "remark":"{{ fixture.remark }}",
+
+        };
+
+    {%else%}
+        $scope.fixture={}
+
+    {% endif %}
+
+    $scope.postFixture=function(){
+
+      next = "/caishi/saichenbiao/";
+      $(".btn-primary img").show();
+      $.post("", $("#fixtureForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+  }
+
+
+
+</script>
+{% endblock %}

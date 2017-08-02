@@ -1,0 +1,25 @@
+<link href="/static/ueditor/themes/default/css/ueditor.css" type="text/css" media="all" rel="stylesheet" />
+<link href="/static/ueditor/themes/iframe.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="/static/ueditor/editor_config_r1.js"></script>
+<script type="text/javascript" src="/static/ueditor/editor_all_min.js"></script>
+<script>
+    var dUeditor={};
+    dUeditor.user_dir = "upfiles/{{user_dir}}/";
+    var ueditor= new baidu.editor.ui.Editor({
+	     "UEDITOR_HOME_URL":"/static/ueditor/",
+	     "imageUrl":"/ueditor/ImageUp/"+dUeditor.user_dir,
+         "imagePath":"/static/"+dUeditor.user_dir,
+         "scrawlUrl":"/ueditor/scrawlUp/"+dUeditor.user_dir,
+         "scrawlPath":"/static/"+dUeditor.user_dir,
+         "imageManagerUrl":"/ueditor/ImageManager/"+dUeditor.user_dir,
+         "imageManagerPath":"/static/"+dUeditor.user_dir,
+         "catcherUrl":"/ueditor/RemoteCatchImage/"+dUeditor.user_dir,
+         "catcherPath":"/static/"+dUeditor.user_dir,
+         "fileUrl":"/ueditor/FileUp/"+dUeditor.user_dir,
+         "filePath":"/static/"+dUeditor.user_dir,
+         "getMovieUrl":"/ueditor/SearchMovie/",
+	     initialFrameWidth:700,  
+	     initialFrameHeight:400  
+	     
+    });
+</script>

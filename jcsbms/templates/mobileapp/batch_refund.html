@@ -1,0 +1,75 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-inline" method="POST" action="." enctype="multipart/form-data" onsubmit="return submit_confirm();">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="input_file">退费名单</label>
+                    <input class="form-control" type="file" id="input_file" name="input_file">
+                </div>
+
+                <div class="form-group">
+
+                    <button class="btn btn-primary" type="submit" id="up_btn">上传</button>
+                </div>
+
+                </fieldset>
+            </form>
+            <br><br>
+            {% if fail_list %}
+                失败列表:
+                <table class="table table-bordered table-striped table-hover tablesorter">
+                    <thead>
+                    <tr>
+                        <th>用户ID</th>
+                        <th>金币</th>
+                        <th>赠送理由</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for l in fail_list %}
+                        <tr>
+                            <td>{{ l|dictvbyk:"phonenumber" }}</td>
+                            <td>{{ l|dictvbyk:"goldcoin" }}</td>
+                         <td>{{ l|dictvbyk:"comment_reson" }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+            {% if success %}
+                <div class="alert alert-success" role="alert">退费全部成功!</div>
+            {% endif %}
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+<script type="text/javascript">
+function submit_confirm(e) {
+    if ($("#input_file").val() == "") {
+        alert("请先选择文件!");
+        return false;
+    }
+    if (confirm("确认要上传?")) {
+        $("#up_btn").attr("disabled", "diabled");
+        return true;
+    }else{
+        return false;
+
+    }
+}
+</script>
+{% endblock %}

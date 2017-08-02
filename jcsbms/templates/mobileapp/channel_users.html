@@ -1,0 +1,74 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+{% block postPageCss %}
+    {% load i18n %}
+{%load jauth_tags %}
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-12">
+<form class="form-horizontal" method="get" action="#">
+<fieldset>
+
+  <input  name="action" value="search" type="hidden" />
+  <div class="form-group">
+
+    <div class="col-sm-offset-3 col-sm-6 input-group">
+
+      <input type="search" class="form-control" name="channel" id="channel" placeholder={% trans '请输入渠道邀请码' %}>
+      <span class="input-group-btn">
+        <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+      </span>
+    </div>
+
+  </div>
+</fieldset>
+</form>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>{% trans '头像' %}</th>
+    <th>{% trans '用户ID' %}</th>
+    <th>{% trans '注册时间' %}</th>
+    <th>{% trans '最后登录' %}</th>
+    <th>{% trans '操作系统' %}</th>
+    <th>{% trans '邀请来源' %}</th>
+    <th>{% trans '状态' %}</th>
+
+</tr>
+</thead>
+<tbody>
+{% for auser in pager.object_list %}
+<tr>
+<td>{{ auser.userid }}</td>
+<td><img src="{{auser.picpath|default_if_none:"/static/img/default_avatar.png"}}" width="32px"> </td>
+<th>{{ auser.userid}}</th>
+<td>{{ auser.cdate|notzdate }}</td>
+<td>{{ auser.udate|notzdate }}</td>
+<td>{{ auser.os }}</td>
+<td>{{ auser.channel }}
+
+</td>
+<td>{{ auser.isactive|yesno:"可登录,不可登录,非法" }}</td>
+
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+
+{% endblock %}

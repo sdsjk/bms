@@ -1,0 +1,132 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+  <form class="form-inline" method="get" action="#" onsubmit="return checkValid()">
+  <fieldset>
+  <input  name="action" value="search" type="hidden" />
+  <div class="form-group">
+      <input type="search" class="form-control" name="author_word" id="author_word" placeholder="作者网络昵称">
+  </div>
+  <div class="form-group">
+      <input type="search" class="form-control" name="title" id="title" placeholder="文章标题">
+  </div>
+  <div class="form-group">
+      <label>爬取时间:</label>
+      <input type="text" class="form-control" value="{{ from_date }}" name="from_date" id="from_date" >
+  </div>
+  <div class="form-group">
+      <label for="exampleInputEmail2">至</label>
+      <input type="text" class="form-control" value="{{ to_date }}" name="to_date" id="to_date" >
+  </div>
+      <button class="btn btn-primary" type="submit">搜索</button>
+  </fieldset>
+</form>
+    <br>
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><!--th>ID</th>
+    <th>URL</th-->
+    <th>作者</th>
+    <th>标题</th>
+    <th>发布时间</th>
+    <th>爬取时间</th>
+    <th>项目</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+{% for result in results %}
+<tr>
+<!--td>{{ result.id }}</td>
+<td>{{ result.url }}</td-->
+<td>{{ result.author }}</td>
+<td><a href="/wenzhang/pian/{{ result.id }}/" target="_blank">{{ result.title }}</a></td>
+<td>{{ result.date_added }}</td>
+<td>{{ result.updatetime }}</td>
+<td>{{ result.project }}</td>
+<td>
+   <div class="btn-group">
+
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">操作<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="/wenzhang/pian/{{ result.id }}/">修改</a></li>
+          <li><a href="javascript:void(0)" onclick="delResult('{{ result.id }}')">删除</a></li>
+        </ul>
+    </div>
+</td>
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+{% tablesorter %}
+<script type="text/javascript">
+function delResult(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/del_result/", data,
+        function(data){
+            if(data.result){
+              alert("成功删除!");
+              location.reload()
+            }else{
+              alert("删除失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+
+  $(function() {
+    $( "#from_date" ).datepicker({
+      defaultDate: "+0d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to_date" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    $( "#to_date" ).datepicker({
+      defaultDate: "+1d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from_date" ).datepicker( "option", "maxDate", selectedDate );
+      }
+    });
+  });
+  function  checkValid(){
+      if($("#from_date").val().length!=$("#to_date").val().length){
+          alert("时间范围必须两个都要选!");
+          return false;
+      }else {
+          return true;
+      }
+  }
+  </script>
+{% endblock %}

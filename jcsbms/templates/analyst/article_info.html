@@ -1,0 +1,69 @@
+{% extends "col2base.html" %}
+{% load analyst_tags %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+{% endblock %}
+{% block sidebar %}
+{% analyst_side %}
+{% endblock %}
+{% block rightcontent %}
+<article>
+<h3 class="text-center">{{ article.id }}号文章 </h3>
+<div class="text-danger text-center">{{ message }}</div>
+<div class="row">
+    <div class="col-sm-3">新增时间:{{ article.date_added|date:"Y-m-d H:i"  }}</div>
+    <div class="col-sm-3">修改时间:{{ article.last_modified|date:"Y-m-d H:i"  }}</div>
+    <div class="col-sm-2">作者昵称:{{ article.author.nick_name }}</div>
+    <div class="col-sm-4">
+        {% if article.end_time %}
+        最后可修改时间:
+        {{ article.end_time|date:"Y-m-d H:i"}}
+        {% else %}
+            无赛事相关文章不可修改
+        {% endif %}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3">文章类型:{{ article.chargeable|yesno:"收费,免费,免费"  }}文章{% if article.price and article.chargeable %}({{ article.price }}精彩币){% endif %}</div>
+
+    <div class="col-sm-3">上首页否:{{ article.is_toppage|yesno:"是,否,否" }}</div>
+    <div class="col-sm-2">已屏蔽否:{{ article.invisible|yesno:"是,否,否" }}</div>
+    <div class="col-sm-4"><a href="{{ serverhost }}/wenzhang/fenxiang/?key={{ article.sign_key }}">分享链接</a></div>
+</div>
+{% if article.lotteries.all %}
+<div class="row">
+<div class="col-sm-12 text-center"><h4>相关赛事:<h4></div>
+
+</div>
+<div class="row">
+
+<div class="col-sm-10">
+{% for lottery in article.lotteries.all %}
+<button  class="btn btn-success">{{ lottery|lottery_name }}</button>
+
+{% endfor %}
+</div>
+</div>
+{% endif %}
+<article>
+    {% if  article.chargeable or article.type %}
+    <section>
+    <h4 class="text-center">文章的摘要:</h4>
+        {{ article.digest }}
+    </section>
+    {% endif %}
+    <section>
+    <h4 class="text-center">文章正文内容:</h4>
+    {{ article.text|safe }}
+    </section>
+</article>
+</article>
+
+{% endblock %}
+
+{% block postPageJS %}
+
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+
+{% block description %}{% endblock %}
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-12">
+<a class="btn btn-primary" href="/laoshi/fabujiage/">添加价格</a>
+<table class="table table-bordered table-striped table-hover sortable">
+<thead>
+<tr><th>ID</th>
+    <th>老师彩种</th>
+    <th>老师等级</th>
+    <td>对应价格</td>
+</tr>
+</thead>
+<tbody>
+{% for pobject in pager.object_list %}
+<tr>
+<td>{{ pobject.id }}</td>
+<th>{{ pobject.lottery_type.name }}</th>
+<td>{{ pobject.analyst_level.name }}</td>
+<td>{{ pobject.cost}}</td>
+
+
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+<script type="text/javascript">
+function delArticle(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/del_result/", data,
+        function(data){
+            if(data.result){
+              alert("成功删除!");
+              location.reload()
+            }else{
+              alert("删除失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+</script>
+{% endblock %}

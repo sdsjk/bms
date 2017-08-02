@@ -1,0 +1,163 @@
+{% extends "col2base.html" %}
+{%load analyst_tags %}
+{%load jcs_tags %}
+{% load i18n %}
+{%load jauth_tags %}
+{% block description %}{% endblock %}
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% analyst_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-12">
+<a class="btn btn-primary" href="/laoshi/fabu/">{% trans '发布文章' %}</a>
+<table class="table table-bordered table-striped table-hover sortable">
+<thead>
+<tr><th>ID</th>
+    <th>{% trans '上首页' %}</th>
+    <th>{% trans '内容' %}</th>
+{#    <th>作者</th>#}
+    <td>{% trans '收费否' %}</td>
+    <th>{% trans '创建时间' %}</th>
+    <th>{% trans '是否删除' %}</th>
+    <th>{% trans '删除原因' %}</th>
+    <th>{% trans '首页状态' %}</th>
+    <th>{% trans '驳回原因' %}</th>
+    <th>{% trans '操作' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for article in pager.object_list %}
+<tr>
+<td>{{ article.id }}</td>
+<td>{%  if  article.is_toppage %}
+    <span class="glyphicon glyphicon-arrow-up text-success" aria-hidden="true"></span>
+    {% endif %}
+</td>
+<th>{% if article.digest != Null %}
+        <a href="/laoshi/fabu/?id={{ article.id }}" target="_blank">{{ article.digest|striptags|truncatechars:30 }}{{ article.digest|striptags|yesno:",【查看】,【查看】" }}</a>
+    {% else %}
+        <a href="/laoshi/fabu/?id={{ article.id }}" target="_blank">{% trans '无内容' %}</a>
+    {% endif %}
+</th>
+{#<td>{{ article.author.nick_name }}</td>#}
+<td>{{ article.chargeable|yesno:"是,否,否"}}</td>
+<td>{{ article.date_added|date:"Y-m-d H:i"  }}</td>
+<td>
+{%  if  article.invisible %}
+    是
+{% endif %}
+</td>
+<td>
+{%  if  article.invisible %}
+    {{ article.memo }}
+{% endif %}
+</td>
+{#<td>{{ article.last_modified|date:"Y-m-d H:i"  }}</td>#}
+<td>
+    {% if article.article_examine.status == '10' %}
+        {% trans '待审核' %}
+    {% elif article.article_examine.status == '20' %}
+        {% trans '通过' %}
+    {% elif article.article_examine.status == '90' %}
+        {% trans '驳回' %}
+    {% endif %}
+</td>
+<td>{{ article.article_examine.examine_opinion }}</td>
+<td>
+   <div class="btn-group">
+
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">{% trans '操作' %}<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <!--li><a href="/laoshi/fabu/?id={{ article.id }}">修改</a></li-->
+            {% if not article.is_toppage %}
+
+            <li><a href="javascript:void(0)" onclick="make_toppage('{{ article.id }}')">{% trans '上首页' %}</a></li>
+          {% endif %}
+        </ul>
+    </div>
+</td>
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+<script type="text/javascript">
+function delArticle(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/del_result/", data,
+        function(data){
+            if(data.result){
+              alert("成功删除!");
+              location.reload()
+            }else{
+              alert("删除失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function make_toppage(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/laoshi/shangshouye/", data,
+        function(data){
+            if(data.result){
+              alert("操作成功!");
+              location.reload()
+            }else{
+              alert("操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function cancel_toppage(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/laoshi/xiashouye/", data,
+        function(data){
+            if(data.result){
+              alert("操作成功!");
+              location.reload()
+            }else{
+              alert("操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+</script>
+
+{% endblock %}

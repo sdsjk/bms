@@ -1,0 +1,79 @@
+{%load jcs_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>赛事同步结果</title>
+    <style>
+        table, tr, th, td {
+            border: 1px solid black;
+        }
+        table {
+            width: 800px;
+            border-collapse: collapse;
+            margin: auto;
+            padding: 5px;
+        }
+        .mark {
+            background-color: yellow;
+        }
+        .problem_odd {
+            background-color: #9ae5e5;
+        }
+        .problem_even {
+            background-color: #82cffa;
+        }
+    </style>
+</head>
+<body>
+    <h2>未同步的赛事</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>开赛时间</th>
+                <th>赛事名</th>
+                <th>主队</th>
+                <th>客队</th>
+                <th>原因</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            {% for match in non_synced %}
+            <tr>
+                <td>{{ match|dictvbyk:"start_time" }}</td>
+                <td>{{ match|dictvbyk:"cup_name" }}</td>
+                <td {% if match.match_flag == 0 or match.match_flag == 2 %}class="mark"{% endif %}>{{ match|dictvbyk:"home_team" }}</td>
+                <td {% if match.match_flag == 0 or match.match_flag == 1 %}class="mark"{% endif %}>{{ match|dictvbyk:"away_team" }}</td>
+                <td>{{ match|dictvbyk:"reason" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h2>开赛时间有问题的赛事</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>开赛时间</th>
+                <th>赛事名</th>
+                <th>主队</th>
+                <th>客队</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teams, times in problem_matches.iteritems %}
+                {% with teams|mysplit:"_" as teamnames %}
+                {% for stime, cup_name in times.iteritems %}
+                <tr {% if forloop.parentloop.counter|divisibleby:2 %}class="problem_even"{% else %}class="problem_odd"{% endif %}>
+                    <td>{{ stime }}</td>
+                    <td>{{ cup_name }}</td>
+                    <td>{{ teamnames.0 }}</td>
+                    <td>{{ teamnames.1 }}</td>
+                </tr>
+                {% endfor %}
+                {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

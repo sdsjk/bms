@@ -1,0 +1,119 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="renXuanForm" name="renXuanForm" ng-controller="renXuanCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>任9赛事表编辑</legend>
+    {% if renXuan %}
+        <input type="hidden" name="id" value="{{ renXuan.id }}">
+    {% endif %}
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">期数:</label>
+       <div class="col-sm-10">
+           <div class="input-group">
+               <input type="text"  required="required" value="{{ renXuan.issue }}" ng-model="renXuan.issue" class="form-control" id="issue" name="issue" placeholder="期数">
+            </div>
+
+       </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">截至时间:</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" readonly required name="end_time" ng-model="renXuan.end_time" data-date-format="yyyy-mm-dd hh:ii">
+        </div>
+    </div>
+    <div class="form-group">
+        <table class="table">
+            <thead>
+                <tr><th>序号</th>
+                    <th>主客队</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td><input type="text"  required="required" value="{{ renXuan.match1 }}" ng-model="renXuan.match1" class="form-control" id="match1" name="match1" placeholder="主队VS客队"></td></tr>
+                <tr><td>2</td><td><input type="text"  required="required" value="{{ renXuan.match2 }}" ng-model="renXuan.match2" class="form-control" id="match2" name="match2" placeholder="主队VS客队"></td></tr>
+                <tr><td>3</td><td><input type="text"  required="required" value="{{ renXuan.match3 }}" ng-model="renXuan.match3" class="form-control" id="match3" name="match3" placeholder="主队VS客队"></td></tr>
+                <tr><td>4</td><td><input type="text"  required="required" value="{{ renXuan.match4 }}" ng-model="renXuan.match4" class="form-control" id="match4" name="match4" placeholder="主队VS客队"></td></tr>
+                <tr><td>5</td><td><input type="text"  required="required" value="{{ renXuan.match5 }}" ng-model="renXuan.match5" class="form-control" id="match5" name="match5" placeholder="主队VS客队"></td></tr>
+                <tr><td>6</td><td><input type="text"  required="required" value="{{ renXuan.match6 }}" ng-model="renXuan.match6" class="form-control" id="match6" name="match6" placeholder="主队VS客队"></td></tr>
+                <tr><td>7</td><td><input type="text"  required="required" value="{{ renXuan.match7 }}" ng-model="renXuan.match7" class="form-control" id="match7" name="match7" placeholder="主队VS客队"></td></tr>
+                <tr><td>8</td><td><input type="text"  required="required" value="{{ renXuan.match8 }}" ng-model="renXuan.match8" class="form-control" id="match8" name="match8" placeholder="主队VS客队"></td></tr>
+                <tr><td>9</td><td><input type="text"  required="required" value="{{ renXuan.match9 }}" ng-model="renXuan.match9" class="form-control" id="match9" name="match9" placeholder="主队VS客队"></td></tr>
+                <tr><td>10</td><td><input type="text"  required="required" value="{{ renXuan.match10 }}" ng-model="renXuan.match10" class="form-control" id="match10" name="match10" placeholder="主队VS客队"></td></tr>
+                <tr><td>11</td><td><input type="text"  required="required" value="{{ renXuan.match11 }}" ng-model="renXuan.match11" class="form-control" id="match11" name="match11" placeholder="主队VS客队"></td></tr>
+                <tr><td>12</td><td><input type="text"  required="required" value="{{ renXuan.match12 }}" ng-model="renXuan.match12" class="form-control" id="match12" name="match12" placeholder="主队VS客队"></td></tr>
+                <tr><td>13</td><td><input type="text"  required="required" value="{{ renXuan.match13 }}" ng-model="renXuan.match13" class="form-control" id="match13" name="match13" placeholder="主队VS客队"></td></tr>
+                <tr><td>14</td><td><input type="text"  required="required" value="{{ renXuan.match14 }}" ng-model="renXuan.match14" class="form-control" id="match14" name="match14" placeholder="主队VS客队"></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postRenXuan()" class="btn btn-primary btn-lg" ng-disabled="renXuanForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+function renXuanCtrl($scope){
+    $("input[name='end_time']").datetimepicker({autoclose: true});
+    {% if renXuan %}
+        $scope.renXuan={
+            "issue":"{{ renXuan.issue }}",
+            "end_time": "{{ renXuan.end_time|date:'Y-m-d H:i:s' }}",
+            "match1": "{{ renXuan.match1 }}",
+            "match2": "{{ renXuan.match2 }}",
+            "match3": "{{ renXuan.match3 }}",
+            "match4": "{{ renXuan.match4 }}",
+            "match5": "{{ renXuan.match5 }}",
+            "match6": "{{ renXuan.match6 }}",
+            "match7": "{{ renXuan.match7 }}",
+            "match8": "{{ renXuan.match8 }}",
+            "match9": "{{ renXuan.match9 }}",
+            "match10": "{{ renXuan.match10 }}",
+            "match11": "{{ renXuan.match11 }}",
+            "match12": "{{ renXuan.match12 }}",
+            "match13": "{{ renXuan.match13 }}",
+            "match14": "{{ renXuan.match14 }}"
+        };
+    {%else%}
+        $scope.renXuan={
+        }
+
+    {% endif %}
+
+    $scope.postRenXuan=function(){
+      next = "/caishi/rx9/";
+      $(".btn-primary img").show();
+      $.post("", $("#renXuanForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("保存成功!");
+              location = next;
+            }else{
+              alert("保存失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+}
+</script>
+{% endblock %}

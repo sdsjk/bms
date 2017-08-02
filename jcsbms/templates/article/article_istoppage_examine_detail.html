@@ -1,0 +1,132 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+
+{% block rightcontent %}
+    <br />
+    <form class="form-horizontal" action="" method="post" id="ExamineForm" name="ExamineForm">
+    {% csrf_token %}
+    <fieldset>
+    <input type="hidden" name="article_id" value="{{ article_id }}">
+    <input type="hidden" name="examine_pass" id="examine_pass" value="20">
+    <button class="btn btn-primary btn-lg" onclick="pass_save()">审核通过</button>
+    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">审核驳回</button>
+    <button class="btn btn-primary btn-lg" onclick="history.back(-1)">返回</button>
+    <br /><br />
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">请选择原因</h4>
+                </div>
+                <div class="modal-body">
+                        <label><input name="reason" type="checkbox" value="无实质性推荐内容" />无实质性推荐内容</label><br />
+                        <label><input name="reason" type="checkbox" value="分析推荐不明确" />分析推荐不明确</label><br />
+                        <label><input name="reason" type="checkbox" value="标签使用错误" />标签使用错误</label><br />
+                        <label><input name="reason" type="checkbox" value="未关联比赛" />未关联比赛</label><br />
+                        <label><input name="reason" type="checkbox" value="图片使用不当" />图片使用不当</label><br />
+                        <label><input name="reason" type="checkbox" value="广告语太多" />广告语太多</label><br />
+                        <label><input name="reason" type="checkbox" value="版面怪异" />版面怪异</label><br />
+                        <label><input name="reason" type="checkbox" value="战绩虚假宣传" />战绩虚假宣传</label><br />
+                        <label><input name="reason" type="checkbox" value="晒单不符首页规定" />晒单不符首页规定</label><br />
+                        <label><input name="reason" type="checkbox" value="晒单篇数已到" />晒单篇数已到</label><br />
+                        <label><input name="reason" type="checkbox" value="夸大，承诺收益倾向" />夸大，承诺收益倾向</label><br />
+                        <label><input name="reason" type="checkbox" value="用词不雅" />用词不雅</label><br />
+                        <label><input name="reason" type="checkbox" value="侮辱辱骂人身攻击" />侮辱辱骂人身攻击</label><br />
+                        <label><input name="reason" type="checkbox" value="地域歧视" />地域歧视</label><br />
+                        <label><input name="other" type="checkbox" value="其他" onclick="on_hide()" id="other"/>其他</label>
+                        <label><input name="reason_custom" type = "text" id="hide" style="display:none" placeholder="必须填写自定义原因"/></label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"  onclick="funclose()" >关闭</button>
+                    <input type="hidden" name="examine_no_pass" id="examine_no_pass" value="90">
+                    <button type="button" class="btn btn-primary" onclick="not_pass_save()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </fieldset>
+    </form>
+    <div div style="border: solid; border-color: #265a88;">
+    <br>
+    <!--转换html标签文本-->
+    {% autoescape off %}
+    {% if article.chargeable %}
+        <label style="font-size: 20px;">{{ article.digest }}{{ article.text }}</label>
+    {% else %}
+        <label style="font-size: 20px;">{{ article.text }}</label>
+    {% endif %}
+    {% endautoescape %}
+    </div>
+{% endblock %}
+
+{% block postPageJS %}
+<script type="text/javascript">
+    function pass_save() {
+      var next = "/wenzhang/shouyeshenhe/";
+      $(".btn-primary img").show();
+      $.post("/wenzhang/article_istoppage_examine_pass/", $("#ExamineForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("保存成功!");
+              window.location.href=document.referrer;
+            }else{
+              alert("保存失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+    }
+    function on_hide(){
+      document.getElementById("hide").style.display = (document.getElementById("other").checked == true) ? "block" : "none";
+    }
+    function not_pass_save(){
+
+        var flag=false;
+         $("#myModal").find("input[name='reason']:checked").each(function () {
+           flag=true;
+            return ;
+      });
+
+         if($("#other").is(':checked')){
+               if($("#hide").val()==''){
+                   flag=false;
+               }else{
+                   flag=true;
+               }
+         }
+
+        if(!flag){
+            return alert('请选择原因');
+        }
+
+      var next = "/wenzhang/shouyeshenhe/";
+      $(".btn-primary img").show();
+      $.post("/wenzhang/article_istoppage_examine_nopass/", $("#ExamineForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("保存成功!");
+              window.location.href=document.referrer;
+            }else{
+              alert("保存失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+    }
+    function funclose(){
+{#        alert('test');#}
+      $('#myModal').modal('hide');
+      $("#myModal").find("input[name='reason']").each(function (e,v) {
+          $(this).attr("checked",false);
+
+      });
+      $("#other").attr("checked",false);
+      $("#hide").val('');
+      $("#hide").hide();
+    }
+</script>
+{% endblock %}

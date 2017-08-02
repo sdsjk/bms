@@ -1,0 +1,1 @@
+[{"model": "ask.answerlevel", "pk": 1, "fields": {"level_number": 0, "name": "\u65e0\u6743\u9650", "cost": 0}}, {"model": "ask.answerlevel", "pk": 2, "fields": {"level_number": 1, "name": "\u6536\u8d391", "cost": 1}}, {"model": "ask.answerlevel", "pk": 3, "fields": {"level_number": 2, "name": "\u6536\u8d392", "cost": 2}}]

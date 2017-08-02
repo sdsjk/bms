@@ -1,0 +1,241 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{%load app_tags %}
+{% block postPageCss %}
+    {% load i18n %}
+{%load jauth_tags %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+  <input  name="action" value="search" type="hidden" />
+    <div class="form-group">
+        <label>{% trans '文章ID' %}</label>
+        <input type="text" class="form-control" value="{{ article_id }}" name="article_id" id="article_id" >
+    </div>
+    <div class="form-group">
+        <label>{% trans '审阅人' %}</label>
+        <input type="text" class="form-control" value="{{ cut_author }}" name="cut_author" id="cut_author" >
+    </div>
+    <div class="form-group">
+        <label>{% trans '翻译发布人' %}</label>
+        <input type="text" class="form-control" value="{{ translate_author }}" name="translate_author" id="translate_author" >
+    </div>
+    <div class="form-group">
+        <label>{% trans '发布前作者' %}</label>
+        <input type="text" class="form-control" value="{{ teacher_id }}" name="teacher_id" id="teacher_id" >
+    </div>
+     <div class="form-group">
+        <label>{% trans '发布后作者' %}</label>
+        <input type="text" class="form-control" value="{{ teacher_thai }}" name="teacher_thai" id="teacher_thai" >
+    </div>
+    <div class="form-group">
+        <label>{% trans '国语发布时间' %}:</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />
+    </div>
+        <input type="hidden" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+        <input type="hidden" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+
+    <div class="form-group">
+        <label>{% trans '审阅时间' %}:</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker1" />
+    </div>
+        <input type="hidden" class="form-control" value="{{ from_datestr1 }}" name="from_date1" id="from_date1" >
+        <input type="hidden" class="form-control" value="{{ to_datestr1 }}" name="to_date1" id="to_date1" >
+
+    <div class="form-group">
+        <label>{% trans '翻译发布时间' %}:</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker2" />
+    </div>
+        <input type="hidden" class="form-control" value="{{ from_datestr2 }}" name="from_date2" id="from_date2" >
+        <input type="hidden" class="form-control" value="{{ to_datestr2 }}" name="to_date2" id="to_date2" >
+
+
+    <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+</fieldset>
+</form>
+<br>
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr>
+    <th>{% trans '文章ID' %}</th>
+    <th>{% trans '国语发布时间' %}</th>
+    <th>{% trans '审阅时间' %}</th>
+    <th>{% trans '审阅人' %}</th>
+    <th>{% trans '翻译发布时间' %}</th>
+    <th>{% trans '翻译发布人' %}</th>
+    <th>{% trans '发布前作者ID' %}</th>
+    <th>{% trans '发布后作者ID' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for bmslog in pager.object_list %}
+<tr>
+<td>{{ bmslog.article_id }}</td>
+<td>{{ bmslog.m_cdate|date:"Y-m-d H:i:s"}}</td>
+<td>{{ bmslog.cut_cdate|date:"Y-m-d H:i:s" }}</td>
+<td>{{ bmslog.cut_author }}</td>
+<td>{{ bmslog.translate_cdate|date:"Y-m-d H:i:s" }}</td>
+<td>{{ bmslog.translate_author }}</td>
+<td>{{ bmslog.teacher_id|get_teacher }}</td>
+<td>{{ bmslog.teacher_thai|get_teacher }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+
+{% tablesorter %}
+<script type="text/javascript">
+
+$('#daterangepicker').daterangepicker({
+          timePicker: true,
+          timePickerIncrement: 1,
+          timePicker24Hour: true,
+          linkedCalendars: false,
+          locale:{
+              format: 'YYYY/MM/DD HH:mm',
+              applyLabel:"确定",
+              cancelLabel:"取消",
+              daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+              ],
+              monthNames: [
+                  "一月",
+                  "二月",
+                  "三月",
+                  "四月",
+                  "五月",
+                  "六月",
+                  "七月",
+                  "八月",
+                  "九月",
+                  "十月",
+                  "十一月",
+                  "十二月"
+              ],
+          }
+      },
+      function(start, end) {
+          var datefmt = "YYYY-MM-DD HH:mm";
+          console.log(start.format(datefmt), end.format(datefmt));
+          $("#from_date").val(start.format(datefmt + ":00"));
+          $("#to_date").val(end.format(datefmt + ":59"));
+
+      }
+  );
+  $('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+  $('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+
+  $('#daterangepicker1').daterangepicker({
+          timePicker: true,
+          timePickerIncrement: 1,
+          timePicker24Hour: true,
+          linkedCalendars: false,
+          locale:{
+              format: 'YYYY/MM/DD HH:mm',
+              applyLabel:"确定",
+              cancelLabel:"取消",
+              daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+              ],
+              monthNames: [
+                  "一月",
+                  "二月",
+                  "三月",
+                  "四月",
+                  "五月",
+                  "六月",
+                  "七月",
+                  "八月",
+                  "九月",
+                  "十月",
+                  "十一月",
+                  "十二月"
+              ],
+          }
+      },
+      function(start, end) {
+          var datefmt = "YYYY-MM-DD HH:mm";
+          console.log(start.format(datefmt), end.format(datefmt));
+          $("#from_date1").val(start.format(datefmt + ":00"));
+          $("#to_date1").val(end.format(datefmt + ":59"));
+
+      }
+  );
+  $('#daterangepicker1').data("daterangepicker").setStartDate("{{ from_datestr1 }}");
+  $('#daterangepicker1').data("daterangepicker").setEndDate("{{ to_datestr1 }}");
+  $('#daterangepicker2').daterangepicker({
+          timePicker: true,
+          timePickerIncrement: 1,
+          timePicker24Hour: true,
+          linkedCalendars: false,
+          locale:{
+              format: 'YYYY/MM/DD HH:mm',
+              applyLabel:"确定",
+              cancelLabel:"取消",
+              daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+              ],
+              monthNames: [
+                  "一月",
+                  "二月",
+                  "三月",
+                  "四月",
+                  "五月",
+                  "六月",
+                  "七月",
+                  "八月",
+                  "九月",
+                  "十月",
+                  "十一月",
+                  "十二月"
+              ],
+          }
+      },
+      function(start, end) {
+          var datefmt = "YYYY-MM-DD HH:mm";
+          console.log(start.format(datefmt), end.format(datefmt));
+          $("#from_date2").val(start.format(datefmt + ":00"));
+          $("#to_date2").val(end.format(datefmt + ":59"));
+
+      }
+  );
+  $('#daterangepicker2').data("daterangepicker").setStartDate("{{ from_datestr2 }}");
+  $('#daterangepicker2').data("daterangepicker").setEndDate("{{ to_datestr2 }}");
+</script>
+{% endblock %}

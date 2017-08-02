@@ -1,0 +1,239 @@
+{% extends "col2base.html" %}
+{%load analyst_tags %}
+{%load app_tags %}
+{%load jcs_tags %}
+{% load i18n %}
+{%load jauth_tags %}
+{% block postPageCss %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+{% endblock %}
+{% block sidebar %}
+    {% analyst_side %}
+{% endblock %}
+{% block rightcontent %}
+    <form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+
+  <input  name="action" value="search" type="hidden" />
+
+
+      &nbsp; &nbsp;
+    <div class="form-group">
+        <label>{% trans '注册时间' %}</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />
+        <input type="hidden" value="{{ from_datestr }}" name="from_date" id="from_date">
+        <input type="hidden" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    </div>
+
+    <div class="form-group">
+        <label>{% trans '消费时间' %}</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="purchase_daterangepicker" />
+        <input type="hidden" value="{{ purchase_from_datestr }}" name="purchase_from_date" id="purchase_from_date">
+        <input type="hidden" value="{{ purchase_to_datestr }}" name="purchase_to_date" id="purchase_to_date" >
+    </div>
+
+    <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+</fieldset>
+</form>
+<div class="row">
+<div class="col-md-12">
+<!--form class="form-horizontal" method="get" action="#">
+<fieldset>
+
+  <input  name="action" value="search" type="hidden" />
+  <div class="form-group">
+
+    <div class="col-sm-offset-3 col-sm-6 input-group">
+
+      <input type="search" class="form-control" name="key_word" id="key_word" placeholder="请输入用户网络昵称">
+      <span class="input-group-btn">
+        <button class="btn btn-primary" type="submit">搜索</button>
+      </span>
+    </div>
+
+  </div>
+</fieldset>
+</form-->
+<div class="text-info btn-lg">{% trans '您的邀请码为' %}{{ analyst.id }}</div>
+<table class="table table-bordered table-striped table-hover sortable">
+<thead>
+<tr><th>ID</th>
+
+    <th>{% trans '手机' %}</th>
+
+    <th>{% trans '注册时间' %}</th>
+
+    <th>{% trans '消费总额' %}</th>
+
+
+</tr>
+</thead>
+<tbody>
+{% for auser in pager.object_list %}
+<tr>
+<td>{{ auser.0 }}</td>
+<th>*******{{ auser.1|slice:"7:"}}</th>
+
+<td>{{ auser.2|notzdate }}</td>
+<td>
+{% if auser.3 == None %}
+    0
+{% else %}
+    {{ auser.3 }}
+{% endif %}
+
+
+</td>
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<script type="text/javascript">
+function deactivity(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/app/wuxiao/", data,
+        function(data){
+            if(data.result){
+              alert("成功无效!");
+              location.reload()
+            }else{
+              alert("无效失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function activity(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/app/youxiao/", data,
+        function(data){
+            if(data.result){
+              alert("成功可登录!");
+              location.reload()
+            }else{
+              alert("可登陆操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+
+$('#daterangepicker').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 1,
+            timePicker24Hour: true,
+            linkedCalendars: false,
+            locale:{
+                format: 'YYYY/MM/DD HH:mm',
+                applyLabel:"确定",
+                cancelLabel:"取消",
+                daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+                ],
+                monthNames: [
+                    "一月",
+                    "二月",
+                    "三月",
+                    "四月",
+                    "五月",
+                    "六月",
+                    "七月",
+                    "八月",
+                    "九月",
+                    "十月",
+                    "十一月",
+                    "十二月"
+                ],
+            }
+        },
+        function(start, end) {
+            var datefmt = "YYYY-MM-DD HH:mm";
+            console.log(start.format(datefmt), end.format(datefmt));
+            $("#from_date").val(start.format(datefmt + ":00"));
+            $("#to_date").val(end.format(datefmt + ":59"));
+
+        }
+);
+
+$('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+$('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+
+$('#purchase_daterangepicker').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 1,
+            timePicker24Hour: true,
+            linkedCalendars: false,
+            locale:{
+                format: 'YYYY/MM/DD HH:mm',
+                applyLabel:"确定",
+                cancelLabel:"取消",
+                daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+                ],
+                monthNames: [
+                    "一月",
+                    "二月",
+                    "三月",
+                    "四月",
+                    "五月",
+                    "六月",
+                    "七月",
+                    "八月",
+                    "九月",
+                    "十月",
+                    "十一月",
+                    "十二月"
+                ],
+            }
+        },
+        function(start, end) {
+            var datefmt = "YYYY-MM-DD HH:mm";
+            console.log(start.format(datefmt), end.format(datefmt));
+            $("#purchase_from_date").val(start.format(datefmt + ":00"));
+            $("#purchase_to_date").val(end.format(datefmt + ":59"));
+
+        }
+);
+
+
+$('#purchase_daterangepicker').data("daterangepicker").setStartDate("{{ purchase_from_datestr }}");
+$('#purchase_daterangepicker').data("daterangepicker").setEndDate("{{ purchase_to_datestr }}");
+</script>
+{% endblock %}

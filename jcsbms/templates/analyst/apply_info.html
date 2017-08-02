@@ -1,0 +1,124 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h3>老师申请信息({{apply.handle_status|yesno:"已处理,未处理"}})</h3>
+
+<dl class="dl-horizontal">
+<dt>
+真实姓名:
+</dt>
+<dd>
+    {{ apply.real_name }}
+</dd>
+<dt>
+邮箱:
+</dt>
+<dd>
+    {{ apply.email }}
+</dd>
+<dt>
+微信:
+</dt>
+<dd>
+    {{ apply.weichat }}
+</dd>
+<dt>
+手机:
+</dt>
+<dd>
+    {{ apply.mobile }}
+</dd>
+<dt>
+擅长彩种:
+</dt>
+<dd>
+    {{ apply.skill }}
+</dd>
+<dt>
+简介:
+</dt>
+<dd>
+    {{ apply.brief }}
+</dd>
+{% if apply.handle_status == 1 %}
+ <dt>
+处理结果意见:
+</dt>
+<dd>
+    {{ apply.handle_result }}
+</dd>
+{% endif %}
+</dl>
+{% if apply.handle_status == 0 %}
+<form class="form-horizontal" action="" method="post" id="resultForm" name="resultForm" ng-controller="resultCtrl">
+{% csrf_token %}
+
+<input type="hidden" name="id" value="{{ apply.id }}">
+<fieldset>
+    <legend>处理结果</legend>
+    <div class="form-group">
+        <div class="col-sm-offset-1 col-sm-10">
+         <textarea class="form-control" ng-minlength="2" ng-maxlength="100" required="required" rows="3" name="handle_result" id="handle_result" ng-model="apply.handle_result">{{ apply.handle_result }}</textarea>
+        </div>
+        <br>
+            <div>
+                <div class="col-sm-offset-1 col-sm-6">
+
+                    <span class="text-danger" ng-show="resultForm.handle_result.$error.required">需要填写</span>
+                    <span class="text-danger" ng-show="resultForm.handle_result.$error.minlength">至少6个字符</span>
+                    <span class="text-danger" ng-show="resultForm.handle_result.$error.maxlength">至多300个字符</span>
+                </div>
+            </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-1 col-sm-10">
+         <button type="button" ng-click="postResult()" class="btn btn-primary btn-lg" ng-disabled="resultForm.$invalid" >已处理<img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+         <button type="button" ng-click="backtoList()" class="btn btn-primary btn-lg"  >回到列表</button>
+        </div>
+
+    </div>
+</fieldset>
+</form>
+
+{% endif %}
+{% endblock %}
+
+{% block postPageJS %}
+
+
+<script type="text/javascript">
+function resultCtrl($scope) {
+    {% if apply.handle_status == 0 %}
+        $scope.apply={handle_result:$("#handle_result").val()};
+    {% endif %}
+    $scope.postResult=function(){
+        next = "/laoshi/shengqinbiao/";
+      $(".btn-primary img").show();
+      $.post("", $("#resultForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("处理成功!");
+              location = next;
+            }else{
+              alert("处理失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+    $scope.backtoList=function(){
+        location="/laoshi/shengqinbiao/";
+
+    };
+
+}
+
+</script>
+{% endblock %}

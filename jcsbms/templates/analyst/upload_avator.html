@@ -1,0 +1,109 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+
+
+{% block title %}头像上传编辑-{% endblock %}
+{% block postPageCss %} 
+ <link rel="stylesheet" type="text/css" href="/static/jquery.imgareaselect/css/imgareaselect-default.css" />
+
+ 
+{% endblock %}
+
+{% block sidebar %}
+{% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h3>头像上传编辑</h3>
+<div class="row-well well-box">
+  <div  class="col-md-8">
+  <iframe name="uploadf" id="uploadf" align="middle" marginwidth="0" marginheight="0" src="/yonghu/avatar_upload/" frameborder="0" width="500" scrolling="no" height="30" allowTransparency="true" border="0"></iframe> 
+  <img alt="默认头像" id="avatar" src="/static/img/default_avatar.png"
+    style="width: 480px;margin-top: 20px; "  
+  />
+  <form class="form-horizontal" method="post" id="avatarForm">
+  <input name="aid" type="hidden" value="{{ analyst.id }}">
+  {% csrf_token %}
+  <input type="hidden" name="x1" value="" />
+  <input type="hidden" name="y1" value="" />  
+  <input type="hidden" name="x2" value="" />
+  <input type="hidden" name="y2" value="" />
+  <input type="hidden" name="img_url" value="" />
+<br><br>
+<div class="form-group">
+    <div class="text-center">
+         <button type="button" class="btn btn-primary" id="submit_button" disabled="disabled" onclick="avatar_submit()" class="btn btn-primary">提交头像</button>
+      
+    </div>
+</div>
+
+</form>
+  </div>
+  <div  class="col-md-4">
+    <div style="width:200px;height:200px;overflow: hidden;margin-top: 50px;">
+      <img alt="头像预览" id="avatar_preview" src="/static/img/default_avatar.png"
+        style="width: 480px;max-width: none;"  
+      />
+    </div> 
+  </div>
+</div>
+
+{% endblock %} 
+
+{% block postPageJS %}
+<script type="text/javascript" src="/static/jquery.imgareaselect/scripts/jquery.imgareaselect.pack.js"></script>
+<script type="text/javascript">
+
+function ready_image(){
+  $("#submit_button").prop("disabled",false);
+  $('img#avatar').imgAreaSelect({
+    x1: 0, y1: 0, x2: 200, y2: 200, 
+    aspectRatio: '1:1',
+    handles: true,
+    onSelectEnd: function(img, selection){
+        //console.log(img);
+        //console.log(selection);
+        if (selection.width>0){
+          view_preview(selection);
+          $('input[name="x1"]').val(selection.x1);
+          $('input[name="y1"]').val(selection.y1);
+          $('input[name="x2"]').val(selection.x2);
+          $('input[name="y2"]').val(selection.y2);
+          $("#submit_button").prop("disabled",false);
+        }else{
+          $("#submit_button").prop("disabled",true);
+        }
+    }
+  });
+}
+function view_preview(selection){
+  var ratio= 200.0/selection.width;
+  $("#avatar_preview").css("width",Math.round(480.0*ratio));
+  $("#avatar_preview").css("margin-left",Math.round(0-selection.x1*ratio));
+  $("#avatar_preview").css("margin-top",Math.round(0-selection.y1*ratio));
+  //console.log(ratio);
+  //console.log($("#avatar_preview").css("margin-left"));
+  //console.log($("#avatar_preview").css("margin-top"));
+  //console.log($("#avatar_preview").css("width"));
+}
+
+function image_preview(imageurl){
+  $('input[name="img_url"]').val(imageurl);
+  var url_prefix = "/static/";
+  imageurl = url_prefix + imageurl;
+  $("#avatar").prop("src",imageurl);
+  ready_image();
+  $("#avatar_preview").prop("src",imageurl);
+}
+function avatar_submit(){
+  $.post("/laoshi/touxiang/", $("#avatarForm").serialize(),
+        function(data){
+          if(data.result){
+            alert("头像提交成功");
+            location = '/yonghu/';
+          }else{
+            alert(data.message);
+          }
+  }, "json");
+}
+</script>
+{% endblock %}

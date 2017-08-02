@@ -1,0 +1,51 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-inline" method="POST" action="." enctype="multipart/form-data" onsubmit="return submit_confirm();">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="input_file">用户名单（第一列为userid)</label>
+                    <input class="form-control" type="file" id="input_file" name="input_file">
+                </div>
+
+                <div class="form-group">
+
+                    <button class="btn btn-primary" type="submit" id="up_btn">上传</button>
+                </div>
+
+                </fieldset>
+            </form>
+            <br><br>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+<script type="text/javascript">
+function submit_confirm(e) {
+    if ($("#input_file").val() == "") {
+        alert("请先选择文件!");
+        return false;
+    }
+    if (confirm("确认要上传?")) {
+        $("#up_btn").attr("disabled", "diabled");
+        return true;
+    }else{
+        return false;
+
+    }
+}
+</script>
+{% endblock %}

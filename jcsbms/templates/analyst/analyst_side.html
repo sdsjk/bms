@@ -1,0 +1,16 @@
+{% load i18n %}
+{%load jauth_tags %}
+<ul class="nav nav-pills nav-stacked">
+  <li><a href="/laoshi/wodewenzhang/">{% trans '我的文章' %}</a></li>
+  <li><a href="/laoshi/fabu/">{% trans '发布文章' %}</a></li>
+  <li><a href="/laoshi/xinxi/">{% trans '我的信息' %}</a></li>
+  {% if user.analyst.answer_level and user.analyst.answer_level.cost > 0 %}
+  <li><a href="/wenda/wode/">{% trans '收费问答' %}{% if question_count > 0 %}<span class="badge">{{question_count}}</span>{% endif %}</a></li>
+
+  {% endif %}
+  <li><a href="/site/wodexiaoxi/">{% trans '免费私信' %}{% if letters %}<span class="badge">{{letters|length}}</span>{% endif %}</a></li>
+  <li><a href="/app/laoshizhangmu/">{% trans '文章销售' %}</a></li>
+  <li><a href="/app/laoshizengsong/">{% trans '文章赠送' %}</a></li>
+  <li><a href="/laoshi/yaoqing/">{% trans '我的邀请' %}</a></li>
+
+</ul>

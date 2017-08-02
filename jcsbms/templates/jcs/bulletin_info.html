@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block content %}
+<div class="row">
+<div class="blog-post col-sm-offset-2 col-sm-8">
+    <h2 class="blog-post-title text-center">{{ bulletin.title }}</h2>
+
+<p class="blog-post-meta">{{  bulletin.date_added|date:"Y-m-d H:i" }}</p>
+    <hr>
+{{ bulletin.text|safe }}
+</div>
+
+</div>
+
+{% endblock %}

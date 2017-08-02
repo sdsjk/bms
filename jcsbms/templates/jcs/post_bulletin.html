@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{%load ueditor_tags %}
+
+
+{% block description %}{% endblock %}
+{% block postPageCss %}
+<style>
+
+
+</style>
+{% endblock %}
+{% block content %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="bulletinForm" name="bulletinForm" ng-controller="bulletinCtrl">
+{% csrf_token %}
+ {% if bulletin %}
+ <input name="id" type="hidden" value="{{ bulletin.id }}">
+ {% endif %}
+
+<fieldset>
+    <legend>文章编辑</legend>
+
+    <div class="form-group">
+       <div class="col-sm-6">
+         <input type="text" id="inputTitle"  class="form-control "  name="title" ng-model="bulletin.title" placeholder="请输入文章标题"  required  ng-minlength="2" ng-maxlength="100">
+       </div>
+       <div class="col-sm-6">
+        <span class="text-danger" ng-show="bulletinForm.title.$error.required">需要填写</span>
+        <span class="text-danger" ng-show="bulletinForm.title.$error.minlength">至少2个字符</span>
+        <span class="text-danger" ng-show="bulletinForm.title.$error.maxlength">至多100个字符</span>
+        </div>
+
+    </div>
+
+
+<div class="row">
+        <div class="col-sm-8">
+
+
+        <script id="textdescription" name="text"  style="display: inline-block;" type="text/plain">
+                  {{bulletin.text|safe}}</script>
+        </div>
+        <div class="col-sm-4">
+
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+         <button type="button" ng-click="postBulletin()" class="btn btn-primary btn-lg" >提交发布 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+
+        </div>
+        </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+{% ueditor %}
+<script type="text/javascript">
+    var ueditor = UE.getEditor('textdescription',{'initialFrameWidth': 685, 'initialFrameHeight': 600, 'serverUrl': '/ueditor/controller/?imagePathFormat=&filePathFormat='});
+     ueditor.ready(function(){
+
+     });
+</script>
+<script type="text/javascript">
+  function bulletinCtrl($scope){
+    {% if bulletin %}
+    $scope.bulletin={"title":"{{bulletin.title}}"};
+
+    {%endif  %}
+    $scope.checkForm=function(){
+
+        return true;
+    }
+
+
+    $scope.postBulletin=function(){
+      if(!$scope.checkForm()){
+          return;
+      }
+      //$('#textdescription').val(ueditor.getContent());
+      if(ueditor.getContent().length<6){
+        alert("内容不得少于6个字符");
+        return false;
+      }
+      if(ueditor.getContent().length>65518){
+        alert("内容不得多于65518个字符");
+        return false;
+      }
+      next = "/";
+      //console.log($('#textdescription').val());
+      $(".btn-primary img").show();
+      $.post("", $("#bulletinForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+
+
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="jcsApp">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}产品内容{% endblock %}</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="" />
+    <meta name="description" content="{% block description %}产品内容{% endblock %}">
+    <meta name="author" content="Stone">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap-theme.css">
+    <!-- Site Style Css-->
+    <link href="/static/css/site.css" rel="stylesheet">
+    {% block postPageCss %} {% endblock %}
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+     {#this part is for AngularJS IE compatibility#}
+     <!--[if lte IE 7]>
+      <script src="http://bestiejs.github.io/json3/lib/json3.min.js"></script>
+     <![endif]-->
+     <!--[if lte IE 8]>
+        <script>
+          document.createElement('ng-include');
+          document.createElement('ng-pluralize');
+          document.createElement('ng-view');
+
+          // Optionally these for CSS
+          document.createElement('ng:include');
+          document.createElement('ng:pluralize');
+          document.createElement('ng:view');
+        </script>
+     <![endif]-->
+
+    <!-- Fav and touch icons -->
+
+
+    <link rel="shortcut icon bookmark apple-touch-icon-precomposed" href="/static/img/fav.png"  />
+
+  </head>
+  <body>
+
+
+
+    <div class="container" style="min-height:680px;">
+        <br><br><br>
+
+      <div class="row">
+      <div class="col-sm-offset-4 col-sm-4">
+      <div class="panel panel-primary">
+  <!-- Default panel contents -->
+  <div class="panel-heading text-center">精彩说登录</div>
+  <div class="panel-body">
+
+
+      <form class="form-horizontal" action="" method="post" id="dengluForm" name="dengluForm" ng-controller="dengluCtrl">
+  {% csrf_token %}
+  <div class="form-group">
+
+    <div class="col-sm-12">
+      <input type="text" class="form-control" id="inputUserName"   name="username" ng-model="user.username" required placeholder="输入用户名">
+    </div>
+    <div class="col-sm-12">
+      <span class="text-danger" ng-show="dengluForm.userName.$error.required">需要填写</span>
+    </div>
+  </div>
+  <div class="form-group">
+
+    <div class="col-sm-12">
+      <input type="password" class="form-control" id="inputPassword"  name="password" ng-keyup="keyPress($event)" ng-model="user.password" autocomplete="off" required placeholder="输入密码">
+    </div>
+    <div class="col-sm-12">
+      <span class="text-danger" ng-show="dengluForm.Password.$error.required">需要填写</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="login()" class="btn btn-primary" ng-disabled="dengluForm.$invalid">登&nbsp;&nbsp;&nbsp;录</button> &nbsp;&nbsp;&nbsp;<a class="btn btn-link" href="/yonghu/zhaomima/">忘记密码</a>
+    </div>
+  </div>
+</form>
+</div>
+</div>
+</div>
+
+</div>
+    </div>
+    <footer class="navbar">
+      <br>
+      <div class="container">
+
+        <p class="text-center"><a href="#">联系方式</a>
+          | <a href="#" title="">精彩说</a>
+          | <a href="#" title="">信盈世纪</a>
+            <br>&copy; 2015 信盈世纪精彩说产品
+
+        </p>
+      </div>
+    </footer>
+    <script src="//cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/angular.js/1.2.29/angular.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="/static/js/site.js"></script>
+    {% block postPageJS %}
+<script>
+function dengluCtrl($scope,$http){
+	$scope.keyPress= function(event){
+		if (event.keyCode == "13"){
+			if(!$scope.dengluForm.$invalid){
+				$scope.login();
+			}
+
+		}
+	};
+    $scope.login = function(){
+      var next="{{ next }}";
+      //console.log(next);
+      $.post("/yonghu/denglu/", $("#dengluForm").serialize(),
+        function(data){
+          if(data.result){
+            alert("登录成功");
+            if(next.length>0){
+              location = next;
+            }else{
+              location = '/';
+            }
+
+          }else{
+            alert("登录失败");
+          }
+      }, "json");
+
+    };
+}
+</script>
+
+{% endblock %}
+  </body>
+</html>

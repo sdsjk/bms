@@ -1,0 +1,133 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="groupForm" name="groupForm" ng-controller="groupCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>组编辑</legend>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">组名称{{ group }}:</label>
+       <div class="col-sm-3">
+           <input type="text"  class="form-control" id="name" name="name" value="{{ group.name }}" placeholder="组名">
+       </div>
+
+    </div>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">序号:</label>
+       <div class="col-sm-3">
+           <input type="number" min="1" max="1000" class="form-control" id="level_number" name="level_number"  value="{{ group.level_number}}" placeholder="序号">
+       </div>
+
+    </div>
+    {% if group %}
+    <input name="id" value="{{ group.id }}" type="hidden">
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">相关价格选择:</label>
+       <div class="col-sm-3">
+
+              {% lprice_select %}
+
+       </div>
+       <div class="col-sm-3">
+        <button class="btn btn-primary" ng-click="addItem()">增加</button>
+       </div>
+
+    </div>
+    <div class="row" ng-init="getPrices()">
+        <label  class="col-sm-2 control-label">已有价格:</label>
+        <div class="col-sm-8">
+        {%verbatim%}
+        <button ng-repeat="price in liveprices" class="btn btn-info" data-id="{{ price.id }}" ng-click="removeItem($event)">{{ price.name }} X</button>
+        {% endverbatim %}
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <br>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postGroup()" class="btn btn-primary btn-lg" ng-disabled="groupForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+
+
+<script type="text/javascript">
+
+  function groupCtrl($scope,$http){
+    {% if group %}
+    $scope.liveprices=[];
+    $scope.group_id = {{ group.id }};
+    $scope.getPrices=function(){
+        $http.get('/laoshi/group_prices/', {params: {"groupid":$scope.group_id}}).
+        success(function(data) {
+            $scope.liveprices=data;
+        });
+
+
+
+    };
+    $scope.addItem=function(){
+        $http.post('/laoshi/group_addprice/', {"groupid":$scope.group_id,"priceid":$("#selectLivePriceplan").val()}).
+        success(function(data) {
+            if(data.result){
+                $scope.getPrices();
+                alert("添加成功");
+            }else{
+                alert(data.message);
+            }
+
+        });
+    };
+    $scope.removeItem=function(event){
+        var target = $(event.target);
+        console.log(target.attr("data-id"));
+        $http.post('/laoshi/group_delprice/', {"groupid":$scope.group_id,"priceid":target.attr("data-id")}).
+        success(function(data) {
+            if(data.result){
+                $scope.getPrices();
+                alert("删除成功");
+            }else{
+                alert(data.message);
+            }
+
+        });
+    };
+
+    {% endif %}
+
+    $scope.postGroup=function(){
+      next = "/laoshi/zubiao/";
+      $(".btn-primary img").show();
+      $.post("/laoshi/zu/", $("#groupForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+
+
+  }
+</script>
+{% endblock %}

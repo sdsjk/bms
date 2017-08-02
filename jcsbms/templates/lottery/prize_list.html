@@ -1,0 +1,69 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+
+
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<div class="row">
+<div class="col-md-12">
+<form class="form-inline" method="get" action="#">
+<fieldset>
+    <button type="submit" class="btn btn-default">搜索</button>
+</fieldset>
+</form>
+<br><h3 class="text-primary"></h3>
+<a class="btn btn-primary" href="/caishi/jincaibianji/">新增竞猜</a>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>赛事</th>
+    <th>开始时间</th>
+    <th>结束时间</th>
+    <th>奖金总额</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+
+{% for prize in pager.object_list %}
+<tr>
+<td>{{ prize.id}}</td>
+<td>{{ prize.match.home_team }}vs{{ prize.atch.away_team }}@{{ prize.match.start_time|date }}</td>
+<td>{{ prize.start_time|date:"Y-m-d H:i" }}</td>
+<td>{{ prize.end_time|date:"Y-m-d H:i"}}</td>
+
+<th>{{  prize.reward }}</th>
+<td>
+    <div class="btn-group">
+
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">操作<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="/caishi/jincaibianji/?id={{ prize.id }}">修改</a></li>
+
+        </ul>
+    </div>
+
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+<script type="text/javascript">
+
+</script>
+{% endblock %}

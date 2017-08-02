@@ -1,0 +1,102 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{#this template is replaced by home_login.djhtml #}
+{% block title %}付费问答-精彩说{% endblock %}
+{% block postPageCss %}
+<style>
+.letters-list .letter-item a{
+color:#333333;
+
+}
+.letters-list .letter-item a.btn-link{
+color: #08c;
+
+}
+.letters-list .letter-item{
+  background-color: #FFFFFF;
+  clear: both;
+    list-style: none
+}
+.letters-list .letter-item div {
+    padding: 15px;
+    max-width: 80%;
+    min-width: 50%;
+    float: left;
+    margin-top: 12px;
+    border-radius: 6px;
+}
+.letters-list .letter-item div.text-right {
+
+
+    float: right;
+}
+</style>
+{% endblock %}
+{% block sidebar %}
+{% analyst_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="well well-box" ng-controller="questionsCtrl">
+
+<div class="tab-content">
+  <div class="tab-pane active" id="unread" ng-controller="unreadCtrl">
+    <br>
+    {% for object in pager.object_list %}
+    <div class="panel panel-{{ object.unread|yesno:"primary,default,default" }} container-fluid">
+      <div class="panel-heading row "><div class="col-sm-6">来自*******{{object.from_user.username|slice:"-4:"}}的问题</div><div class="col-sm-6 text-right">{{ object.unread|yesno:"有新消息,," }}  &nbsp;&nbsp;{{object.date_added|date:"y-m-d H:i"}}</div></div>
+      <div class="panel-body">
+          <a href="/wenda/wenti/?id={{ object.id }}" >
+            {{ object.content|truncatechars:32 }}
+            <hr>
+             {{ object.lastinfo }}
+              {{ object.lastinfo_date|safe }}
+          </a>
+      </div>
+      <div class="panel-footer row text-right"></div>
+    </div>  
+    {% endfor %}
+    {% pager %}
+
+  </div>
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/angular.js/1.2.29/angular-sanitize.min.js"></script>
+<script>
+$(function () {
+  $('#letterTab a').click(function (e) {
+    e.preventDefault();
+    $(this).tab('show');
+  });
+});
+var uiId = "{{user.id}}";
+angular.module('jcsApp.services', [])
+.factory('readDataService', function() {
+  var user_id;
+  var reading_offset;
+  return {
+    getUserid: function() {
+      return user_id;
+    },
+    setUserid: function(userid) {
+      user_id = userid;
+    },
+    getOffset: function() {
+      return reading_offset;
+    },
+    setOffset: function(readingoffset) {
+      reading_offset = readingoffset;
+    }
+  };
+});
+function questionsCtrl() {
+
+}
+function unreadCtrl() {
+
+}
+
+</script>
+{% endblock %}

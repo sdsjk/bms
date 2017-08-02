@@ -1,0 +1,127 @@
+{% load i18n %}
+{%load jauth_tags %}
+<nav class="sidenav" ng-controller="sidenavCtrl">
+<ul class="nav nav-pills nav-stacked">
+    <li><a href="#">{% trans '编辑管理' %}</a>
+    <ul class="nav">
+        <!--li><a href="/wenzhang/authorsearch/">抓取文章库</a></li-->
+         {% if 'article.junior_editor_cut' in perms or 'suppor' in perms%}
+        <li><a href="/wenzhang/sousuo/">{% trans '正式文章库' %}</a></li>
+         {%  endif %}
+     {% if 'article.junior_editor_translate' in perms or 'suppor' in perms%}
+        <li><a href="/wenzhang/translate/">Translation article library</a></li>
+    {%  endif %}
+    {% if 'article.junior_editor_translate' not in perms and 'article.junior_editor_cut' not in perms%}
+        <li><a href="/wenzhang/shouyeshenhe/">{% trans '首页审核表' %}</a></li>
+        <li><a href="/wenzhang/redblack_options/" style="display: none">红黑判断</a></li>
+        <li><a href="/wenzhang/black_red_search/" style="display: none">文章红黑库</a></li>
+        <li><a href="/caishi/" style="display: none">赛事管理</a></li>
+        <li><a href="/caishi/duimingbiao/" style="display: none">队名表</a></li>
+{#         {% if perms.article.junior_editor%}#}
+
+
+        <li><a href="/app/guanggaobiao/">{% trans '广告管理' %}</a></li>
+
+        <li><a href="/app/rukouguanli/">{% trans '入口管理' %}</a></li>
+    {%  endif %}
+{#         {% endif %}#}
+        <li><a href="/site/sixinshencha/" style="display: none">私信审查</a></li>
+        <li><a href="/site/gonggaoguanli/" style="display: none">公告管理</a></li>
+        <!--li><a href="/caishi/jincaibiao/">竞猜表</a></li-->
+        <li><a href="/caishi/saiduibiao/" style="display: none">赛队表</a></li>
+        <li><a href="/caishi/cup_league/" style="display: none">杯赛联赛表</a></li>
+        <li><a href="/caishi/rx9/" style="display: none">任9赛事表</a></li>
+        {% if is_xiaomishu or user.id == 1 %}
+        <li><a href="http://123.57.59.76:9080/user/list" target="jcsadmin" style="display: none">用户微信管理</a> </li>
+        {% endif %}
+        <!--li><a href="/caishi/saichenbiao/">固定赛程</a></li-->
+
+
+    </ul>
+  </li>
+    {% if user.id == 1 or user.id == 1000044%}
+  <li><a href="#">{% trans '老师和用户' %}</a>
+    <ul class="nav">
+        <li><a href="/laoshi/sousuo/">{% trans '分析师管理' %}</a></li>
+        <li><a href="/laoshi/zubiao/" style="display: none">老师组</a></li>
+        <li><a href="/laoshi/zhibojiagebiao/" style="display: none">包时价格表</a></li>
+        <li><a href="/app/users/">{% trans '用户管理' %}</a></li>
+        <li><a href="/app/user_last_active/" style="display: none">最后活动时间</a></li>
+        <li><a href="/laoshi/shengqinbiao/" style="display: none">老师申请</a></li>
+        <li><a href="/app/qudaoyonghu/">{% trans '渠道用户' %}</a></li>
+        <li><a href="/app/cheat_monitor/" style="display: none">作弊监控</a></li>
+        <li><a href="/laoshi/probability/" style="display: none">讲师胜率</a></li>
+
+    </ul>
+  </li>
+  <li><a href="#">{% trans '财务管理' %}</a>
+    <ul class="nav">
+        <li><a href="/app/zhifu/">{% trans '文章购买' %}</a></li>
+        <li><a href="/app/zengsong/">{% trans '文章赠送' %}</a></li>
+        <li><a href="/app/baoyuegoumai/" style="display: none">包月购买</a></li>
+        <li><a href="/app/xianjingliushui/">{% trans '现金金额' %}</a></li>
+        <li><a href="/app/chongzhi/">{% trans '账户流水明细' %}</a></li>
+        <li><a href="/app/chongzhipaihang/" style="display: none">账户异动监测</a></li>
+        <li><a href="/laoshi/jiagebiao/" style="display: none">价格方案</a></li>
+        <li><a href="/app/chongzhiplan/">{% trans '充值方案' %}</a></li>
+        <li><a href="/app/laoshishouru/">{% trans '老师收入' %}</a></li>
+        <li><a href="/app/article_log/">{% trans '文章操作日志' %}</a></li>
+        <li><a href="/app/piliangtuifei/" style="display: none">批量退费</a></li>
+        <li><a href="/app/pullnew/" style="display: none">拉新结算</a></li>
+    </ul>
+  </li>
+  <li><a href="/app/rizhi/">{% trans '操作日志' %}</a></li>
+
+  <li><a href="#">{% trans '缓存工具' %}</a>
+    <ul class="nav">
+        <li><a href="/app/huancuncaozuo/">{% trans '缓存操作' %}</a></li>
+    </ul>
+   <li><a href="/app/traslate_balance/">{% trans '翻译结算' %}</a></li>
+  </li>
+  {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  {% comment %}
+  <li><a href="/wenzhang/">所有爬虫文章</a></li>
+  {% endcomment %}
+</ul>
+</nav>
+<script>
+    function sidenavCtrl(){
+        $("nav.sidenav>ul.nav>li>a").click(function(){
+            $(this).parent("li").children("ul.nav").toggleClass("active")
+
+        })
+        $(function(){
+            /*
+             * Sidenav的Acitve状态判定.
+             */
+            var nav_items = $("ul.nav.nav-pills>li>ul.nav>li");
+            if(nav_items.size()>0){
+                nav_items.each(function( index ) {
+                    if($(this).children("a").attr("href")==location.pathname){
+                        $(this).addClass("active");
+                        $(this).parent("ul").addClass("active");
+                        $(this).parent("ul").parent("li").addClass("active");
+                        return false;
+                    }
+                });
+
+            }
+        });
+
+    }
+</script>

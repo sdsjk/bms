@@ -1,0 +1,126 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+{% load i18n %}
+{%load jauth_tags %}
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row">
+<div class="col-md-12">
+<h4>传送门</h4>
+
+    <a class="btn btn-primary" href="/app/bianjirukou/">新增传送门</a><br>
+<table class="table table-bordered table-striped table-hover sortable">
+
+<thead>
+<tr><th>ID</th>
+    <th>{% trans '用户可选' %}</th>
+    <th>{% trans '名字' %}</th>
+    <th>{% trans '在线状态' %}</th>
+    <th>{% trans '添加时间' %}</th>
+    <th>{% trans '序号' %}</th>
+    <th>{% trans '所属项目' %}</th>
+    <th>{% trans '操作' %}</th>
+
+
+</tr>
+</thead>
+<tbody>
+{% for object in pager.object_list %}
+<tr>
+<td>{{ object.id }}</td>
+<td>{{ object.can_selected}}</td>
+<td>{{ object.name}}</td>
+<td>{{ object.is_online|yesno:"在线,下线,下线" }}</td>
+<td>{{ object.date_added|date }}</td>
+<td>{{ object.rank }}</td>
+<td>
+    {% if object.project == 'M' %}
+        国语
+    {% elif object.project == 'C' %}
+        粤语
+    {% elif object.project == 'J' %}
+        一起赢
+    {% endif %}
+</td>
+<td>
+    <div class="btn-group">
+
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">{% trans '操作' %}<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="/app/bianjirukou/?id={{ object.id }}">{% trans '修改' %}</a></li>
+          {% if object.is_online %}
+          <li><a href="javascript:void(0)" onclick="down_portal('{{ object.id }}')">{% trans '下线' %}</a></li>
+          {% else %}
+            <li><a href="javascript:void(0)" onclick="online_portal('{{ object.id }}')">上线</a></li>
+          {% endif %}
+        </ul>
+    </div>
+</td>
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+<script type="text/javascript">
+function online_portal(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/app/online_portal/", data,
+        function(data){
+            if(data.result){
+              alert("操作成功!");
+              location.reload()
+            }else{
+              alert("操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+function down_portal(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/app/down_portal/", data,
+        function(data){
+            if(data.result){
+              alert("操作成功!");
+              location.reload()
+            }else{
+              alert("操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+</script>
+{% endblock %}

@@ -1,0 +1,5 @@
+<select class="form-control"  id="selectAnalystlevel" name="level">
+    {% for analyst_level in analyst_levels %}
+    <option value="{{ analyst_level.id }}">{{ analyst_level.name }}</option>
+    {% endfor %}
+</select>

@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{%load ueditor_tags %}
+{%load lottery_tags %}
+{%load app_tags %}
+{% block description %}{% endblock %}
+{% block postPageCss %}
+    {% load i18n %}
+{%load jauth_tags %}
+<style>
+
+
+</style>
+{% endblock %}
+{% block content %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="articleForm" name="articleForm" ng-controller="articleCtrl">
+{% csrf_token %}
+ {% if article %}
+ <input name="id" type="hidden" value="{{ article.id }}">
+ {% endif %}
+<input type="hidden" id="language" name="language" value="M">
+<fieldset>
+    <legend>{% trans '文章编辑' %}</legend>
+<div class="row">
+        <div class="col-sm-8">
+
+          {% if  analyst.analyst_type == 0 %}
+              {% if not article  %}
+              <div class="form-group">
+
+                <div class="col-sm-8">
+                  <div class="checkbox input-lg">
+                    <label >
+                      <input id="checkChargeable" name="chargeable" type="checkbox" ng-model="article.chargeable" ng-change="checkLeft()" />  {% trans '发表收费文章' %}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              {% if default_price > 0 or price_range %}
+              <div class="form-group" ng-show="article.chargeable">
+                  <div class="col-sm-11">
+                      <span>{% trans '文章价格' %}:</span><input type="number" style="display: inline; width: 20%; margin-left: 5px; margin-right: 5px;" name="price" id="price" class="form-control" value="{{ default_price }}" placeholder={% trans '请输入本文价格' %} {% if price_range %}min="{{ price_range.low_price }}" max="{{ price_range.high_price }}"{% endif %}> {% trans '元' %}{% if price_range %}<span class="help-block" style="display: inline-block">{% trans '定价区间' %}{{ price_range.low_price }}-{{ price_range.high_price }}</span>{% endif %}
+                  </div>
+              </div>
+              {% endif %}
+              <div class="form-group" ng-show="article.chargeable">
+
+                  <div class="col-sm-11">
+                      <textarea class="form-control" required  ng-minlength="6" ng-maxlength="300" ng-model="article.digest" id="digestText" name="digest" rows="6" placeholder={% trans '收费文章摘要可免费观看,请勿泄露任何关键收费内容' %}>{{ article.digest }}</textarea>
+                  </div>
+                  <br>
+                  <div>
+                      <div class="col-sm-6">
+                          <span class="text-info">{% verbatim %}{{ article.digest.length }}{% endverbatim %}</span>
+                          <span class="text-danger" ng-show="articleForm.digest.$error.required">{% trans '需要填写' %}</span>
+                          <span class="text-danger" ng-show="articleForm.digest.$error.minlength">{% trans '至少6个字符' %}</span>
+                          <span class="text-danger" ng-show="articleForm.digest.$error.maxlength">{% trans '至多300个字符' %}</span>
+                      </div>
+                  </div>
+              </div>
+            {% endif %}
+        <div class="form-group" ng-show="article.chargeable">
+            <div class="col-sm-12 ">
+            {% trans '以下为收费内容,用户购买后才可阅读.' %}
+             </div>
+            <div class="col-sm-12 text-danger">
+                {% trans '比赛开始' %}{{ auto_unlock_hours }}{% trans '小时后，收费内容将免费公布.' %}
+            </div>
+        </div>
+        <div class="form-group" ng-show="!article.chargeable">
+            <div class="col-sm-12">
+            {% trans '以下为免费内容,所有用户皆可阅读.' %}
+             </div>
+        </div>
+        <script id="textdescription" name="text"  style="display: inline-block;" type="text/plain">
+                  {{article.text|safe}}</script>
+        </div>
+        <div class="col-sm-4">
+            <!--div class="text-danger" ng-show="article.chargeable">
+                收费文章必须匹配到比赛.
+            </div-->
+          {% analystlottery_select %}
+        </div>
+    </div>
+    {% if not article %}
+            <div class="form-group">
+                <div class="col-sm-8">
+                  <div class="checkbox input-lg" >
+                    <label ng-if="article.m_toppage_leftcount>0 || article.c_toppage_leftcount > 0">
+                      <input id="is_toppage"  name="is_toppage" type="checkbox" ng-model="article.is_toppage" />{% trans '上首页(今天还可上' %}{% verbatim %}{{ article.m_toppage_leftcount }}篇国语和{{ article.c_toppage_leftcount }}篇粤语{% endverbatim %}<span ng-if="article.chargeable">{% trans '收费' %}</span><span ng-if="!article.chargeable">{% trans '免费' %}</span>{% trans '文章' %})
+                    </label>
+                    <label class="text-danger" ng-if="article.m_toppage_leftcount<=0 && article.c_toppage_leftcount <= 0">{% trans '今日' %}<span ng-if="article.chargeable">{% trans '收费' %}</span><span ng-if="!article.chargeable">{% trans '免费' %}</span>文{% trans '章上首页次数已用完,本文将不会在首页显示' %}</label>
+                  </div>
+                </div>
+              </div>
+    {% endif %}
+    <div class="form-group input-lg" style="height: auto">
+        <div class="col-sm-2">
+            {% trans '相关标签' %}:
+        </div>
+        <div>
+            {% portal_checks %}
+        </div>
+    </div>
+    {% if activitys %}
+        <div class="form-group input-lg" style="height: auto">
+        <div class="col-sm-2">
+            {% trans '发送到活动' %}:
+        </div>
+        <div>
+            <label>
+                <input type="radio" name="activityid" value="">{% trans '不参加' %}
+            </label>
+            {% for activity in activitys %}
+                <label>
+                <input type="radio" name="activityid" value="{{ activity.id }}">
+                {{ activity.activity_name }}
+              </label>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+{#    <div class="form-group input-lg" style="height: auto">#}
+{#        <div class="col-sm-2">#}
+{#            指定老师:#}
+{#        </div>#}
+{#        <div class="col-sm-4">#}
+{#            <input type="text" id="nick_name" name="nick_name">#}
+{#        </div>#}
+{#    </div>#}
+    {% if is_zhuanqu_editor %}
+    <div class="form-group input-lg" style="height: auto">
+        <div class="col-sm-2 control-label">
+            {% trans '原老师编号' %}:
+        </div>
+        <div class="col-sm-4">
+            <input type="text"  required="required"  class="" id="origin_author" name="origin_author" placeholder={% trans '原老师编号' %}>
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+        <div class="col-sm-12">
+         {% if analyst.is_mandarin_perm %}
+         <button type="button" ng-click="postArticle('M')" name="language" class="btn btn-primary btn-lg" > {% trans '发布国语文章' %}<img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+         {% endif %}
+         {% if analyst.is_cantonese_perm %}
+         <button type="button" ng-click="postArticle('C')" name="language" class="btn btn-primary btn-lg" >{% trans '发布粤语文章' %}<img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+         {% endif %}
+            <!-- <label class="input-lg"><input id="is_yiyuan"  name="is_yiyuan" type="checkbox" value="1"/> 同时发布到一元专区</label> -->
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+{% ueditor %}
+<script type="text/javascript">
+    var ueditor = UE.getEditor('textdescription',{'initialFrameWidth': 685, 'initialFrameHeight': 600, 'serverUrl': '/ueditor/controller/?imagePathFormat=&filePathFormat='});
+     ueditor.ready(function(){
+
+     });
+</script>
+<script type="text/javascript">
+  function articleCtrl($scope,$http){
+    $scope.checkedLotteries=[];
+    {% if article %}
+    $scope.article={"chargeable":{{ article.chargeable|yesno:"true,false,false"}},
+                    "is_toppage":false,
+                    "digest":$("#digestText").val()};
+    $scope.checkLeft = function(){};
+        {% for portal in article.portal_tags.all %}
+
+            $(":checkbox[value='{{ portal.id }}']").prop( "checked", true );
+        {% endfor %}
+    {% else %}
+    $scope.article={chargeable:false,
+                   is_toppage:false};
+    $scope.checkLeft = function(){
+        $http.get("/laoshi/jinrifawen/",{params:{"chargeable":$scope.article.chargeable,"r":Math.random()}}).success(function(data){
+                    $scope.article.m_toppage_leftcount= data.m_left_count;
+                    $scope.article.c_toppage_leftcount= data.c_left_count;
+
+                }
+            );
+
+    }
+    $scope.checkLeft();
+    {%endif  %}
+    $scope.checkForm=function(){
+
+        if($scope.article.chargeable){
+            if($scope.articleForm.digest.$error.required||$scope.articleForm.digest.$error.maxlength||$scope.articleForm.digest.$error.minlength) {
+                alert("收费文章摘要字数不符合要求")
+                return false;
+            }
+            {% if default_price > 0 and price_range %}
+            var price = $("#price").val();
+            if (!$.isNumeric(price)) {
+                alert("价格必须填数字!");
+                return false;
+            }else {
+                price = parseInt(price);
+                if (price < 1) {
+                    alert("价格必须大于0!");
+                    return false;
+                }
+                {% if price_range %}
+                var low_price = {{ price_range.low_price }};
+                var high_price = {{ price_range.high_price }};
+                if (price < low_price || price > high_price) {
+                    alert("文章定价超出了定价区间!");
+                    return false;
+                }
+                {% endif %}
+            }
+            {% endif %}
+        }
+
+        return true;
+    }
+    $scope.postArticle=function(language){
+        $('#language').val(language);
+
+        if($scope.checkedLotteries.length==0){
+            if(!confirm("你的文章没有选择赛事，提交之后不可修改，是否提交？"))
+
+            return;
+        }
+        else{
+            for( var i = 0; i < $scope.checkedLotteries.length; i ++){
+                var lottery = $scope.checkedLotteries[i];
+                if( (language == 'M' && lottery.name.indexOf('粤语') != -1) ||
+                    (language == 'C' && lottery.name.indexOf('国语') != -1) ){
+                    alert('你选择的比赛和文章的语言不匹配，无法发布!');
+                    return;
+                }
+            }
+        }
+
+        {% if is_zhuanqu_editor %}
+            if(!$.isNumeric($('#origin_author').val())){
+                alert('请输入原老师编号');
+                return false;
+            }
+        {% endif %}
+        if (!$scope.article.is_toppage){
+            $scope.realpostArticle();
+            return;
+        }
+
+
+        {% if article %}
+            /*
+            $http.get("/laoshi/jinrifawen/",{params:{id:"{{ article.id }}","chargeable":$scope.article.chargeable}}).success(function(data){
+            if(!data.result>0){
+              if(confirm("每天仅允许2篇收费文章,5篇免费文章上首页,本文现在发布将不会在首页显示,确认还要发布?")) {
+                  $scope.realpostArticle();
+              }
+            }else{
+              $scope.realpostArticle();
+            }
+            });*/
+        {% else %}
+        $http.get("/laoshi/jinrifawen/",{params:{"chargeable":$scope.article.chargeable,"r":Math.random()}}).success(function(data){
+            var language = $('#language').val();
+            if(data.m_left_count<=0 &&language == 'M'){
+              if(confirm("每天仅允许" + data.m_top_page_charge_max + "篇国语收费文章," + data.m_top_page_free_max + "篇国语免费文章上首页,本文现在发布将不会在首页显示,确认还要发布?")) {
+                  $scope.realpostArticle();
+              }
+            }
+            else if(data.c_left_count<=0 &&language == 'C') {
+                if (confirm("每天仅允许" + data.c_top_page_charge_max + "篇粤语收费文章," + data.c_top_page_free_max + "篇粤语免费文章上首页,本文现在发布将不会在首页显示,确认还要发布?")) {
+                    $scope.realpostArticle();
+                }
+            }else{
+              $scope.realpostArticle();
+            }
+        });
+        {% endif %}
+
+    }
+
+    $scope.realpostArticle=function(){
+      if(!$scope.checkForm()){
+          return;
+      }
+      //$('#textdescription').val(ueditor.getContent());
+      if(ueditor.getContent().length<16){
+        alert("内容不得少于16个字符");
+        return false;
+      }
+      if(ueditor.getContent().length>65518){
+        alert("内容不得多于65518个字符");
+        return false;
+      }
+      if($(":checked[name='portaltags']").length>1){
+         alert("最多只能选1个标签");
+         return false;
+      }
+      if($(":checked[name='portaltags']").length == 1){
+        var language = $('#language').val();
+        if (language == 'M' && $(":checked[name='portaltags']").val() == "{{ zoudi_id }}"){
+          alert("国语版滚球文章不能发到走地标签");
+          return false;
+        }
+      }
+
+      next = "/laoshi/wodewenzhang/";
+      //console.log($('#textdescription').val());
+      $("button.btn-primary").prop( "disabled", true );
+      $(".btn-primary img").show();
+      $.post("", $("#articleForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $("button.btn-primary").prop( "disabled", false );
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+    $scope.has_banned=function(){
+        $http.post("/wenzhang/has_banned/", {"text":ueditor.getContent()}).success(
+        function(data){
+            if(data.result){
+              alert("文字中包含敏感词:"+data.message);
+              return true;
+            }else{
+              return false
+
+            }
+        });
+    }
+
+
+  }
+</script>
+{% endblock %}

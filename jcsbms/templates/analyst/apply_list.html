@@ -1,0 +1,69 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+
+
+
+{% block sidebar %}
+{% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline" method="get" action="#" >
+  <fieldset>
+
+  <div class="form-group">
+      <input type="hidden" name="action" value="search">
+        <input type="checkbox" class="form-control" {{handle_status|yesno:"checked,," }} id="handle_status" name="handle_status">只显示未处理的
+  </div>
+      <button class="btn btn-primary" type="submit">搜索</button>
+  </fieldset>
+</form>
+
+<table class="table table-bordered table-striped table-hover sortable">
+<thead>
+<tr><th>ID</th>
+    <th>姓名</th>
+    <th>邮箱</th>
+    <th>微信号</th>
+    <th>手机号</th>
+    <th>擅长彩种</th>
+    <th>申请时间</th>
+    <th>状态</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+{% for apply in pager.object_list %}
+    <tr>
+    <td>{{ apply.id }}</td>
+    <td>{{ apply.real_name }}</td>
+    <td>{{ apply.email }}</td>
+    <td>{{ apply.weichat}}</td>
+    <td>{{ apply.mobile }}</td>
+    <td>{{ apply.skill }}</td>
+    <td>{{ apply.date_added|notzdate }}</td>
+    <td>
+        {{ apply.handle_status|yesno:"已处理,未处理" }}
+    </td>
+    <td>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                操作 <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="/laoshi/shenqing/?id={{ apply.id }}">处理申请</a></li>
+            </ul>
+        </div>
+    </td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+{% pager %}
+{% csrf_token %}
+{% endblock %}
+
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+
+{% endblock %}

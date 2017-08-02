@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport"/>
+<title>欧洲杯</title>
+<link href="images/styles.css" rel="stylesheet" type="text/css">
+<script src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/tabs.js"></script>
+</head>
+
+<body class="mbox">
+	<div class="topvid"><span class="logo"><img src="images/top_logo.png"></span></div>
+    <div class="video"><img src="images/img2.jpg"></div>
+    <div class="vit_box">
+    	<div class="select_box">
+                              <span class="select_txt"><input name="" type="text" value="黄健翔解说"></span>
+                              <a class="selet_open"><b><img src="images/sebg.png"></b></a>                    
+                              <div class="posR">
+                                <div class="option">
+                                  <a>黄健翔解说</a>
+                                  <a>黄健翔解说</a>
+                                  <a>黄健翔解说</a>
+                                </div>
+                              </div>
+                            </div>
+        <span class="tit">欧洲杯  爱尔兰VS比利时</span>
+        <div class="share"><a href="#"><i><img src="images/shre.png"></i>分享</a></div>
+    </div>
+    <div class="ipt_box">
+    	<span class="ipnt"><input name="" type="text" placeholder="发送弹幕"></span>
+        <span class="btn"><a href="#">发 送</a></span>
+    </div>
+    <div class="tablist tabt">
+    	<div class="hd">
+        	<ul class="jTabs">
+            	<li><a href="javascript:">本场专家解盘</a></li>
+                <li><a href="javascript:">评论</a></li>
+            </ul>
+        </div>
+        <div class="bd">
+        	<div class="jCons">
+            <div class="listbd">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd>带彩大哥</dd>
+                </dl>
+                <div class="txtcon">无论是从联赛，还是双方交战往绩来看，这都是一场旗鼓相当的比赛。不过即使如此...</div>
+                <div class="time">
+                	<span class="t_xt">05-28 23:00</span>
+                    <span class="btn"><a href="#">给他留言</a></span>
+                </div>
+            </div>
+            <div class="listbd">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd>带彩大哥</dd>
+                </dl>
+                <div class="txtcon">无论是从联赛，还是双方交战往绩来看，这都是一场旗鼓相当的比赛。不过即使如此...</div>
+                <div class="time">
+                	<span class="t_xt">05-28 23:00</span>
+                    <span class="btn"><a href="#">给他留言</a></span>
+                </div>
+            </div>
+            <div class="listbd">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd>带彩大哥</dd>
+                </dl>
+                <div class="txtcon">无论是从联赛，还是双方交战往绩来看，这都是一场旗鼓相当的比赛。不过即使如此...</div>
+                <div class="time">
+                	<span class="t_xt">05-28 23:00</span>
+                    <span class="btn"><a href="#">给他留言</a></span>
+                </div>
+            </div>
+            </div>
+            <div class="jCons">
+            	<div class="comment">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd><span class="title">7890</span><span class="time">05-28 23:00</span></dd>
+                    <dd>精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩！</dd>
+                </dl>
+            </div>
+            <div class="comment">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd><span class="title">7890</span><span class="time">05-28 23:00</span></dd>
+                    <dd>精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩！</dd>
+                </dl>
+            </div>
+            <div class="comment">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd><span class="title">7890</span><span class="time">05-28 23:00</span></dd>
+                    <dd>精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩！</dd>
+                </dl>
+            </div>
+            <div class="comment">
+            	<dl>
+                	<dt><img src="images/img2.jpg"></dt>
+                    <dd><span class="title">7890</span><span class="time">05-28 23:00</span></dd>
+                    <dd>精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩精彩！</dd>
+                </dl>
+            </div>
+            </div>
+        </div>
+    </div>
+    <script>
+$(".select_box").click(function (event) {
+      event.stopPropagation();
+      $(this).find(".option").toggle();
+      $(this).css('z-index', 2).parent().siblings().find(".option").hide();
+    });
+    $(document).click(function (event) {
+      var eo = $(event.target);
+      if ($(".select_box").is(":visible")
+        && eo.attr("class") != "option" && !eo.parent(".option").length) {
+        $('.option').hide();
+        $(".select_box").css('z-index', 1);
+      }
+    });
+</script>
+<script>
+	new Tabs($('.tabt'),{
+							tabs : '.jTabs li',
+							views : '.jCons',
+							nextBtn : '.slider-btnnext',
+							prevBtn : '.slider-btnprev',
+							evtType : 'mouseover',
+							onTabChange : $.noop,
+							tabClass : 'now',
+							showIndex : 0,
+							loop : false,
+							autoPlay : false
+							//interval : 2*1000
+				})
+</script>
+</body>
+</html>

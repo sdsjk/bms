@@ -1,0 +1,93 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+
+
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<div class="row">
+<div class="col-md-12">
+<form class="form-inline" method="get" action="/caishi/duimingbiao/">
+<fieldset>
+
+
+    <div class="form-group">
+        <input type="search" class="form-control" value="{{ original_name }}" name="original_name" id="original_name" placeholder="请输入队名关键字">
+    </div>
+    <div class="form-group">
+        <input type="checkbox" class="form-control" name="only_unmodified" checked="checked" id="only_unmodified" >只看未确认的
+    </div>
+  <button type="submit" class="btn btn-default">搜索</button>
+
+
+
+</fieldset>
+</form>
+     <br>
+    <h3 class="text-primary">队名列表</h3>
+
+
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>新增时间</th>
+    <th>杯名</th>
+    <th>原始队名</th>
+    <th>标准队名</th>
+
+</tr>
+</thead>
+<tbody>
+
+{% for object in pager.object_list %}
+<tr>
+<td><a href="/caishi/duimingbianji/?id={{ object.id }}">{{ object.id }}</a></td>
+<td>{{ object.date_added|date }}</td>
+<td>{{ object.cup_name }}</td>
+<td>{{ object.original_name}}</td>
+<td><input id="as-{{ object.id }}" value="{{ object.standard_name }}" /> <button class="btn btn-primary" onclick="save_name('{{ object.id }}')">保存</button> </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+<script type="text/javascript">
+$(function(){
+    $("#only_unmodified").prop("checked",{{ only_unmodified|yesno:"true,false,true" }})
+
+});
+function save_name(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+        "standard_name":$("#as-"+id).val()
+    };
+
+    $.post("/caishi/post_standardname/", data,
+        function(data){
+            if(data.result){
+              alert("提交成功!");
+            }else{
+              alert("提交失败："+data.message)
+            }
+        }, "json");
+}
+</script>
+{% endblock %}

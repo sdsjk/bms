@@ -1,0 +1,253 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+
+{% block postPageCss %}
+{% load i18n %}
+{%load jauth_tags %}
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<div class="row">
+<div class="col-md-12">
+<form class="form-inline" method="get" action="#">
+<fieldset>
+
+    <div style="margin-top: 100px;margin-left: 200px;">
+        <input type="text" class="form-control" name="article_id" id="article_id" placeholder={% trans '文章ID' %}>
+        <button type="button" class="btn btn-default" onclick="del_article_redis()">{% trans '删除文章缓存' %}</button>
+    </div>
+
+    <div style="margin-top: 15px;margin-left: 200px;">
+        <input type="text" class="form-control" name="push_article_id" id="push_article_id" placeholder={% trans '文章ID' %}>
+        <button type="button" class="btn btn-default" onclick="push_article_redis()">{% trans '发布文章消息' %}</button>
+    </div>
+
+    <div style="margin-top: 15px;margin-left: 200px;">
+        <input type="text" class="form-control" name="user_id" id="user_id" placeholder={% trans '用户ID' %}>
+        <button type="button" class="btn btn-default" onclick="del_user_redis()">{% trans '删除用户登录状态' %}</button>
+    </div>
+
+    <div style="margin-top: 15px;margin-left: 200px;">
+        <input type="text" class="form-control" name="hash_name" id="hash_name" placeholder="HASH_NAME">
+        <input type="text" class="form-control" name="hash_key" id="hash_key" placeholder="HASH_KEY">
+        <button type="button" class="btn btn-default" onclick="del_redis_hash()">{% trans '删除Hash缓存' %}</button>
+    </div>
+
+    <div style="margin-top: 15px;margin-left: 200px;">
+        <input type="text" class="form-control" name="zset_name" id="zset_name" placeholder="ZSET_NAME">
+        <input type="text" class="form-control" name="zset_score" id="zset_score" placeholder="ZSET_SCORE">
+        <button type="button" class="btn btn-default" onclick="del_redis_zset()">{% trans '删除Zest缓存' %}</button>
+    </div>
+
+    <div style="margin-top: 15px;margin-left: 200px;">
+        <input type="text" class="form-control" name="update_hash_name" id="update_hash_name" placeholder="HASH_NAME">
+        <input type="text" class="form-control" name="update_hash_key" id="update_hash_key" placeholder="HASH_KEY">
+        <input type="text" class="form-control" name="update_hash_value" id="update_hash_value" placeholder="HASH_VALUE">
+        <button type="button" class="btn btn-default" onclick="update_redis_hash()">{% trans '修改Hash缓存' %}</button>
+    </div>
+
+</fieldset>
+</form>
+
+{% csrf_token %}
+
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript">
+    function del_article_redis() {
+      if($('#article_id').val() == ''){
+          alert("文章ID不能为空！");
+          return;
+      }
+      if(!confirm("确认做此操作")){
+        return false;
+      }
+      var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+      var article_id = $('#article_id').val();
+      var data = {
+            "csrfmiddlewaretoken":csrfmiddlewaretoken,
+            "article_id":article_id,
+      };
+      $.post("/app/del_article_redis/", data,
+        function(data){
+            if(data.result){
+              alert("删除成功!");
+              location.reload();
+            }else{
+              alert("删除失败："+data.message);
+              $(".btn-primary img").hide();
+              $("#article_id").val('');
+            }
+        }, "json");
+    }
+
+    function push_article_redis() {
+      if($('#push_article_id').val() == ''){
+          alert("文章ID不能为空！");
+          return;
+      }
+      if(!confirm("确认做此操作")){
+        return false;
+      }
+      var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+      var push_article_id = $('#push_article_id').val();
+      var data = {
+            "csrfmiddlewaretoken":csrfmiddlewaretoken,
+            "push_article_id":push_article_id,
+      };
+      $.post("/app/push_article_redis/", data,
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location.reload();
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+              $("#push_article_id").val('');
+            }
+        }, "json");
+    }
+
+    function del_user_redis() {
+      if($('#user_id').val() == ''){
+          alert("用户ID不能为空！");
+          return;
+      }
+      if(!confirm("确认做此操作")){
+        return false;
+      }
+      var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+      var user_id = $('#user_id').val();
+      var data = {
+            "csrfmiddlewaretoken":csrfmiddlewaretoken,
+            "user_id":user_id,
+      };
+      $.post("/app/del_user_redis/", data,
+        function(data){
+            if(data.result){
+              alert("删除成功!");
+              location.reload();
+            }else{
+              alert("删除失败："+data.message);
+              $(".btn-primary img").hide();
+              $("#user_id").val('');
+            }
+        }, "json");
+    }
+
+    function del_redis_hash() {
+      if($('#hash_name').val() == ''){
+          alert("HASH_NAME不能为空！");
+          return;
+      }
+      if($('#hash_key').val() == ''){
+          alert("HASH_KEY不能为空！");
+          return;
+      }
+      if(!confirm("确认做此操作")){
+        return false;
+      }
+      var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+      var hash_name = $('#hash_name').val();
+      var hash_key = $('#hash_key').val();
+      var data = {
+            "csrfmiddlewaretoken":csrfmiddlewaretoken,
+            "hash_name":hash_name,
+            "hash_key":hash_key,
+      };
+      $.post("/app/shanchuhash/", data,
+        function(data){
+            if(data.result){
+              alert("删除成功!");
+              location.reload();
+            }else{
+              alert("删除失败："+data.message);
+              $(".btn-primary img").hide();
+              $("#hash_name").val('');
+              $("#hash_key").val('');
+            }
+        }, "json");
+    }
+
+    function del_redis_zset() {
+      if($('#zset_name').val() == ''){
+          alert("ZSET_NAME不能为空！");
+          return;
+      }
+      if($('#zset_score').val() == ''){
+          alert("ZSET_SCORE不能为空！");
+          return;
+      }
+      if(!confirm("确认做此操作")){
+        return false;
+      }
+      var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+      var zset_name = $('#zset_name').val();
+      var zset_score = $('#zset_score').val();
+      var data = {
+            "csrfmiddlewaretoken":csrfmiddlewaretoken,
+            "zset_name":zset_name,
+            "zset_score":zset_score,
+      };
+      $.post("/app/shanchuzset/", data,
+        function(data){
+            if(data.result){
+              alert("删除成功!");
+              location.reload();
+            }else{
+              alert("删除失败："+data.message);
+              $(".btn-primary img").hide();
+              $("#zset_name").val('');
+              $("#zset_score").val('');
+            }
+        }, "json");
+    }
+
+    function update_redis_hash() {
+      if($('#update_hash_name').val() == ''){
+          alert("HASH_NAME不能为空！");
+          return;
+      }
+      if($('#update_hash_key').val() == ''){
+          alert("HASH_KEY不能为空！");
+          return;
+      }
+      if($('#update_hash_value').val() == ''){
+          alert("HASH_VALUE不能为空！");
+          return;
+      }
+      if(!confirm("确认做此操作")){
+        return false;
+      }
+      var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+      var update_hash_name = $('#update_hash_name').val();
+      var update_hash_key = $('#update_hash_key').val();
+      var update_hash_value = $('#update_hash_value').val();
+      var data = {
+            "csrfmiddlewaretoken":csrfmiddlewaretoken,
+            "update_hash_name":update_hash_name,
+            "update_hash_key":update_hash_key,
+            "update_hash_value":update_hash_value,
+      };
+      $.post("/app/xiugaihash/", data,
+        function(data){
+            if(data.result){
+              alert("删除成功!");
+              location.reload();
+            }else{
+              alert("删除失败："+data.message);
+{#              $(".btn-primary img").hide();#}
+{#              $("#update_hash_name").val('');#}
+{#              $("#update_hash_key").val('');#}
+{#              $("#update_hash_value").val('');#}
+            }
+        }, "json");
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{%load app_tags %}
+{% block postPageCss %}
+    {% load i18n %}
+{%load jauth_tags %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+  <input  name="action" value="search" type="hidden" />
+    <div class="form-group">
+        <label>{% trans '操作人' %}</label>
+        <input type="text" class="form-control" value="{{ username }}" name="username" id="username" >
+    </div>
+{#    <div class="form-group">#}
+{#        <label>{% trans '动作名称' %}</label>#}
+{#        <input type="text" class="form-control" value="{{ even_name }}" name="even_name" id="even_name" >#}
+{#    </div>#}
+{#    <div class="form-group">#}
+{#        <label>{% trans '详细信息' %}</label>#}
+{#        <input type="text" class="form-control" value="{{ even_deatil }}" name="even_deatil" id="even_deatil" >#}
+{#    </div>#}
+    <div class="form-group">
+        <label>{% trans '翻译时间' %}:</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />
+    </div>
+        <input type="hidden" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+        <input type="hidden" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+</fieldset>
+</form>
+<br>
+
+    <a class="btn btn-primary" target="_blank" href="{% export_link %}">{% trans '导出数据' %}</a>
+
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>{% trans '日志ID' %}</th>
+    <th>{% trans '操作人' %}</th>
+    <th>{% trans '动作名称' %}</th>
+    <th>{% trans '详细信息' %}</th>
+    <th>{% trans '操作时间' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for bmslog in pager.object_list %}
+<tr>
+<td>{{ bmslog.id }}</td>
+<td>{{ bmslog.operator.username }}</td>
+<td>{{ bmslog.even_name }}</td>
+<td>{{ bmslog.even_message }}</td>
+<td>{{ bmslog.cdate|date:"Y-m-d H:i:s" }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+
+{% tablesorter %}
+<script type="text/javascript">
+
+$('#daterangepicker').daterangepicker({
+          timePicker: true,
+          timePickerIncrement: 1,
+          timePicker24Hour: true,
+          linkedCalendars: false,
+          locale:{
+              format: 'YYYY/MM/DD HH:mm',
+              applyLabel:"确定",
+              cancelLabel:"取消",
+              daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+              ],
+              monthNames: [
+                  "一月",
+                  "二月",
+                  "三月",
+                  "四月",
+                  "五月",
+                  "六月",
+                  "七月",
+                  "八月",
+                  "九月",
+                  "十月",
+                  "十一月",
+                  "十二月"
+              ],
+          }
+      },
+      function(start, end) {
+          var datefmt = "YYYY-MM-DD HH:mm";
+          console.log(start.format(datefmt), end.format(datefmt));
+          $("#from_date").val(start.format(datefmt + ":00"));
+          $("#to_date").val(end.format(datefmt + ":59"));
+
+      }
+  );
+  $('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+  $('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+ {% load i18n %}
+{%load jauth_tags %}
+{% block postPageCss %}
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<a class="btn btn-primary" href="/app/fabuchongzhi/">{% trans '添加充值方案' %}</a>
+<br>
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover sortable">
+<thead>
+<tr><th>ID</th>
+    <th>{% trans '金币数' %}</th>
+    <th>{% trans '当前价格' %}</th>
+    <th>{% trans '操作' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for object in pager.object_list %}
+<tr>
+<td>{{ object.id }}</td>
+<td>{{ object.gold_number }}</td>
+<td>{{ object.cost }}</td>
+<td><a class="btn btn-link" href="/app/fabuchongzhi/?id={{ object.id }}">{% trans '编辑' %}</a></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+{% endblock %}

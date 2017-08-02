@@ -1,0 +1,99 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="teamnameForm" name="teamnameForm" ng-controller="teamnameCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>队名表</legend>
+    {% if teamname %}
+        <input type="hidden" name="id" value="{{ teamname.id }}">
+    {% endif %}
+
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">杯名:</label>
+       <div class="col-sm-3">
+           <input type="text" name="cup_name" id="cup_name" class="form-control" readonly ng-model="teamname.cup_name" value="{{ teamname.cup_name }}">
+       </div>
+
+    </div>
+     <div class="form-group">
+       <label  class="col-sm-2 control-label">名称:</label>
+
+       <div class="col-sm-3">
+           <input type="text" required class="form-control" readonly ng-model="teamname.original_name" id="original_name" name="original_name" value="{{ teamname.original_name }}">
+
+       </div>
+    </div>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">名称:</label>
+
+       <div class="col-sm-3">
+           <input type="text" required class="form-control" ng-model="teamname.standard_name" id="standard_name" name="standard_name" value="{{ teamname.standard_name }}">
+
+       </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postTeamName()" class="btn btn-primary btn-lg" ng-disabled="teamnameForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+
+
+<script type="text/javascript">
+  function teamnameCtrl($scope){
+    {% if teamname %}
+        $scope.teamname={
+            "original_name":"{{ teamname.original_name }}",
+            "cup_name":"{{ teamname.cup_name }}",
+
+        };
+
+    {% endif %}
+
+    $scope.postTeamName=function(){
+
+      next = "/caishi/duimingbiao/";
+      $(".btn-primary img").show();
+      $.post("", $("#teamnameForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+
+
+  }
+function image_preview(imageurl){
+  var url_prefix = "/static/";
+  imageurl = url_prefix + imageurl;
+  $('input[name="img_url"]').val(imageurl);
+
+  $("#avatar").prop("src",imageurl);
+
+}
+</script>
+{% endblock %}

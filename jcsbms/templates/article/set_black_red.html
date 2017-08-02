@@ -1,0 +1,238 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block postPageCss %}
+<link rel="stylesheet" href="/static/css/bootstrap-multiselect.css" type="text/css">
+<link rel="stylesheet" href="/static/datetimepicker/bootstrap-datetimepicker.min.css" type="text/css">
+{% endblock %}
+{% block rightcontent %}
+<style>
+    button.multiselect {
+        width: 100%
+    }
+</style>
+<h2></h2>
+<form class="form-horizontal" action="" onsubmit="validate_match_name()" method="post" id="BlackRedForm" name="BlackRedForm" ng-controller="blackredCtrl">
+{% csrf_token %}
+ <input type="hidden" name="article_id" value="{{ article_id }}">
+{% if article_lotteries_result %}
+    <input type="hidden" name="id" value="{{ article_lotteries_result.id }}">
+{% endif %}
+<fieldset>
+    <legend>文章赛事红黑判定设置</legend>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">联赛:</label>
+        <input type="text" name="league" class="col-sm-4 control-label" ng-model="result.league" style="border-radius: 8px;outline:none;text-align: left;" id="cup_name">
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">赛队名称:</label>
+        <input type="text" name="match_name" class="col-sm-4 control-label" ng-model="result.match_name" style="border-radius: 8px;outline:none;text-align: left;" id="match_name">
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">开赛时间:</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" name="match_time" ng-model="result.match_time" data-date-format="yyyy-mm-dd hh:ii:00" id="start_time">
+        </div>
+    </div>
+    <div class="form-group">
+    <label class="col-sm-2 control-label">玩法:</label>
+    <div class=" col-sm-6">
+      <select style="width: 295px" class="form-control" name="playname" id="playname" ng-model="result.playname">
+          <option value="" >请选择</option>
+          <option value="竞彩" >竞彩</option>
+          <option value="亚盘" >亚盘</option>
+          <option value="滚球" >滚球</option>
+          <option value="脚球" >脚球</option>
+          <option value="比分" >比分</option>
+          <option value="大小球" >大小球</option>
+          <option value="大小分" >大小分</option>
+      </select>
+    </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">预测结果:</label>
+        <input type="text" name="score_prediction" class="col-sm-4 control-label" ng-model="result.score_prediction" style="border-radius: 8px;outline:none;text-align: left;">
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">比分结果:</label>
+        <input type="text" name="score_practical" class="col-sm-4 control-label" ng-model="result.score_practical" style="border-radius: 8px;outline:none;text-align: left;">
+    </div>
+    <div class="form-group">
+    <label class="col-sm-2 control-label">红黑结果:</label>
+    <div class=" col-sm-6">
+      <select style="width: 295px" class="form-control" name="black_red_decide" id="black_red_decide" ng-model="result.black_red_decide">
+          <option value="" >请选择</option>
+          <option value="红" >红</option>
+          <option value="黑" >黑</option>
+          <option value="走水" >走水</option>
+      </select>
+    </div>
+    </div>
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">备注:</label>
+        <input type="text" name="comment" class="col-sm-4 control-label" ng-model="result.comment" style="border-radius: 8px;outline:none;text-align: left;">
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10" style="margin-left:100px">
+
+         <button type="button" ng-click="postNextBlackRed()" class="btn btn-primary btn-lg" ng-disabled="BlackRedForm.$invalid" >保存下一料<img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+         <button type="button" ng-click="postBlackRedNextArticle()" class="btn btn-primary btn-lg" ng-disabled="BlackRedForm.$invalid" >保存下一篇<img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+         <button type="button" ng-click="cancelNextArticle()" class="btn btn-primary btn-lg" ng-disabled="BlackRedForm.$invalid" >取消下一篇<img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button><br /><br />
+         <button type="button" ng-click="postBlackRed()" class="btn btn-primary btn-lg" ng-disabled="BlackRedForm.$invalid" style="margin-left: 120px">保存<img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+         <a class="btn btn-warning btn-lg" href="/wenzhang/black_red_list/?article_id={{ article_id }}">返回</a>
+        </div>
+    </div>
+    <div style="width: 75%;height: 231px;float: right;margin-top: -452px;margin-right: -30%;overflow: scroll;">
+    <label style="font-size: 20px;color: red;">请选择文章赛事:</label>
+    <br>
+    {% for m in matches %}
+        <button style="font-size: 20px;" onclick="chooseMatch('{{ m.cup_name }}', '{{ m.home_team }}','{{ m.away_team }}','{{ m.start_time|date:"Y-m-d H:i" }}')">
+           {{ m.cup_name }} {{ m.start_time|date:"Y-m-d H:i" }} {{ m.home_team }} VS {{ m.away_team }}</button>
+    {% endfor %}
+    </div>
+    <div style="width: 75%;height: 300px;float: right;margin-top: -220px;margin-right: -30%;overflow: scroll;">
+    <label style="font-size: 20px;color: red">文章内容:</label>
+    <br>
+    <!--转换html标签文本-->
+    {% autoescape off %}
+    {% if article.chargeable %}
+        <label style="font-size: 20px;">{{ article.digest }}{{ article.text }}</label>
+    {% else %}
+        <label style="font-size: 20px;">{{ article.text }}</label>
+    {% endif %}
+    {% endautoescape %}
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+<script type="text/javascript" src="/static/js/bootstrap-multiselect.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="/static/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+$("input[name='match_time']").datetimepicker({autoclose: true});
+    function blackredCtrl($scope) {
+        {% if article_lotteries_result %}
+            $scope.result = {
+               'league': '{{ article_lotteries_result.league }}',
+               'match_name': '{{ article_lotteries_result.match_name }}',
+               'match_time': '{{ article_lotteries_result.match_time|date:'Y-m-d H:i:s' }}',
+               'playname': '{{ article_lotteries_result.playname }}',
+               'score_prediction': '{{ article_lotteries_result.score_prediction }}',
+               'score_practical': '{{ article_lotteries_result.score_practical }}',
+               'black_red_decide': '{{ article_lotteries_result.black_red_decide }}',
+               'comment': '{{ article_lotteries_result.comment }}',
+            };
+        {% endif %}
+        $scope.postBlackRed = function () {
+            var x = document.forms["BlackRedForm"]["match_name"].value;
+            var y = document.forms["BlackRedForm"]["playname"].value;
+            var z = document.forms["BlackRedForm"]["black_red_decide"].value;
+            var indexstr = 'vs'
+            if (x.toLowerCase().indexOf(indexstr) < 0 || x.toLowerCase().startsWith(indexstr) || x.toLowerCase().endsWith(indexstr)) {
+                alert("赛队名称格式必须为主队VS客队");
+                return false;
+            }
+            if (y == ''){
+                alert("请选择玩法");
+                return false;
+            }
+            if (z == ''){
+                alert("请选择红黑结果");
+                return false;
+            }
+            next = "/wenzhang/black_red_list/?article_id={{ article_id }}";
+            $(".btn-primary img").show();
+            $.post("", $("#BlackRedForm").serialize(),
+                function (data) {
+                    if (data.result) {
+                        alert("保存成功!");
+                        location = next;
+                    } else {
+                        alert("保存失败：" + data.message);
+                        $(".btn-primary img").hide();
+                    }
+                }, "json");
+            }
+        $scope.postNextBlackRed = function () {
+            var x = document.forms["BlackRedForm"]["match_name"].value;
+            var y = document.forms["BlackRedForm"]["playname"].value;
+            var z = document.forms["BlackRedForm"]["black_red_decide"].value;
+            var indexstr = 'vs'
+            if (x.toLowerCase().indexOf(indexstr) < 0 || x.toLowerCase().startsWith(indexstr) || x.toLowerCase().endsWith(indexstr)) {
+                alert("赛队名称格式必须为主队VS客队");
+                return false;
+            }
+            if (y == ''){
+                alert("请选择玩法");
+                return false;
+            }
+            if (z == ''){
+                alert("请选择红黑结果");
+                return false;
+            }
+            next = "/wenzhang/black_red_list/?article_id={{ article_id }}";
+            $(".btn-primary img").show();
+            $.post("", $("#BlackRedForm").serialize(),
+                function (data) {
+                    if (data.result) {
+                        alert("保存成功!");
+                        location = next;
+                        window.location.reload();
+                    } else {
+                        alert("保存失败：" + data.message);
+                        $(".btn-primary img").hide();
+                    }
+                }, "json");
+            }
+        $scope.postBlackRedNextArticle = function () {
+            var x = document.forms["BlackRedForm"]["match_name"].value;
+            var y = document.forms["BlackRedForm"]["playname"].value;
+            var z = document.forms["BlackRedForm"]["black_red_decide"].value;
+            var indexstr = 'vs'
+            if (x.toLowerCase().indexOf(indexstr) < 0 || x.toLowerCase().startsWith(indexstr) || x.toLowerCase().endsWith(indexstr)) {
+                alert("赛队名称格式必须为主队VS客队");
+                return false;
+            }
+            if (y == ''){
+                alert("请选择玩法");
+                return false;
+            }
+            if (z == ''){
+                alert("请选择红黑结果");
+                return false;
+            }
+            var count = {{ article_id }}-1;
+            next = "/wenzhang/set_black_red/?article_id="+count;
+            $(".btn-primary img").show();
+            $.post("", $("#BlackRedForm").serialize(),
+            function (data) {
+                if (data.result) {
+                    alert("保存成功!");
+                    location = next;
+                } else {
+                    alert("保存失败：" + data.message);
+                    $(".btn-primary img").hide();
+                }
+            }, "json");
+
+        }
+        $scope.cancelNextArticle = function () {
+            var count = {{ article_id }}-1;
+            next = "/wenzhang/set_black_red/?article_id="+count;
+            window.location.href=next;
+        }
+    }
+function chooseMatch(cup_name,home_team,away_team,start_time) {
+    $('#cup_name').val(cup_name);
+    $('#match_name').val(home_team+'VS'+away_team);
+    $('#start_time').val(start_time);
+}
+</script>
+{% endblock %}

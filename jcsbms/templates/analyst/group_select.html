@@ -1,0 +1,5 @@
+<select class="form-control"  id="selectAnalystgroup" name="analyst_group">
+    {% for group in analyst_groups %}
+    <option value="{{ group.id }}">{{ group.name }}</option>
+    {% endfor %}
+</select>

@@ -1,0 +1,512 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+    {% load i18n %}
+{%load jauth_tags %}
+
+
+{% block sidebar %}
+{% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+    <link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+<div ng-controller="analystsCtrl">
+<form class="form-horizontal" method="get" action="/laoshi/sousuo/">
+  <div class="form-group">
+
+    <div class="col-sm-3">
+      <input type="text" class="form-control" id="inputNickName" name="nick_name" placeholder={% trans '网络昵称' %} value="{{ nick_name }}">
+    </div>
+    <div class="col-sm-3">
+      <select class="form-control" name="is_active" id="selectActive" >
+          <option value="-1" >{% trans '选择登录状态' %}</option>
+          <option value="0"  {% if is_active == 0 %}selected{% endif %}>{% trans '不可登录' %}</option>
+          <option value="1" {% if is_active == 1 %}selected{% endif %}>{% trans '可登录' %}</option>
+          <option value="2" {% if is_active == 2 %}selected{% endif %}>{% trans '已删除' %}</option>
+      </select>
+    </div>
+    <div class="col-sm-3">
+      <select class="form-control" name="analyst_type" id="selectType" >
+          <option value="-1" >{% trans '选择合作类型' %}</option>
+          <option value="0" {% if analyst_type == 0 %}selected{% endif %}>收费{% trans '创建时间' %}</option>
+          <option value="1" {% if analyst_type == 1 %}selected{% endif %}>免费{% trans '创建时间' %}</option>
+          <option value="2" {% if analyst_type == 2 %}selected{% endif %}>代发{% trans '创建时间' %}</option>
+      </select>
+    </div>
+{#      <div class="col-sm-3">#}
+{#      <select class="form-control" name="language" id="language" >#}
+{#          <option value="-1" >{% trans '选择客户端' %}</option>#}
+{#          <option value="0" {% if language == 0 %}selected{% endif %}>国语</option>#}
+{#          <option value="1" {% if language == 1 %}selected{% endif %}>粤语</option>#}
+{#      </select>#}
+{#    </div>#}
+    <div class="col-sm-3">
+        <select class="form-control" name="analyst_channel" id="analyst_channel">
+            <option value="-1">{% trans '选择渠道' %}</option>
+                {% for analystchannel in analystchannels %}
+                     <option {% if analyst_channel_id == analystchannel.id %}selected{% endif %} value="{{ analystchannel.id }}">{{ analystchannel.channel_name }}</option>
+                {% endfor %}
+        </select>
+    </div>
+    <div class="col-sm-3">
+
+        <input type="text" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" placeholder={% trans '开始时间' %} >
+    </div>
+    <div class="col-sm-3" >
+
+        <input type="text" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" placeholder={% trans '结束时间' %} >
+    </div>
+
+
+          <div class="col-sm-2">
+      <button type="submit" class="btn btn-primary btn-block">{% trans '查询' %}</button>
+    </div>
+  </div>
+
+
+  <div class="form-group">
+
+  </div>
+</form>
+ <a class="btn btn-primary" href="/laoshi/bianji/">{% trans '新增分析师' %}</a>
+ {% if batch_set_toppage_count_user %}
+ <button class="btn btn-primary" onclick="set_toppage_count()">{% trans '批量修改首页数量' %}</button>
+ {% endif %}
+<br />
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>{% trans '头像' %}</th>
+    <th>{% trans '真实姓名' %}</th>
+    <th>{% trans '昵称' %}</th>
+    <th>{% trans '收费类型' %}</th>
+    <th>{% trans '彩种' %}</th>
+    <th>{% trans '老师等级' %}</th>
+    <th>{% trans '客户端' %}</th>
+    <th>{% trans '状态' %}</th>
+    <th>{% trans '被禁状态' %}</th>
+    <th>{% trans '添加时间' %}</th>
+    <th>{% trans '操作' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for analyst in pager.object_list %}
+    <tr>
+    <td>{{ analyst.id }}</td>
+    <td><img width="32px" src="/static/{{ analyst.user.userinfo.avatar|default_if_none:"img/default_avatar.png" }}"></td>
+    <td>{{ analyst.real_name|default_if_none:"未设置" }}</td>
+    <td>{{ analyst.nick_name }}</td>
+    <td>{{ analyst.analyst_type|analyst_typename }}</td>
+    <td>{{ analyst.lottery_type.name }}</td>
+    <td>{{ analyst.level.name }}</td>
+    <td>{{ analyst.is_mandarin_perm|yesno:"国语,," }} {{ analyst.is_cantonese_perm|yesno:"粤语,," }} </td>
+    <td>
+        {% if not analyst.invisible %}
+        {{ analyst.user.is_active|yesno:"可登录,不可登录,非法" }}
+        {% else %}
+         已删除
+        {% endif %}
+
+    </td>
+    <td>
+        {% if analyst.ban_chargeable == True and analyst.banchargeable_time|date:"Y-m-d H:i:s" > datetime_now %}
+             {% trans '禁止发国语收费' %}<br />
+        {% endif %}
+        {% if analyst.ban_free == True and analyst.banfree_time|date:"Y-m-d H:i:s" > datetime_now %}
+             {% trans '禁止发国语免费' %}<br />
+        {% endif %}
+        {% if analyst.ban_letter == True and analyst.banletter_time|date:"Y-m-d H:i:s" > datetime_now %}
+             {% trans '禁止发私信' %}<br />
+        {% endif %}
+        {% if analyst.ban_chargeable_cantonese == True and analyst.banchargeable_time_cantonese|date:"Y-m-d H:i:s" > datetime_now %}
+             {% trans '禁止发粤语收费' %}<br />
+        {% endif %}
+        {% if analyst.ban_free_cantonese == True and analyst.banfree_time_cantonese|date:"Y-m-d H:i:s" > datetime_now %}
+            {% trans '禁止发粤语免费' %}<br />
+        {% endif %}
+    </td>
+    <td>{{ analyst.date_added|date:"Y-m-d" }}</td>
+    <td>
+        <div class="btn-group" style="width:100px">
+            <button class="btn btn-primary">{% trans '操作' %}</button>
+            <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a href="/laoshi/bianji/?id={{ analyst.id }}">{% trans '修改' %}</a></li>
+              <li><a href="/laoshi/touxiang/?id={{ analyst.id }}">{% trans '头像编辑' %}</a></li>
+              <li><a href="/app/followers/?id={{ analyst.id }}">{% trans '粉丝列表' %}({{ analyst.followers.all.count }})</a></li>
+              {% if analyst.user.is_active and not analyst.invisible %}
+              <li><a href="javascript:void(0)" onclick="deactivity({{ analyst.id }})">{% trans '不可登录' %}</a></li>
+              {% endif %}
+              {% if not analyst.user.is_active and not analyst.invisible %}
+                  <li><a href="/laoshi/jihuo/?id={{ analyst.id }}">{% trans '激活登录' %}</a></li>
+              {% endif%}
+              {% if not analyst.invisible %}
+              <li><a href="javascript:void(0)" onclick="makeInvisible({{ analyst.id }})">{% trans '删除' %}</a></li>
+              {% endif %}
+              {% if analyst.ban_chargeable == True and analyst.banchargeable_time|date:"Y-m-d H:i:s" > datetime_now %}
+                <li><a href="javascript:void(0)" ng-click="canChargeable({{ analyst.id }})">{% trans '允许发国语收费' %}</a></li>
+              {% else %}
+                <li><a href="javascript:void(0)" ng-click="banChargeable({{ analyst.id }})">{% trans '禁止发国语收费' %}</a></li>
+              {% endif %}
+              {% if analyst.ban_free == True and analyst.banfree_time|date:"Y-m-d H:i:s" > datetime_now %}
+                <li><a href="javascript:void(0)" ng-click="canFree({{ analyst.id }})">{% trans '允许发国语免费' %}</a></li>
+              {% else %}
+                <li><a href="javascript:void(0)" ng-click="banFree({{ analyst.id }})">{% trans '禁止发国语免费' %}</a></li>
+              {% endif %}
+              {% if analyst.ban_letter == True and analyst.banletter_time|date:"Y-m-d H:i:s" > datetime_now %}
+                <li><a href="javascript:void(0)" ng-click="canLetter({{ analyst.id }})">{% trans '允许发私信' %}</a></li>
+              {% else %}
+                <li><a href="javascript:void(0)" ng-click="banLetter({{ analyst.id }})">{% trans '禁止发私信' %}</a></li>
+              {% endif %}
+              {% if analyst.ban_chargeable_cantonese == True and analyst.banchargeable_time_cantonese|date:"Y-m-d H:i:s" > datetime_now  %}
+                <li><a href="javascript:void(0)" ng-click="canChargeableCantonese({{ analyst.id }})">{% trans '允许发粤语收费' %}</a></li>
+              {% else %}
+                <li><a href="javascript:void(0)" ng-click="banChargeableCantonese({{ analyst.id }})">{% trans '禁止发粤语收费' %}</a></li>
+              {% endif %}
+              {% if analyst.ban_free_cantonese == True and analyst.banfree_time_cantonese|date:"Y-m-d H:i:s" > datetime_now  %}
+                <li><a href="javascript:void(0)" ng-click="canFreeCantonese({{ analyst.id }})">{% trans '允许发粤语免费' %}</a></li>
+              {% else %}
+                <li><a href="javascript:void(0)" ng-click="banFreeCantonese({{ analyst.id }})">{% trans '禁止发粤语免费' %}</a></li>
+              {% endif %}
+            </ul>
+        </div>
+    </td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+{% pager %}
+{% csrf_token %}
+
+<div class="modal fade" id="topModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {% verbatim %}
+          <h4 class="modal-title" id="gridSystemModalLabel">惩罚老师{{ action_name }}</h4>
+          {% endverbatim %}
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" id="banForm" name="banForm" >
+        {% csrf_token %}
+        {% verbatim %}
+        <input name="action" type="hidden" ng-value="action">
+        <input name="analyst" type="hidden" ng-value="analyst">
+        <div class="form-group">
+          <label class="col-md-2">置顶时长</label>
+          <div class="col-md-4">
+            <select id="ban_days" name="ban_days" class="form-control">
+                <option value="1">
+                    1天
+                </option>
+                <option value="3">
+                    2天
+                </option>
+                <option value="5">
+                    5天
+                </option>
+                <option value="7">
+                    7天
+                </option>
+            </select>
+
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-2">惩罚原因:</label>
+          <div class="col-md-6"><textarea class="form-control" ng-minlength="2" ng-maxlength="200" required  id="ban_reason" name="ban_reason" ng-model="ban_reason"></textarea></div>
+            <div class="col-md-4">
+            <span class="text-danger" ng-show="banForm.ban_reason.$error.required">需要填写</span>
+            <span class="text-danger" ng-show="banForm.ban_reason.$error.minlength">至少2个字符</span>
+            <span class="text-danger" ng-show="banForm.ban_reason.$error.maxlength">至多200个字符</span>
+        </div>
+        </div>
+        {% endverbatim %}
+      </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans '取消' %}</button>
+        <button type="button" class="btn btn-primary" id="primarybutton" ng-disabled="banForm.$invalid" ng-click="submit_ban()">{% trans '确认提交' %}</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--解禁-->
+<div class="modal fade" id="relieveModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {% verbatim %}
+          <h4 class="modal-title" id="gridSystemModalLabel">是否{{ action_name }}</h4>
+          {% endverbatim %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans '取消' %}</button>
+        <button type="button" class="btn btn-primary" id="primarybutton" ng-click="submit_can()">{% trans '确认提交' %}</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+<link rel="stylesheet" href="/static/css/easydialog.css" type="text/css">
+<script src="/static/js/easydialog.js"></script>
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script>
+
+   $(document).ready(function(){
+
+        $( "#from_date" ).datepicker({
+            defaultDate: "+0d",
+            dateFormat: "yy-mm-dd",
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#to_date" ).datepicker( "option", "minDate", selectedDate );
+            }
+        });
+        $( "#to_date" ).datepicker({
+            defaultDate: "+1d",
+            dateFormat: "yy-mm-dd",
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#from_date" ).datepicker( "option", "maxDate", selectedDate );
+            }
+        });
+
+        $("select[name='lottery_type']").change(function(e){
+            var parent_id = $(this).find(":selected").attr("parent_id") || $(this).val();
+            toggleTeamnameInput(parseInt(parent_id));
+
+        });
+
+        //修改日期的功能
+        $("tbody td:nth-child(4)").dblclick(function (e) {
+            if ($(this).find("input").length > 0) {
+                return;
+            }
+            var timeStr = $(this).html();
+            $(this).html("<input type='text' value='" + timeStr + "'/><button class='btn btn-primary btn-sm' style='margin-left:3px'>保存</button>");
+            $(this).find("button").click(function(e){
+                var entryId = $(this).parent().parent().find("td:first-child").html();
+                var timeStr = $(this).parent().find("input").val();
+                var elem = $(this);
+                $.post("/caishi/modify_match_time/", {"entry_id":entryId, "start_time":timeStr, "csrfmiddlewaretoken":csrfmiddlewaretoken}, function(data){
+                    if(data.result) {
+                        $(elem).parent().html(timeStr);
+                        alert(data.message);
+                    }else{
+                        alert(data.message);
+                    }
+                });
+            });
+        });
+        toggleTeamnameInput({{ type.id }});
+    });
+
+
+    var toggleTeamnameInput = function(lottery_type_parent) {
+        if (lottery_type_parent == 3) {
+            $("div[class*='team']").css("display", "").find("input").prop("disabled", false);
+        }else{
+            $("div[class*='team']").css("display", "none").find("input").prop("disabled", true);
+        }
+    };
+
+    </script>
+<script type="text/javascript">
+
+
+
+function analystsCtrl($scope,$http){
+    $scope.banChargeable=function(id){
+        $('#topModal').modal('show')
+        $scope.action_name="禁止发国语收费文章";
+        $scope.action = "ban_chargeable";
+        $scope.analyst = id;
+    }
+    $scope.canChargeable=function(id){
+        $('#relieveModal').modal('show')
+        $scope.action_name="允许发国语收费文章";
+        $scope.action = "can_chargeable";
+        $scope.analyst = id;
+    }
+    $scope.banFree=function(id){
+        $('#topModal').modal('show')
+        $scope.action_name="禁止发国语免费文章";
+        $scope.action = "ban_free";
+        $scope.analyst = id;
+    }
+        $scope.canFree=function(id){
+        $('#relieveModal').modal('show')
+        $scope.action_name="允许发国语免费文章";
+        $scope.action = "can_free";
+        $scope.analyst = id;
+    }
+    $scope.banChargeableCantonese=function(id){
+        $('#topModal').modal('show')
+        $scope.action_name="禁止发粤语收费文章";
+        $scope.action = "ban_chargeable_cantonese";
+        $scope.analyst = id;
+    }
+        $scope.canChargeableCantonese=function(id){
+        $('#relieveModal').modal('show')
+        $scope.action_name="允许发粤语收费文章";
+        $scope.action = "can_chargeable_cantonese";
+        $scope.analyst = id;
+    }
+    $scope.banFreeCantonese=function(id){
+        $('#topModal').modal('show')
+        $scope.action_name="禁止发粤语免费文章";
+        $scope.action = "ban_free_cantonese";
+        $scope.analyst = id;
+    }
+    $scope.canFreeCantonese=function(id){
+        $('#relieveModal').modal('show')
+        $scope.action_name="允许发粤语免费文章";
+        $scope.action = "can_free_cantonese";
+        $scope.analyst = id;
+    }
+    $scope.banLetter=function(id){
+        $('#topModal').modal('show')
+        $scope.action_name="禁止发私信";
+        $scope.action = "ban_letter";
+        $scope.analyst = id;
+    }
+    $scope.canLetter=function(id){
+        $('#relieveModal').modal('show')
+        $scope.action_name="允许发私信";
+        $scope.action = "can_letter";
+        $scope.analyst = id;
+    }
+    $scope.submit_ban=function(){
+        $.post("/laoshi/jingzhicaozuo/", $("#banForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("操作成功.");
+              $('#topModal').modal('hide')
+              window.location.reload();
+            }else{
+              alert("操作失败："+data.message);
+              window.location.reload();
+            }
+        }, "json");
+
+    }
+    $scope.submit_can=function(){
+        $.post("/laoshi/yunxucaozuo/", $("#banForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("操作成功.");
+              $('#relieveModal').modal('hide')
+              window.location.reload();
+            }else{
+              alert("操作失败："+data.message);
+              window.location.reload();
+            }
+        }, "json");
+    }
+}
+function deactivity(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/laoshi/wuxiao/", data,
+        function(data){
+            if(data.result){
+              alert("成功无效!");
+              location.reload()
+            }else{
+              alert("无效失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+}
+function makeInvisible(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    if(!confirm("重要操作,再次确认:做了此操作,您可能没有做恢复操作的权限")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/laoshi/bukejian/", data,
+        function(data){
+            if(data.result){
+              alert("成功删除.");
+              location.reload()
+            }else{
+              alert("删除失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+}
+function set_toppage_count(){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    easyDialog.open({
+        container : {
+            header : '批量修改讲师文章上首页数量',
+            content : '<form name="toppageform">'+
+                '国语收费文章上首页数量：<input type="text" id="m_top_page_charge_max" value="" style="width:15%;margin-top:1px"></input>'+'<br>'+
+                '国语免费文章上首页数量：<input type="text" id="m_top_page_free_max" value="" style="width:15%;margin-top:1px"></input>'+'<br>'+
+                '粤语收费文章上首页数量：<input type="text" id="c_top_page_charge_max" value="" style="width:15%;margin-top:1px"></input>'+'<br>'+
+                '粤语免费文章上首页数量：<input type="text" id="c_top_page_free_max" value="" style="width:15%;margin-top:1px"></input>'+'<br>'+
+                '</form>',
+            yesFn : btnFn ,
+            noFn : true ,
+            yesText : '保存' ,
+            noText : '取消'
+        }
+    });
+}
+
+var btnFn = function(){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var m_charge_count = $('#m_top_page_charge_max').val();
+    var m_free_count = $('#m_top_page_free_max').val();
+    var c_charge_count = $('#c_top_page_charge_max').val();
+    var c_free_count = $('#c_top_page_free_max').val();
+    if (Number(m_charge_count)<0||Number(m_free_count)<0||Number(c_charge_count)<0||Number(c_free_count)<0){
+        alert("首页数量不能小于0");
+        return false;
+    }
+    if (isNaN(m_charge_count)||isNaN(m_free_count)||isNaN(c_charge_count)||isNaN(c_free_count)){
+        alert("首页数量只能为数字！");
+        return false;
+    }
+    var data = {
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+        "m_charge_count":$('#m_top_page_charge_max').val(),
+        "m_free_count":$('#m_top_page_free_max').val(),
+        "c_charge_count":$('#c_top_page_charge_max').val(),
+        "c_free_count":$('#c_top_page_free_max').val()
+    };
+    $.post("/app/batch_set_toppage_count/", data,
+        function(data){
+            if(data.result){
+              alert("操作成功!");
+              easyDialog.close();
+            }else{
+              alert("操作失败："+data.message);
+            }
+        }, "json");
+    return false;
+};
+</script>
+{% endblock %}

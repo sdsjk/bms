@@ -1,0 +1,109 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+{% load i18n %}
+{%load jauth_tags %}
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet">
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline" method="get" action="/app/laoshishouru/" onsubmit="return checkValid()">
+  <fieldset>
+
+  <div class="form-group">
+      <label>{% trans '付款时间' %}:</label>
+      <input type="text" class="form-control" value="{{ from_date }}" name="from_date" id="from_date" >
+  </div>
+  <div class="form-group">
+      <label for="exampleInputEmail2">{% trans '至' %}</label>
+      <input type="text" class="form-control" value="{{ to_date }}" name="to_date" id="to_date" >
+  </div>
+  <div class="form-group">
+      <label class="" for="channel">{% trans '渠道' %}:</label>
+          <select name="channel" id="channel" class="form-control">
+              <option value="-1">{% trans '请选择' %}</option>
+              {% for channel in channels %}
+                  <option value="{{ channel.id }}">{{ channel.channel_name }}</option>
+              {% endfor %}
+          </select>
+  </div>
+      <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+  </fieldset>
+</form>
+<br>
+
+<a class="btn btn-primary" target="_blank" href="{% export_link %}">{% trans '导出数据' %}</a>
+{#<p>只包括文章和问答,不包括包月,买花.{% trans '只包括文章和问答,不包括包月,买花.' %}</p>#}
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr>
+    <th>{% trans '老师ID' %}</th>
+    <th>{% trans '老师' %}</th>
+    <th>{% trans '渠道' %}</th>
+    <th>{% trans '金额(精彩币)' %}</th>
+    <th>{% trans '邀请人数' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for object in pager.object_list %}
+{% if object.nick_name != "梅花彩数" and object.nick_name != "uvw173" and object.nick_name != "足彩伤停" %}
+<tr>
+<td>{{ object.id }}</td>
+<td>{{ object.nick_name }}</td>
+<td>{{ object.channel }}</td>
+<td>{{ object.revenue|centesimal }}</td>
+<td>{{ object.invite_count }}</td>
+</tr>
+{% endif %}
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+{% tablesorter %}
+<script type="text/javascript">
+    $("#channel").val("{{ channel_id }}");
+  $(function() {
+    $( "#from_date" ).datepicker({
+      defaultDate: "+0d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#to_date" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    $( "#to_date" ).datepicker({
+      defaultDate: "+1d",
+      dateFormat: "yy-mm-dd",
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#from_date" ).datepicker( "option", "maxDate", selectedDate );
+      }
+    });
+  });
+  function  checkValid(){
+      if ($("#from_date").val().length<1){
+          alert("必须选择时间范围");
+          return false;
+      }
+      if($("#from_date").val().length!=$("#to_date").val().length){
+          alert("时间范围必须两个都要选!");
+          return false;
+      }else {
+          return true;
+      }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="bannerForm" name="bannerForm" ng-controller="bannerCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>广告图</legend>
+    {% if banner %}
+        <input type="hidden" name="id" value="{{ banner.id }}">
+    {% endif %}
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">上传图片:</label>
+       <div class="col-sm-6">
+           <input type="hidden" name="img_url" value="" />
+           <iframe name="uploadf" id="uploadf" align="middle" marginwidth="0" marginheight="0" src="/yonghu/avatar_upload/" frameborder="0" width="500" scrolling="no" height="30" allowTransparency="true" border="0"></iframe>
+       </div>
+    </div>
+
+     <img alt="默认头像" id="avatar" src="/static/img/default_avatar.png"
+      style="width: 480px;margin-top: 20px; "
+     />
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">金币包价格:</label>
+       <div class="col-sm-3">
+
+
+                  <select name="target_type" id="target_type" class="form-control">
+                      <option value="{{ BANNER_TARGET_TYPE_ARTICLE }}">文章</option>
+                      <option value="{{ BANNER_TARGET_TYPE_ANALYST }}">老师</option>
+                      <option value="{{ BANNER_TARGET_TYPE_LOTTERY }}">赛事</option>
+                      <option value="{{ BANNER_TARGET_TYPE_H5 }}">H5页面</option>
+
+                  </select>
+
+
+
+
+       </div>
+       <div class="col-sm-3">
+           <input type="number" min="1"  required class="form-control" ng-model="banner.target_id" id="target_id" name="target_id" placeholder="填入目标对象的ID">
+
+       </div>
+    </div>
+
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">跳转地址:</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" id="target_url" name="target_url" placeholder="填入要跳转的url">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label  class="col-sm-2 control-label">语言:</label>
+        <div class="col-sm-6">
+            <select name="project" id="project" class="form-control">
+                <option value="M" >国语版</option>
+                <option value="C">粤语版</option>
+                <option value="J">一起赢</option>
+             </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postBanner()" class="btn btn-primary btn-lg" ng-disabled="bannerForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+
+
+<script type="text/javascript">
+  function bannerCtrl($scope){
+    {% if banner %}
+        $scope.banner={
+            "target_id":{{ banner.target_id }},
+        };
+        $("#target_type").val("{{ banner.target_type }}");
+        $('input[name="img_url"]').val("{{ banner.img_url }}");
+        $("#avatar").prop("src","{{ banner.img_url }}");
+        $('input[name="target_url"]').val("{{ banner.target_url }}");
+        $("#project").val("{{ banner.project }}");
+    {% endif %}
+
+    $scope.postBanner=function(){
+      if ($('input[name="img_url"]').val().length==0){
+          alert("图片尚未上传")
+          return;
+      }
+      next = "/app/guanggaobiao/";
+      $(".btn-primary img").show();
+      $.post("", $("#bannerForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+
+
+  }
+function image_preview(imageurl){
+  var url_prefix = "/static/";
+  imageurl = url_prefix + imageurl;
+  $('input[name="img_url"]').val(imageurl);
+
+  $("#avatar").prop("src",imageurl);
+
+}
+</script>
+{% endblock %}

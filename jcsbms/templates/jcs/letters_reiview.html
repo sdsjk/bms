@@ -1,0 +1,238 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+
+{% block postPageCss %}
+<link href="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" xmlns="http://www.w3.org/1999/html">
+    <style>
+    em {
+        color:red
+    }
+    </style>
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<div class="row">
+<div class="col-md-12">
+<form class="form-inline clearfix" method="get" action="/site/sixinshencha">
+<fieldset>
+
+  <input  name="action" value="search" type="hidden" />
+
+    <div class="form-group">
+        <label for="from_date">发信时间:</label>
+        <input type="text" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+    </div>
+    <div class="form-group">
+        <label for="to_date">至</label>
+        <input type="text" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="nick_name" id="nick_name" value="{{ nick_name }}" placeholder="请输入老师昵称">
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="auser_nickname" id="auser_nickname" value="{{ auser_nickname }}" placeholder="请输入用户昵称或者ID">
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="keywords" id="keywords" value="{{ keywords }}" placeholder="内容关键词">
+    </div>
+    <div class="form-group">
+        <label for="invisible">是否审核:</label>
+        <select name="invisible" class="form-control">
+            <option value="-1">全部</option>
+            <option value="1" {% if invisible == 1 %}selected{% endif %}>否</option>
+            <option value="0" {% if invisible == 0 %}selected{% endif %}>是</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="project">语言:</label>
+        <select name="project" class="form-control">
+            <option value="-1">全部</option>
+            <option value="M" {% if project == 'M' %}selected{% endif %}>国语</option>
+            <option value="C" {% if project == 'C' %}selected{% endif %}>粤语</option>
+            <option value="J" {% if project == 'J' %}selected{% endif %}>一起赢</option>
+        </select>
+    </div>
+
+     <button class="btn btn-primary" type="submit">搜索</button>
+
+
+</fieldset>
+</form>
+     <br>
+    <a class="btn btn-primary" target="_blank" href="{% export_link %}">导出数据</a>
+
+
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>发信人</th>
+    <th>收信人</th>
+    <th>发信时间</th>
+    <th>内容</th>
+    <th>已读</th>
+    <th>已审核</th>
+    <th>最后操作</th>
+    <th>操作时间</th>
+    <th>语言</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+
+{% for object in pager.object_list %}
+<tr>
+<td>{{ object.id}}</td>
+<td>{% if object.from_user%}老师:{{ object.from_user.analyst.nick_name }}{% endif %}{% if object.from_auser  %}app用户:{{ object.from_auser.userid }}{% endif %}</td>
+<td>{% if object.to_user%}老师:{{ object.to_user.analyst.nick_name }}{% elif object.to_auser  %}app用户:{{ object.to_auser.userid }}{% endif %}</td>
+<td>{{ object.date_added|date:"Y-m-d H:i"}}</td>
+<td>{{ object.content|check_banned_words|safe}}</td>
+
+<td>{{ object.unread|yesno:"否,是,是"}}</td>
+<td>{{ object.invisible|yesno:"否,是,是"}}</td>
+{% if object.id in actionLogDict %}
+<td>{{ actionLogDict|dictvbyk:object.id|dictvbyk:"user" }}:{{ actionLogDict|dictvbyk:object.id|dictvbyk:"description" }}</td>
+<td>{{ actionLogDict|dictvbyk:object.id|dictvbyk:"date_added"|date:"Y-m-d H:i" }}</td>
+{% else %}
+<td></td>
+<td></td>
+{% endif %}
+<td>
+    {% if object.project == 'M' %}
+        国语
+    {% elif object.project == 'C'%}
+        粤语
+    {% elif object.project == 'J'%}
+        一起赢
+    {% endif %}
+</td>
+<td>
+    {% if True %}
+        {% if object.invisible %}
+            <button class="btn btn-primary" id="handle_btn_{{ object.id }}" onclick="restore_letter('{{ object.id }}')">审核通过</button>
+        {% else %}
+            <button class="btn btn-primary" id="handle_btn_{{ object.id }}" onclick="del_letter('{{ object.id }}')">取消审核状态</button>
+        {% endif %}
+    {% endif %}
+    {% if can_revert_letter and object.from_auser and object.invisible == False %}
+        <button class="btn btn-primary" name="revert_letter" id="revert_letter" onclick="revert_letter('{{ object.to_user.analyst.id }}','{{ object.to_auser.userid }}','{{ object.project }}')">回复私信</button>
+    {% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="//cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.min.js"></script>
+{% tablesorter %}
+<link rel="stylesheet" href="/static/css/easydialog.css" type="text/css">
+<script src="/static/js/easydialog.js"></script>
+<script type="text/javascript">
+function del_letter(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/site/del_letter/", data,
+            function(data){
+                if(data.result){
+                    $("#handle_btn_" + id).parent().parent().children(":nth-child(7)").css({'display':"none", 'background-color':'yellow'}).fadeIn(2000, function(){$(this).css({'background-color':''})}).html('否');
+                    $("#handle_btn_" + id).attr('onclick', "restore_letter(" + id + ")").html("审核通过");
+                    //window.location.reload();
+                }else{
+                    alert("置为未审核失败："+data.message);
+                    //$(".btn-primary img").hide();
+                }
+            }, "json");
+
+}
+function restore_letter(id){
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/site/restore_letter/", data,
+            function(data){
+                if(data.result){
+                    $("#handle_btn_" + id).parent().parent().children(":nth-child(7)").css({'display':"none", 'background-color':'yellow'}).fadeIn(2000, function(){$(this).css({'background-color':''})}).html('是');
+                    $("#handle_btn_" + id).attr('onclick', "del_letter(" + id + ")").html("取消审核状态");
+                    //window.location.reload();
+                }else{
+                    alert("审核失败："+data.message);
+                    //$(".btn-primary img").hide();
+                }
+            }, "json");
+
+}
+function revert_letter(to_analyst,to_auser,project) {
+    easyDialog.open({
+        container: {
+            header: '回复私信',
+            content: "<form name=\"letterForm\"><textarea type=\"text\" style=\"width:100%;height:100px\" id=\"content\"></textarea>" +
+                "<input type=\"hidden\" id=\"to_analyst\" value='"+to_analyst+"'/>" +
+                "<input type=\"hidden\" id=\"to_auser\" value='"+to_auser+"'/>" +
+                "<input type=\"hidden\" id=\"project\" value='"+project+"'/></form>",
+            yesFn: send_letter,
+            noFn: true,
+            yesText: '确定',
+            noText: '取消'
+        }
+    });
+    }
+    var send_letter = function () {
+        var data = {
+            "csrfmiddlewaretoken": $("[name='csrfmiddlewaretoken']").val(),
+            "to_anaylst":$("#to_analyst").val(),
+            "to_auser":$("#to_auser").val(),
+            "content":$('#content').val(),
+            "project":$("#project").val(),
+        };
+        $.post("/site/daifaxiaoxi/", data,
+            function (data) {
+                if (data.result) {
+                    alert("回复成功");
+                    window.location.reload();
+                } else {
+                    alert(data.message);
+                }
+            }, "json");
+    };
+
+
+$(document).ready(function(){
+
+    $( "#from_date" ).datepicker({
+        defaultDate: "+0d",
+        dateFormat: "yy-mm-dd",
+        numberOfMonths: 1,
+        onClose: function( selectedDate ) {
+            $( "#to_date" ).datepicker( "option", "minDate", selectedDate );
+        }
+    });
+    $( "#to_date" ).datepicker({
+        defaultDate: "+1d",
+        dateFormat: "yy-mm-dd",
+        numberOfMonths: 1,
+        onClose: function( selectedDate ) {
+            $( "#from_date" ).datepicker( "option", "maxDate", selectedDate );
+        }
+    });
+
+});
+</script>
+{% endblock %}

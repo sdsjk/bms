@@ -1,0 +1,91 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+
+
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<div class="row">
+<div class="col-md-12">
+<form class="form-inline" method="get" action="#">
+<fieldset>
+
+    <div class="form-group">
+        <input type="search" class="form-control" name="issue" id="issue" value="{{ issue }}" placeholder="请输入期数">
+    </div>
+    <button type="submit" class="btn btn-default">搜索</button>
+</fieldset>
+</form>
+<br><h3 class="text-primary"></h3>
+<a class="btn btn-primary" href="/caishi/edit_rx9/">新增赛事表</a>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>任9赛事ID</th>
+    <th>任9期数</th>
+    <th>截止时间</th>
+    <th>编辑时间</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+
+{% for ren_xuan in pager.object_list %}
+<tr>
+<td>{{ ren_xuan.id}}</td>
+<td>{{ ren_xuan.issue}}</td>
+<td>{{ ren_xuan.end_time|date:"m-d H:i" }}</td>
+<td>{{ ren_xuan.update_time|date:"y-m-d H:i" }}</td>
+<td>
+    <div class="btn-group">
+
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">操作<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="/caishi/edit_rx9/?id={{ ren_xuan.id }}">修改</a></li>
+          <li><a href="javascript:void(0)" onclick="delRenXuan('{{ ren_xuan.id }}')">删除</a></li>
+        </ul>
+    </div>
+
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+<script type="text/javascript">
+function delRenXuan(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/caishi/del_rx9/", data,
+        function(data){
+            if(data.result){
+              alert("成功删除!");
+              location.reload()
+            }else{
+              alert("删除失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+</script>
+{% endblock %}

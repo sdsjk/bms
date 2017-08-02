@@ -1,0 +1,226 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+{% load i18n %}
+{%load jauth_tags %}
+{% block postPageCss %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline" method="get" action="/app/zhifu/" onsubmit="return checkValid()">
+    <fieldset>
+
+        <div class="form-group">
+            <input type="search" class="form-control" value="{{ nick_name }}" name="nick_name" id="nick_name" placeholder={% trans '网络昵称' %}>
+        </div>
+        <div class="form-group">
+            <label>{% trans '付款时间' %}:</label>
+            <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />
+        </div>
+        <input type="hidden" class="form-control" value="{{ from_datestr }}" name="from_date" id="from_date" >
+        <input type="hidden" class="form-control" value="{{ to_datestr }}" name="to_date" id="to_date" >
+        <div class="form-group">
+            <input type="checkbox" class="form-control" {{status|yesno:"checked,," }} id="status" name="status">{% trans '交易成功' %}
+
+        </div>
+        <div class="form-group">
+            <label>{% trans '来源类型' %}:</label>
+
+            <select name="paytype" id="paytype" class="form-control">
+                <option value="0">{% trans '全部' %}</option>
+                <option value="1" {% if paytype == 1 %}selected{% endif %}>{% trans '微信' %}</option>
+                <option value="2" {% if paytype == 2 %}selected{% endif %}>{% trans '支付宝' %}</option>
+                <option value="4" {% if paytype == 4 %}selected{% endif %}>{% trans '支付精彩币' %}</option>
+                <option value="5" {% if paytype == 5 %}selected{% endif %}>{% trans '任务精彩币' %}</option>
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label>{% trans '购买类型' %}:</label>
+
+            <select name="purchasetype" id="purchasetype" class="form-control">
+                <option value="-1">{% trans '全部' %}</option>
+                <option value="0" {% if purchasetype == 0 %}selected{% endif %}>{% trans '文章' %}</option>
+                <option value="1" {% if purchasetype == 1 %}selected{% endif %}>{% trans '精彩问' %}</option>
+                <option value="3" {% if purchasetype == 3 %}selected{% endif %}>{% trans '视频' %}</option>
+                <option value="4" {% if purchasetype == 4 %}selected{% endif %}>{% trans '买花' %}</option>
+
+            </select>
+        </div>
+        <div class="form-group">
+        <input type="search" class="form-control" name="userid" id="userid" value="{{userid}}" placeholder={% trans '用户ID' %}>
+        </div>
+        <div class="form-group">
+            <input type="search" class="form-control" name="anick_name" id="anick_name" value="{{ anick_name }}" placeholder={% trans '网络昵称' %}>
+        </div>
+        <div class="form-group">
+            <input type="search" class="form-control" name="target_id" id="target_id" value="{{ target_id }}" placeholder={% trans '用户ID' %}>
+        </div>
+        <div class="form-group">
+            <input type="search" class="form-control" name="article_keywords" id="article_keywords" value="{{ article_keywords }}" placeholder="Article keyword or tag">
+        </div>
+        <div class="form-group">
+            <label>{% trans '标签' %}:</label>
+            <select class="form-control" name="portal_tag" id="portal_tag">
+                <option value="-1">{% trans '全部' %}</option>
+                <option value="0">{% trans '无标签' %}</option>
+                {% for tag in portalTags %}
+                    <option value="{{ tag.id }}">{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+        <input type="search" class="form-control" name="buy_id" id="buy_id" value="{{buy_id}}" placeholder="Enter Article ID">
+        </div>
+        <div class="form-group">
+            <label>{% trans '价格' %}:</label>
+            <input type="search" class="form-control" name="price_low" id="price_low" value="{{ price_low }}" placeholder="￥"> -
+            <input type="search" class="form-control" name="price_high" id="price_high" value="{{ price_high }}" placeholder="￥">
+        </div>
+        <div class="form-group">
+            <label>{% trans '语言' %}：</label>
+            <select class="form-control" name="language" id="language">
+                <option value="-1">{% trans '全部' %}</option>
+                <option value="1" {% if language == 1 %}selected{% endif %}>{% trans '国语' %}</option>
+                <option value="0" {% if language == 0 %}selected{% endif %}>{% trans '粤语' %}</option>
+            </select>
+        </div>
+        <div class="form-group" style="display: none;">
+        <input type="number" class="form-control" name="user_inviteid" id="user_inviteid" value="{{user_inviteid}}" placeholder={% trans '请输入老师邀请码' %}>
+        </div>
+        <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+    </fieldset>
+</form>
+<br>
+<div class="text-danger">{% trans '该时间段内合计' %}:{{ gold_sum|default_if_none:"0"|centesimal }}{% trans '精彩币' %}</div>
+<a class="btn btn-primary" target="_blank" href="{% export_link %}">{% trans '导出数据' %}</a>
+<div class="row">
+<div class="col-md-12">
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>{% trans '文章购买' %}ID</th>
+    <th>{% trans '用户ID' %}</th>
+    <th>{% trans '老师' %}</th>
+    <th>{% trans '目标' %}</th>
+    <th>{% trans '时间' %}</th>
+    <th>{% trans '来源' %}</th>
+    <th>{% trans '语言' %}</th>
+    <th>{% trans '金额' %}</th>
+    <th>{% trans '状态' %}</th>
+    <th>{% trans '操作' %}</th>
+</tr>
+</thead>
+<tbody>
+{% for object in pager.object_list %}
+<tr>
+<td>{{ object.id }}</td>
+<td>{{ object.user_id }}</td>
+<td>{{ object.author.nick_name }}</td>
+<td>{{ object|purchasetarget_name|safe }}</td>
+<td>{{ object.cdate|notzdate }}</td>
+<td>{{ object.paytype|paytype_name }}</td>
+<td>{% if object.order.appid == 'C' %}粤语{% else %}国语{% endif %}</td>
+<td>{{ object.price|centesimal }}精彩币</td>
+<td>{{ object.status|yesno:"成功,失败,失败" }}</td>
+<td>
+    {% if object.paytype == 1 and object.status == 0 %}
+        <button class="btn btn-primary" type="submit" id="btn_submit" onclick="check_order({{ object.id }},'purchase')">查询订单状态</button>
+    {% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+{% tablesorter %}
+<script type="text/javascript">
+  function  checkValid(){
+      if ($("#from_date").val().length<1){
+          alert("必须选择时间范围");
+          return false;
+      }
+      if($("#from_date").val().length!=$("#to_date").val().length){
+          alert("时间范围必须两个都要选!");
+          return false;
+      }else {
+          return true;
+      }
+  }
+  $('#daterangepicker').daterangepicker({
+          timePicker: true,
+          timePickerIncrement: 1,
+          timePicker24Hour: true,
+          linkedCalendars: false,
+          locale:{
+              format: 'YYYY/MM/DD HH:mm',
+              applyLabel:"确定",
+              cancelLabel:"取消",
+              daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+              ],
+              monthNames: [
+                  "一月",
+                  "二月",
+                  "三月",
+                  "四月",
+                  "五月",
+                  "六月",
+                  "七月",
+                  "八月",
+                  "九月",
+                  "十月",
+                  "十一月",
+                  "十二月"
+              ],
+          }
+      },
+      function(start, end) {
+          var datefmt = "YYYY-MM-DD HH:mm";
+          console.log(start.format(datefmt), end.format(datefmt));
+          $("#from_date").val(start.format(datefmt + ":00"));
+          $("#to_date").val(end.format(datefmt + ":59"));
+
+      }
+  );
+  $('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+  $('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+  $("#portal_tag").val({{ portal_tag }});
+
+  function check_order(id,page) {
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "page":page,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+        $.post("/app/wx_checkorder/", data,
+            function(data) {
+                var i = '';
+                if(data['trade_state'] == 'NOTPAY' || data['trade_state'] == null)
+                {
+                    i = '失败';
+                }
+                alert('订单状态：'+i+'\n订单号：'+data['orderid']);
+            }, "json");
+    }
+</script>
+{% endblock %}

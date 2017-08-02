@@ -1,0 +1,102 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+
+
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+
+<div class="row">
+<div class="col-md-12">
+<form class="form-inline" method="get" action="#">
+<fieldset>
+
+    <div class="form-group">
+        <input type="search" class="form-control" name="name" id="name" value="{{ name }}" placeholder="请输入赛事名称">
+    </div>
+        <div class="form-group">
+            <label>球类:</label>
+            <select class="form-control" name="sport_type" id="sport_type">
+                <option value="-1">全部</option>
+                <option value="0" {% if sport_type == 0 %}selected{% endif %} >足球</option>
+                <option value="1" {% if sport_type == 1 %}selected{% endif %} >篮球</option>
+                <option value="2" {% if sport_type == 2 %}selected{% endif %} >网球</option>
+           </select>
+        </div>
+        <div class="form-group">
+            <label>语言:</label>
+            <select class="form-control" name="project" id="project">
+                <option value="-1">全部</option>
+                <option value="2" {% if project == 2 %}selected{% endif %} >英语</option>
+                <option value="1" {% if project == 1 %}selected{% endif %} >国语</option>
+                <option value="0" {% if project == 0 %}selected{% endif %} >粤语</option>
+           </select>
+        </div>
+    <button type="submit" class="btn btn-default">搜索</button>
+</fieldset>
+</form>
+<br><h3 class="text-primary"></h3>
+<a class="btn btn-primary" href="/caishi/edit_cup_league/">新增赛事名称</a>
+<table class="table table-bordered table-striped table-hover tablesorter">
+<thead>
+<tr><th>ID</th>
+    <th>赛事名称</th>
+    <th>球类</th>
+    <th>语言</th>
+    <th>操作</th>
+</tr>
+</thead>
+<tbody>
+
+{% for cup_league in pager.object_list %}
+<tr>
+<td>{{ cup_league.id}}</td>
+<td>{{ cup_league.name }}</td>
+<td>{% if cup_league.sport_type == 0 %}
+        足球
+    {% elif cup_league.sport_type == 1 %}
+        篮球
+    {% else %}
+        网球
+    {% endif %}
+</td>
+<td>
+    {% if cup_league.project == 'M' %}
+        国语
+    {% elif cup_league.project == 'C' %}
+        粤语
+    {% elif cup_league.project == 'E' %}
+        英语
+    {% endif %}
+</td>
+<td>
+    <div class="btn-group">
+
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">操作<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="/caishi/edit_cup_league/?id={{ cup_league.id }}">修改</a></li>
+        </ul>
+    </div>
+
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+{% endblock %}
+{% block postPageJS %}
+{% tablesorter %}
+<script type="text/javascript">
+
+</script>
+{% endblock %}

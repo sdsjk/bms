@@ -1,0 +1,16 @@
+{% for portal in portals %}
+    <label>
+    {% if portal.id == 100 and can_push_analyst %}
+         <input type="checkbox" name="portaltags" value="{{ portal.id }}">
+        {{ portal.name }}
+    {% elif portal.id != 100 %}
+        <input type="checkbox" name="portaltags" value="{{ portal.id }}">
+        {{ portal.name }} {% if portal.id == 8 %} (滚球){% endif %}{% if portal.id == 25 %} (走地){% endif %}
+        {% if portal.id == 1000001 %} (欧赔){% endif %}
+         {% if portal.id == 1000002 %} (让分){% endif %}
+         {% if portal.id == 1000003 %} (大小球){% endif %}
+         {% if portal.id == 1000004 %} (比分){% endif %}
+          {% if portal.id == 1000005 %} (滚球){% endif %}
+    {% endif %}
+  </label>
+{% endfor %}

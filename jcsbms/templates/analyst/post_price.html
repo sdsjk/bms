@@ -1,0 +1,87 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+{%load analyst_tags %}
+
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<h2></h2>
+<form class="form-horizontal" action="" method="post" id="priceForm" name="priceForm" ng-controller="priceCtrl">
+{% csrf_token %}
+
+
+<fieldset>
+    <legend>发布价格</legend>
+
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">老师彩种:</label>
+       <div class="col-sm-3">
+           {% analyst_lotterytype %}
+
+       </div>
+
+    </div>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">老师等级:</label>
+       <div class="col-sm-3">
+        {% analyst_level %}
+       </div>
+       <div class="col-sm-3">
+
+       </div>
+    </div>
+    <div class="form-group">
+       <label  class="col-sm-2 control-label">文章价格:</label>
+       <div class="col-sm-3">
+           <div class="input-group">
+              <div class="input-group-addon">￥</div>
+              <input type="number" min="1" max="1000" class="form-control" id="cost" name="cost" placeholder="文章单价">
+              <div class="input-group-addon">.00</div>
+            </div>
+
+       </div>
+       <div class="col-sm-3">
+
+       </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+         <button type="button" ng-click="postPrice()" class="btn btn-primary btn-lg" ng-disabled="priceForm.$invalid" >保存 <img alt="加载中" width="18px" class="hide" src="/static/img/loading.gif"/></button>
+        </div>
+    </div>
+</fieldset>
+</form>
+{% endblock %}
+
+{% block postPageJS %}
+
+
+<script type="text/javascript">
+  $('#selectAnalystlevel>option[value="1"]').hide();
+  $('#selectAnalystlevel>option[value="2"]').prop("selected",true);
+  function priceCtrl($scope,$http){
+    $scope.postPrice=function(){
+      next = "/laoshi/jiagebiao/";
+      $(".btn-primary img").show();
+      $.post("", $("#priceForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+
+    };
+
+
+  }
+</script>
+{% endblock %}

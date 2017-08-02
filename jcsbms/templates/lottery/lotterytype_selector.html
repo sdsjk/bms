@@ -1,0 +1,6 @@
+<select class="form-control" name="lottery_type">
+{% for type in lottery_types %}
+  <option value="{{ type.id }}" {% if type.id == lottery_type_id %}selected{% endif %} parent_id="{{ type.parent.id }}">{{ type.name }}</option>
+{% endfor %}
+
+</select>

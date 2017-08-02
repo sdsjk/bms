@@ -1,0 +1,109 @@
+{% extends "col2base.html" %}
+{% load analyst_tags %}
+{%load jcs_tags %}
+{%load lottery_tags %}
+
+
+{% block sidebar %}
+{% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="jumbotron">
+<form class="form-horizontal" id="analystForm" name="analystForm" ng-controller="analystCtrl">
+<fieldset>
+<legend>激活老师登录权限</legend>
+{% csrf_token %}
+  {% if analyst %}
+
+      <input type="hidden" name="id" value="{{ analyst.id }}">
+  {% endif %}
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">老师登录名</label>
+    <div class=" col-sm-6">
+      <input type="text" name="username" ng-pattern="/^[a-zA-Z][a-zA-Z0-9_]+$/" ng-minlength="6" ng-maxlength="30" ng-model="analyst.username" required="required" class="form-control" id="inputUsername" placeholder="输入用户登录名称" ng-readonly="analyst">
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.username.$error.required">需要填写</span>
+        <span class="text-danger" ng-show="analystForm.username.$error.minlength">至少6个字符</span>
+        <span class="text-danger" ng-show="analystForm.username.$error.maxlength">至多30个字符</span>
+        <span class="text-danger" ng-show="analystForm.userName.$error.pattern">只能是字母数字或下划线且需以字母开头</span>
+      </div>
+  </div>
+<div class="form-group">
+    <label  class="col-sm-2 control-label">手机号</label>
+    <div class=" col-sm-6">
+      <input type="tel" name="mobile"   ng-maxlength="11" ng-model="analyst.mobile" class="form-control" id="inputMobile" placeholder="请输入手机号码" ng-readonly="">
+    </div>
+      <div class="col-sm-4">
+
+
+        <span class="text-danger" ng-show="analystForm.mobile.$error.maxlength">至多11个字符</span>
+      </div>
+  </div>
+
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">邮箱</label>
+    <div class=" col-sm-6">
+      <input type="email" rows="5"  required="required" ng-minlength="3" ng-maxlength="100" ng-model="analyst.email" class="form-control"  id="inputEmail" name="email" placeholder="输入老师邮箱" ng-readonly="analyst"/>
+    </div>
+      <div class="col-sm-4">
+        <span class="text-danger" ng-show="analystForm.email.$error.required">需要填写</span>
+        <span class="text-danger" ng-show="analystForm.email.$error.email">不符合email地址格式</span>
+        <span class="text-danger" ng-show="analystForm.email.$error.minlength">至少3个字符</span>
+        <span class="text-danger" ng-show="analystForm.email.$error.maxlength">至多100个字符</span>
+
+      </div>
+  </div>
+  <div class="form-group">
+    <label  class="col-sm-2 control-label">合作类型</label>
+    <div class=" col-sm-6">
+      <select class="form-control"    name="analyst_type" id="selectType" ng-model="analyst.analyst_type" ng-readonly="analyst">
+          <option value="0" >收费</option>
+          <option value="1" selected="selected" >免费</option>
+      </select>
+    </div>
+  </div>
+
+
+
+
+  <div class="form-group">
+    <div class="col-sm-6 col-sm-offset-2">
+      <button type="button" ng-disabled="analystForm.$invalid" ng-click="post_analyst()" class="btn btn-primary btn-block">提交修改</button>
+    </div>
+  </div>
+</fieldset>
+</form>
+</div>
+
+{% endblock %}
+
+{% block postPageJS %}
+<script type="text/javascript">
+function analystCtrl($scope){
+    {% if analyst %}
+      $scope.analyst = {"username":"{{ analyst.user.username }}",
+                        "nick_name":"{{ analyst.nick_name }}",
+                        "email":"{{ analyst.user.email }}",
+                        "mobile":"{{ analyst.mobile }}",
+                        "analyst_type":"{{ analyst.analyst_type }}",
+                       };
+    {% endif %}
+
+   $scope.post_analyst=function(){
+      next = "/laoshi/sousuo/";
+
+      $.post("/laoshi/jihuo/", $("#analystForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("发布成功!");
+              location = next;
+            }else{
+              alert("发布失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+   };
+}
+</script>
+{% endblock %}

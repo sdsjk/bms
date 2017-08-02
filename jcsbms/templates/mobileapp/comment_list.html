@@ -1,0 +1,97 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load app_tags %}
+{% block title %}待审列表{% endblock %}
+
+{% block postPageCss %}
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<div class="row" ng-controller="commentsCtrl">
+<div class="col-md-12">
+<h4></h4>
+
+<button class="btn btn-primary" ng-click="verify()" ng-disabled="begin_action">通过第一个</button>
+<button class="btn btn-primary" ng-click="deny()" ng-disabled="begin_action">拒绝第一个</button>
+<table class="table table-bordered table-striped table-hover sortable" >
+{% verbatim %}
+<thead>
+<tr><th>ID</th>
+    <th>内容</th>
+    <th>用户</th>
+
+
+
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="item in comments">
+<td>{{ item.id }}</td>
+<td>{{ item.content}}</td>
+<td>{{ item.user}}</td>
+</tr>
+
+
+</tbody>
+{% endverbatim %}
+</table>
+{% csrf_token %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script src="/static/js/sorttable.js"></script>
+<script type="text/javascript">
+
+function commentsCtrl($scope,$http){
+    $scope.begin_action = false
+    $scope.comments =[]
+    $scope.loadComments = function(){
+        $http.get("/app/xinpinglun/",{params:{}}).success(function(data){
+                    $scope.comments= data;
+                    $scope.begin_action = false;
+                }
+        );
+    }
+    $scope.loadComments()
+    $scope.verify=function(){
+        $scope.begin_action = true
+        $http.post("/app/verify/", {"id":$scope.comments[0].id}).success(
+        function(data){
+            if(data.result){
+              alert("操作成功");
+              $scope.loadComments()
+              return true;
+            }else{
+              alert("操作失败");
+              return false
+
+            }
+        });
+
+    }
+    $scope.deny=function(){
+        $scope.begin_action = true
+        $http.post("/app/deny/", {"id":$scope.comments[0].id}).success(
+        function(data){
+            if(data.result){
+              $scope.loadComments()
+              alert("操作成功");
+              return true;
+            }else{
+              alert("操作失败");
+              return false
+
+            }
+        });
+
+    }
+}
+
+</script>
+{% endblock %}

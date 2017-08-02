@@ -1,0 +1,6 @@
+bms后台
+
+上线步骤：
+1、登录20.15
+2、cd /home/fengchao
+3、sudo ./for_online/jcsbms_online.sh

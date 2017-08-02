@@ -1,0 +1,649 @@
+{% extends "col2base.html" %}
+{%load jcs_tags %}
+{%load analyst_tags %}
+{%load app_tags %}
+{% load i18n %}
+{%load jauth_tags %}
+
+
+
+{% block postPageCss %}
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+{% endblock %}
+{% block sidebar %}
+    {% staff_side %}
+{% endblock %}
+{% block rightcontent %}
+<form class="form-inline clearfix" method="get" action="#">
+<fieldset>
+
+  <input  name="action" value="search" type="hidden" />
+
+    <div class="form-group">
+        <input type="search" class="form-control" name="author_word" value="{{ aword }}" id="author_word" placeholder={% trans '网络昵称' %}>
+    </div>
+      &nbsp; &nbsp;
+    <div class="form-group">
+        <label>{% trans '创建时间' %}:</label>
+        <input type="text" style="width: 280px" class="form-control" value="" id="daterangepicker" />
+        <input type="hidden" value="{{ from_datestr }}" name="from_date" id="from_date">
+        <input type="hidden" value="{{ to_datestr }}" name="to_date" id="to_date" >
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="articleid" id="articleid" value="{{ articleid }}" placeholder={% trans '文章ID' %}>
+    </div>
+    <div class="form-group">
+      <label>{% trans '上首页' %}:</label>
+      <select class="form-control" name="is_toppage" id="is_toppage">
+          <option value="-1">{% trans '全部' %}</option>
+          <option value="0" {% if is_toppage == 0 %}selected{% endif %}>{% trans '不上' %}</option>
+          <option value="1" {% if is_toppage == 1 %}selected{% endif %}>{% trans '上' %}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Review?:</label>
+       <select class="form-control" name="invisible" id="invisible">
+          <option value="-1">{% trans '全部' %}</option>
+          <option value="0" {% if invisible == 0 %}selected{% endif %}>Reviewed</option>
+          <option value="1" {% if invisible == 1 %}selected{% endif %}>Notreviewed</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>{% trans '收费否' %}:</label>
+       <select class="form-control" name="chargeable" id="chargeable">
+          <option value="-1">{% trans '全部' %}</option>
+          <option value="0" {% if chargeable == 0 %}selected{% endif %}>{% trans '免费' %}</option>
+          <option value="1" {% if chargeable == 1 %}selected{% endif %}>{% trans '收费' %}</option>
+      </select>
+    </div>
+    <div class="form-group" style="display: none;">
+        <label>收费老师:</label>
+        <select class="form-control" name="author_type" id="author_type">
+            <option value="-1">{% trans '全部' %}</option>
+            <option value="1" {% if author_type == 1 %}selected{% endif %}>{% trans '免费' %}</option>
+            <option value="0" {% if author_type == 0 %}selected{% endif %}>{% trans '收费' %}</option>
+            <option value="2" {% if author_type == 2 %}selected{% endif %}>{% trans '代发' %}</option>
+        </select>
+    </div>
+    <div class="form-group" style="display: none;">
+        <label>关联比赛:</label>
+        <select class="form-control" name="match_related" id="match_related">
+            <option value="-1">{% trans '全部' %}</option>
+            <option value="1" {% if match_related == 1 %}selected{% endif %}>{% trans '是' %}</option>
+            <option value="0" {% if match_related == 0 %}selected{% endif %}>{% trans '否' %}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="key_word" id="key_word" value="{{ key_word }}" placeholder="Key word">
+    </div>
+    <div class="form-group">
+        <label>{% trans '标签' %}:</label>
+        <select class="form-control" name="portal_tag" id="portal_tag">
+            <option value="-1">{% trans '全部' %}</option>
+            <option value="0">无</option>
+            {% for tag in portalTags %}
+            <option value="{{ tag.id }}">{{ tag.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group" style="display: none;">
+        <label>红单退费:</label>
+        <select class="form-control" name="refund_red" id="refund_red">
+            <option value="-1">{% trans '全部' %}</option>
+            <option value="1">是</option>
+            <option value="0">否</option>
+        </select>
+    </div>
+    <div class="form-group" style="display: none;">
+        <label>语言:</label>
+        <select class="form-control" name="language" id="language">
+            <option value="-1">{% trans '全部' %}</option>
+            <option {% if language == 1 %}selected{% endif %} value="1">{% trans '国语' %}</option>
+            <option {% if language == 0 %}selected{% endif %} value="0">{% trans '粤语' %}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>{% trans '红黑结果' %}:</label>
+        <select class="form-control" name="black_red_count" id="black_red_count">
+            <option value="-1">{% trans '全部' %}</option>
+            <option {% if black_red_count == 1 %}selected{% endif %} value="1">{% trans '有' %}</option>
+            <option {% if black_red_count == 0 %}selected{% endif %} value="0">{% trans '无' %}</option>
+        </select>
+    </div>
+    <div class="form-group" style="display: none;">
+        <label>所属活动:</label>
+        <select class="form-control" name="article_activity" id="article_activity">
+            <option value="-1">{% trans '全部' %}</option>
+            {% for measuredactivity in measuredactivities %}
+            <option {% if activity_id == measuredactivity.id %}selected{% endif %} value="{{ measuredactivity.id }}">{{ measuredactivity.activity_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>{% trans '渠道' %}:</label>
+        <select class="form-control" name="analyst_channel" id="analyst_channel">
+            <option value="-1">{% trans '全部' %}</option>
+                {% for analystchannel in analystchannels %}
+                     <option {% if analyst_channel_id == analystchannel.id %}selected{% endif %} value="{{ analystchannel.id }}">{{ analystchannel.channel_name }}</option>
+                {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>{% trans '发布类型' %}:</label>
+        <select class="form-control" name="article_type" id="article_type">
+            <option value="-1">{% trans '全部' %}</option>
+            <option {% if article_type == 10 %}selected{% endif %} value="10">初盘</option>
+            <option {% if article_type == 20 %}selected{% endif %} value="20">竞彩串关</option>
+            <option {% if article_type == 40 %}selected{% endif %} value="40">直播</option>
+            <option {% if article_type == 50 %}selected{% endif %} value="50">其他</option>
+            <option {% if article_type == 60 %}selected{% endif %} value="60">晒战绩</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>{% trans '翻译状态' %}:</label>
+        <select class="form-control" name="translate_type" id="translate_type">
+            <option {% if translate_type == -1 %}selected{% endif %} value="-1" >{% trans '全部' %}</option>
+             <option {% if translate_type == 0 %}selected{% endif %} value="0">同步完成</option>
+         <option {% if translate_type == 2 %}selected{% endif %} value="2">编辑完成</option>
+            <option {% if translate_type == 3 %}selected{% endif %} value="3">发布完成</option>
+        </select>
+    </div>
+
+    <button class="btn btn-primary" type="submit">{% trans '搜索' %}</button>
+
+
+
+</fieldset>
+</form>
+
+    <button class="btn btn-primary" id="delarticle">{% trans '删除' %}</button>
+
+    <button class="btn btn-primary" id="allcheck">{% trans '全选' %}</button>
+
+<form class="form-horizontal" action="" method="post" id="DelArticleForm" name="DelArticleForm">
+    {% csrf_token %}
+    <input name="id" type="hidden" id="article_id" value="" />
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">请选择原因</h4>
+                </div>
+                <div class="modal-body">
+                        <label><input name="reason" type="checkbox" value="商务申请删除" />商务申请删除</label><br />
+                        <label><input name="reason" type="checkbox" value="时效已过" />时效已过</label><br />
+                        <label><input name="reason" type="checkbox" value="图片使用不当" />图片使用不当</label><br />
+                        <label><input name="reason" type="checkbox" value="战绩虚假宣传" />战绩虚假宣传</label><br />
+                        <label><input name="reason" type="checkbox" value="用词不雅" />用词不雅</label><br />
+                        <label><input name="reason" type="checkbox" value="侮辱骂人身攻击" />侮辱骂人身攻击</label><br />
+                        <label><input name="reason" type="checkbox" value="分析推荐不明确" />分析推荐不明确</label><br />
+                        <label><input name="other" type="checkbox" value="其他" onclick="on_hide()" id="other"/>其他</label>
+                        <label><input name="reason_custom" type = "text" id="hide" style="display:none" placeholder="必须填写自定义原因"/></label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"  onclick="funclose()" >关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="make_sure()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<br>
+<div class="row">
+<div class="col-md-12">
+    <a class="btn btn-primary" target="_blank" href="{% export_link %}">{% trans '导出数据' %}</a>
+{#    <a class="btn btn-primary" href="/wenzhang/bianji/">新增文章</a><br>#}
+<h5>{% trans '置顶文章区' %}</h5>
+<table class="table table-bordered table-striped table-hover tablesorter" id="top_articles_table">
+    <thead>
+        <tr>
+
+            <th>ID</th>
+            <th>{% trans '标签' %}</th>
+            <th>{% trans '概要' %}</th>
+            <th>{% trans '作者' %}</th>
+            <th>{% trans '创建时间' %}</th>
+            <th>{% trans '操作' %}</th>
+            <th>{% trans '排序' %}</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for article in top_articles %}
+        <tr>
+
+            <td><a href="http://articleapi.winwin.in.th/Article/GetTranslatedArticle?articleId={{ article.id }}&userId={{ userid }}&callback=http://bms.winwin.in.th/wenzhang/sousuo/" target="_blank">{{ article.id }}</a></td>
+            <td>{{ article.tags }}</td>
+            <td>{{ article.digest }}</td>
+            <td>{{ article.author }}</td>
+            <td>{{ article.date_added|date:"Y-m-d H:i" }}</td>
+            <td><a href="javascript:void(0);" onclick="cancelTop({{ article.id }})">{% trans '取消置顶' %}</a></td>
+            <td>{{ article.top_order }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<table class="table table-bordered table-striped table-hover tablesorter" >
+<thead>
+<tr>
+    <th>删除</th>
+    <th>ID</th>
+    <th style="width:1px;">{% trans '上首页' %}</th>
+    <th style="width:1px;">{% trans '标签' %}</th>
+    <th style="width:2px;">{% trans '发布类型' %}</th>
+    <th style="width:15%;">{% trans '概要' %}</th>
+    <th style="width:1px;">{% trans '收费否' %}</th>
+    <th>{% trans '作者' %}</th>
+    <th style="width:1px;">{% trans '语言' %}</th>
+    <th style="width:15px;">{% trans '创建时间' %}</th>
+    <th style="width:1px;">{% trans '红黑数量' %}</th>
+    <th style="width:12%;">{% trans '删除原因' %}</th>
+    <th>{% trans '渠道' %}</th>
+    <th>{% trans '操作' %}</th>
+</tr>
+</thead>
+<tbody id="alluncutarticle">
+{% for article in pager.object_list %}
+<tr>
+<td><input type="checkbox" id={{article.id  }} name="checkbox"></td>
+<td><a href="http://articleapi.winwin.in.th/Article/GetTranslatedArticle?articleId={{ article.id }}&userId={{ userid }}&callback=http://bms.winwin.in.th/wenzhang/sousuo/" target="_blank">{{ article.id }}</a>
+{% if article.istop and article.top_time > now  %}
+    <span class="glyphicon glyphicon-arrow-up text-danger" style="font-size: 18px;" aria-hidden="true"></span>
+{% endif %}
+</td>
+<td>{%  if article.is_toppage %}
+    <span class="glyphicon glyphicon-arrow-up text-success" aria-hidden="true"></span>
+    {% endif %}</td>
+<td>{{ article.tags }}</td>
+<td>{% if article.type == '10' %}
+        初盘
+    {% elif article.type == '20' %}
+        竞彩串关
+    {% elif article.type == '40' %}
+        直播
+    {% elif article.type == '50' %}
+        其他
+    {% elif article.type == '60' %}
+        晒战绩
+    {% endif %}</td>
+<td>{{ article.digest }}</td>
+<td>{% if article.chargeable %}{% if article.price %}{{ article.price }}{% else %}是{% endif %}{% else %}否{% endif %}</td>
+<td>{{ article.author.nick_name }}</td>
+<td>{% if article.language == 'M' %}国语{% else %}粤语{% endif %}</td>
+<td>{{ article.date_added|date:"m-d H:i" }}</td>
+<td>{{ article.articlelotteriesresult_count }}</td>
+<td>
+{%  if  article.invisible %}
+    {{ article.memo }}
+{% endif %}
+</td>
+<td>{{ article.channel }}</td>
+<td>
+   <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">{% trans '操作' %}<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="http://articleapi.winwin.in.th/Article/GetTranslatedArticle?articleId={{ article.id }}&userId={{ userid }}&callback=http://bms.winwin.in.th/wenzhang/sousuo/">Review</a></li>
+          {% if not article.invisible %}
+          <li><a href="javascript:void(0)" onclick="delArticle('{{ article.id }}')">{% trans '删除' %}</a></li>
+          {% endif %}
+          {% if article.invisible %}
+{#          <li><a href="javascript:void(0)" onclick="recoverArticle('{{ article.id }}')">恢复</a></li>#}
+          {% endif %}
+          <li><a href="/wenzhang/set_channel/?article_id={{ article.id }}">Set Channel</a></li>
+          {% if article.istop %}
+              <li><a href="javascript:void(0)" onclick="cancelTop('{{ article.id }}')">Cancel From HomePage</a></li>
+          {% else %}
+            <li><a href="javascript:void(0)" onclick="makeTop('{{ article.id }}')">{% trans '置顶' %}</a></li>
+          {% endif %}
+          {% if article.is_toppage %}
+          <li><a href="javascript:void(0)" onclick="cancel_toppage('{{ article.id }}')">Cancel From HomePage</a></li>
+          {% else %}
+            <li><a href="javascript:void(0)" onclick="make_toppage('{{ article.id }}')">{% trans '上首页' %}</a></li>
+          {% endif %}
+            {% if article.is_xms and article.has_refund_red %}
+                <li><a href="/app/refund_red_log/?article_id={{ article.id }}" target="_blank">退款日志</a></li>
+            {% elif article.is_xms %}
+                <li><a href="javascript:void(0)" onclick="refund_red('{{ article.id }}')">红单退款</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</td>
+</tr>
+
+{% endfor %}
+</tbody>
+</table>
+{% csrf_token %}
+{% pager %}
+</div>
+</div>
+
+
+{% endblock %}
+{% block postPageJS %}
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+{% tablesorter %}
+<script>
+var flag=true;
+$('#allcheck').click(function () {
+
+{#    var len=$('#alluncutarticle tr').length;#}
+    if (flag){
+        $("[name='checkbox']").prop("checked",true);//全选
+
+        $(this).text("取消全选")
+         flag=false;
+
+    }else {
+        $("[name='checkbox']").prop("checked",false);//全选
+        $(this).text("全选")
+        flag=true;
+    }
+});
+ var articlelist="";
+$('#delarticle').click(function () {
+
+    var len=$("[name='checkbox']").length;
+
+    for(var i=0;i<len;i++){
+        if($("td :checkbox").get(i).checked){
+            if (i==0){
+                articlelist=$($("td :checkbox").get(i)).attr('id')+""+articlelist
+            }else {
+                articlelist=$($("td :checkbox").get(i)).attr('id')+","+articlelist
+            }
+
+        }
+    }
+    if(articlelist==""){
+        alert("请选择相应的文章");
+    }else {
+        var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+        var data = {
+            "m1":articlelist,
+            "csrfmiddlewaretoken":csrfmiddlewaretoken,
+        };
+
+
+
+
+        $.post("/wenzhang/shanchuall/", data,
+        function(data){
+            if(data.result){
+              alert("保存成功!");
+              funclose();
+              window.location.reload();
+            }else{
+              alert("保存失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+    }
+
+
+    console.info(articlelist)
+});
+$("#portal_tag").val({{ portal_tag }});
+$("#refund_red").val({{ refund_red }});
+
+function delArticle(id){
+    $('#myModal').modal('show');
+    $("#article_id").val(id);
+}
+
+function funclose(){
+      $('#myModal').modal('hide');
+      $("#myModal").find("input[name='reason']").each(function (e,v) {
+          $(this).attr("checked",false);
+
+      });
+      $("#other").attr("checked",false);
+      $("#hide").val('');
+      $("#hide").hide();
+    }
+
+function on_hide(){
+      document.getElementById("hide").style.display = (document.getElementById("other").checked == true) ? "block" : "none";
+    }
+
+function make_sure(){
+
+        var flag=false;
+         $("#myModal").find("input[name='reason']:checked").each(function () {
+           flag=true;
+            return ;
+      });
+
+         if($("#other").is(':checked')){
+               if($("#hide").val()==''){
+                   flag=false;
+               }else{
+                   flag=true;
+               }
+         }
+
+        if(!flag){
+            return alert('请选择原因');
+        }
+
+      var next = "/wenzhang/shanchu/";
+      $(".btn-primary img").show();
+      $.post("/wenzhang/shanchushoye/", $("#DelArticleForm").serialize(),
+        function(data){
+            if(data.result){
+              alert("保存成功!");
+              funclose();
+              window.location.reload();
+            }else{
+              alert("保存失败："+data.message);
+              $(".btn-primary img").hide();
+            }
+        }, "json");
+    }
+
+function recoverArticle(id){
+    if(!confirm("文章恢复以后，相关的比赛信息和标签可能无法恢复，如果需要请手动添加！\n确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/huifu/", data,
+        function(data){
+            if(data.result){
+              alert("成功恢复!");
+              location.reload()
+            }else{
+              alert("恢复失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+
+function makeTop(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/zhiding/", data,
+        function(data){
+            if(data.result){
+              alert("成功置顶!");
+              location.reload()
+            }else{
+              alert("置顶失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+
+function cancelTop(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/cancel_top/", data,
+            function(data){
+                if(data.result){
+                    alert("成功取消置顶!");
+                    location.reload()
+                }else{
+                    alert("取消置顶失败："+data.message);
+                    //$(".btn-primary img").hide();
+                }
+            }, "json");
+
+}
+
+function make_toppage(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/shangshouye/", data,
+        function(data){
+            if(data.result){
+              alert("操作成功!");
+              location.reload()
+            }else{
+              alert("操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+
+function cancel_toppage(id){
+    if(!confirm("确认做此操作")){
+        return false;
+    }
+    var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+    var data = {
+        "id":id,
+        "csrfmiddlewaretoken":csrfmiddlewaretoken,
+    };
+    console.log(data)
+    $.post("/wenzhang/xiashouye/", data,
+        function(data){
+            if(data.result){
+              alert("操作成功!");
+              location.reload()
+            }else{
+              alert("操作失败："+data.message);
+              //$(".btn-primary img").hide();
+            }
+        }, "json");
+
+}
+
+var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+//修改置顶排序
+$("#top_articles_table tbody td:nth-child(7)").dblclick(function (e) {
+    if ($(this).find("input").length > 0) {
+        return;
+    }
+    var orderStr = $(this).html();
+    $(this).html("<input type='text' style='width:50px' value='" + orderStr + "'/><button class='btn btn-primary btn-sm' style='margin-left:3px'>保存</button>");
+    $(this).find("button").click(function(e){
+        var articleId = $(this).parent().parent().find("td:first-child a").html();
+        var orderStr = $(this).parent().find("input").val();
+        var elem = $(this);
+        $.post("/wenzhang/top_order/", {"article_id":articleId, "order":orderStr, "csrfmiddlewaretoken":csrfmiddlewaretoken}, function(data){
+            if(data.result) {
+                $(elem).parent().html(orderStr);
+                alert(data.message);
+                location.reload();
+            }else{
+                alert(data.message);
+            }
+        });
+    });
+});
+
+var is_refunding = false;
+function refund_red(article_id) {
+    if (is_refunding) {
+        return;
+    }
+    if (confirm("确认要退款?")) {
+        is_refunding = true;
+        $.post("/app/refund_red/", {"article_id": article_id, "csrfmiddlewaretoken":csrfmiddlewaretoken}, function(data){
+            alert(data.message);
+            if (data.result) {
+                location.reload();
+            }
+            is_refunding = false;
+        });
+    }
+}
+
+$('#daterangepicker').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 1,
+            timePicker24Hour: true,
+            linkedCalendars: false,
+            locale:{
+                format: 'YYYY/MM/DD HH:mm',
+                applyLabel:"确定",
+                cancelLabel:"取消",
+                daysOfWeek: [
+                    "日",
+                    "一",
+                    "二",
+                    "三",
+                    "四",
+                    "五",
+                    "六"
+                ],
+                monthNames: [
+                    "一月",
+                    "二月",
+                    "三月",
+                    "四月",
+                    "五月",
+                    "六月",
+                    "七月",
+                    "八月",
+                    "九月",
+                    "十月",
+                    "十一月",
+                    "十二月"
+                ],
+            }
+        },
+        function(start, end) {
+            var datefmt = "YYYY-MM-DD HH:mm";
+            console.log(start.format(datefmt), end.format(datefmt));
+            $("#from_date").val(start.format(datefmt + ":00"));
+            $("#to_date").val(end.format(datefmt + ":59"));
+
+        }
+);
+
+$('#daterangepicker').data("daterangepicker").setStartDate("{{ from_datestr }}");
+$('#daterangepicker').data("daterangepicker").setEndDate("{{ to_datestr }}");
+</script>
+{% endblock %}
